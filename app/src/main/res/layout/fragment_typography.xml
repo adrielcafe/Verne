@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/vDialogTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/typography"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/vFontFamilyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/font"
+        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/vFontFamilyLayout"
+        app:layout_constraintTop_toTopOf="@+id/vFontFamilyLayout" />
+
+    <FrameLayout
+        android:id="@+id/vFontFamilyLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mtrl_background_filled"
+        app:layout_constraintTop_toBottomOf="@+id/vDialogTitle"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Spinner
+            android:id="@+id/vFontFamily"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="35dp"
+            android:gravity="end"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/ic_keyboard_arrow_down"
+            app:tint="?colorControlNormal"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/vFontSizeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/size"
+        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/vFontSize"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vFontSize" />
+
+    <it.sephiroth.android.library.numberpicker.NumberPicker
+        android:id="@+id/vFontSize"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vFontFamilyLayout"
+        app:picker_min="10"
+        app:picker_max="30"
+        app:picker_stepSize="2"/>
+
+    <TextView
+        android:id="@+id/vMarginSizeTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/margin"
+        android:textSize="18sp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+        app:layout_constraintBottom_toBottomOf="@+id/vMarginSize"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vMarginSize" />
+
+    <it.sephiroth.android.library.numberpicker.NumberPicker
+        android:id="@+id/vMarginSize"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_marginTop="10dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/vFontSize"
+        app:picker_min="0"
+        app:picker_max="50"
+        app:picker_stepSize="10"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

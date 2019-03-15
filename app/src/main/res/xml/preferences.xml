@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/settings">
+
+        <SwitchPreference
+            android:key="appDarkMode"
+            android:title="@string/dark_mode"
+            android:defaultValue="false"/>
+
+        <SwitchPreference
+            android:key="appFullscreen"
+            android:title="@string/fullscreen"
+            android:defaultValue="false"/>
+
+        <ListPreference
+            android:key="appLanguage"
+            android:title="@string/language"
+            android:entries="@array/preference_language_entries"
+            android:entryValues="@array/preference_language_values"
+            app:useSimpleSummaryProvider="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory>
+
+        <Preference
+            android:key="aboutContactUs"
+            android:title="@string/contact_us"
+            android:icon="@drawable/ic_email"/>
+
+        <Preference
+            android:key="aboutReportBug"
+            android:title="@string/report_bug"
+            android:icon="@drawable/ic_bug_report"/>
+
+        <Preference
+            android:key="aboutShare"
+            android:title="@string/share"
+            android:icon="@drawable/ic_share"/>
+
+        <Preference
+            android:key="aboutRateReview"
+            android:title="@string/rate_review"
+            android:icon="@drawable/ic_star"/>
+
+        <Preference
+            android:key="aboutPrivacyPolicy"
+            android:title="@string/privacy_policy"
+            android:icon="@drawable/ic_privacy_policy"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

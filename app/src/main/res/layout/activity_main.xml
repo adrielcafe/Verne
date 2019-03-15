@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/vDrawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".view.main.MainActivity">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/vRoot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.main.MainActivity">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/vToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    app:contentInsetStart="0dp">
+
+                    <cafe.adriel.krumbsview.KrumbsView
+                        android:id="@+id/vBreadcrumbs"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5dp"
+                        app:krumbsStartItem="@string/app_name"
+                        app:krumbsTypeface="@font/alice"
+                        app:krumbsTextSize="26sp"
+                        app:krumbsAnimationType="growShrink"
+                        app:krumbsAnimationDuration="longDuration"/>
+
+                </androidx.appcompat.widget.Toolbar>
+
+                <com.ferfalk.simplesearchview.SimpleSearchView
+                    android:id="@+id/vSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:searchBackground="@color/colorPrimary"
+                    app:backIconTint="@android:color/white"
+                    app:iconsTint="@android:color/white"
+                    app:cursorColor="@android:color/white"
+                    app:hintColor="@color/gray_500"
+                    app:iconsAlpha="1"
+                    app:backIconAlpha="1"
+                    app:voiceSearch="true"/>
+
+            </FrameLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <FrameLayout
+            android:id="@+id/vContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <RelativeLayout
+        android:id="@+id/vSettingsNav"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="?android:windowBackground">
+
+        <FrameLayout
+            android:id="@+id/vSettings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/vAppVersion"/>
+
+        <TextView
+            android:id="@+id/vAppVersion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:padding="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Overline"
+            android:textAllCaps="false"
+            tools:text="v1.0.0 (Build 1)"/>
+
+    </RelativeLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

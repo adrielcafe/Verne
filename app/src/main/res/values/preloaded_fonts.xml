@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/alice</item>
+        <item>@font/arvo</item>
+        <item>@font/bitter</item>
+        <item>@font/fira_sans</item>
+        <item>@font/laila</item>
+        <item>@font/lato</item>
+        <item>@font/lora</item>
+        <item>@font/merriweather</item>
+        <item>@font/montserrat</item>
+        <item>@font/noto_sans</item>
+        <item>@font/noto_serif</item>
+        <item>@font/open_sans</item>
+        <item>@font/oxygen</item>
+        <item>@font/pt_sans</item>
+        <item>@font/pt_serif</item>
+        <item>@font/raleway</item>
+        <item>@font/roboto</item>
+        <item>@font/roboto_slab</item>
+        <item>@font/slabo_13px</item>
+        <item>@font/slabo_27px</item>
+        <item>@font/source_sans_pro</item>
+        <item>@font/source_serif_pro</item>
+        <item>@font/ubuntu</item>
+    </array>
+</resources>

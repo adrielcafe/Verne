@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedQuantity">
+
+    <plurals name="files">
+        <item quantity="one">%d arquivo</item>
+        <item quantity="zero">%d arquivos</item>
+        <item quantity="other">%d arquivos</item>
+    </plurals>
+
+    <plurals name="seconds">
+        <item quantity="one">%d segundo</item>
+        <item quantity="zero">%d segundos</item>
+        <item quantity="other">%d segundos</item>
+    </plurals>
+
+    <plurals name="minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="zero">%d minutos</item>
+        <item quantity="other">%d minutos</item>
+    </plurals>
+
+    <plurals name="items_deleted">
+        <item quantity="one">%d item excluído</item>
+        <item quantity="zero">%d itens excluídos</item>
+        <item quantity="other">%d itens excluídos</item>
+    </plurals>
+
+</resources>

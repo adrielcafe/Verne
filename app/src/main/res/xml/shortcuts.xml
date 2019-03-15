@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="newFile"
+        android:icon="@drawable/ic_shortcut"
+        android:shortcutShortLabel="@string/new_file">
+        <intent
+            android:action="cafe.adriel.verne.action.NEW_FILE"
+            android:targetPackage="cafe.adriel.verne"
+            android:targetClass="cafe.adriel.verne.view.editor.EditorActivity" />
+    </shortcut>
+</shortcuts>

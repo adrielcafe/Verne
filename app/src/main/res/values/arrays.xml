@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="share_item_options">
+        <item>@string/text</item>
+        <item>@string/html_text</item>
+        <item>@string/html_file</item>
+        <item>@string/pdf_file</item>
+    </string-array>
+
+    <string-array name="preference_language_entries">
+        <item>@string/english</item>
+        <item>@string/portuguese</item>
+    </string-array>
+
+    <string-array name="preference_language_values">
+        <item>en</item>
+        <item>pt</item>
+    </string-array>
+
+</resources>
