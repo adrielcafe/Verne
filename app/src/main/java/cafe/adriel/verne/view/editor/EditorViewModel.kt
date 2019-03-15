@@ -4,7 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import cafe.adriel.verne.R
-import cafe.adriel.verne.extension.*
+import cafe.adriel.verne.extension.charCount
+import cafe.adriel.verne.extension.formatSeconds
+import cafe.adriel.verne.extension.formatShort
+import cafe.adriel.verne.extension.paragraphCount
+import cafe.adriel.verne.extension.readTimeInSeconds
+import cafe.adriel.verne.extension.wordCount
 import cafe.adriel.verne.model.ExplorerItem
 import cafe.adriel.verne.model.FontFamily
 import cafe.adriel.verne.model.TypographySettings
@@ -14,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.*
+import java.util.Calendar
 
 class EditorViewModel(private val appContext: Context, private val explorerRepository: LocalExplorerRepository, private val preferences: SharedPreferences) :
     CoroutineScopedStateViewModel<EditorViewState>(), SharedPreferences.OnSharedPreferenceChangeListener {
@@ -41,14 +46,14 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if(key in arrayOf(TypographySettings.TYPOGRAPHY_FONT_FAMILY, TypographySettings.TYPOGRAPHY_FONT_SIZE, TypographySettings.TYPOGRAPHY_MARGIN_SIZE)){
+        if (key in arrayOf(TypographySettings.TYPOGRAPHY_FONT_FAMILY, TypographySettings.TYPOGRAPHY_FONT_SIZE, TypographySettings.TYPOGRAPHY_MARGIN_SIZE)) {
             updateState { it.copy(settings = getSettings()) }
         }
     }
 
     fun requestStateUpdate() = updateState { it }
 
-    fun toggleEditMode(){
+    fun toggleEditMode() {
         editMode = !editMode
     }
 
@@ -61,13 +66,13 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
     suspend fun saveText(title: String, text: String) = withContext(Dispatchers.IO) {
         try {
             // Rename the file if the title has changed
-            if(title != item.title){
+            if (title != item.title) {
                 val newFile = explorerRepository.rename(item, title)
                 item = ExplorerItem.File(newFile.path)
             }
             explorerRepository.create(item)
             item.file.writeText(text)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -75,7 +80,7 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
     suspend fun getHtmlText() = withContext(Dispatchers.IO) {
         try {
             explorerRepository.getHtmlText(item)
-                .also { if(it.isBlank()) editMode = true }
+                .also { if (it.isBlank()) editMode = true }
         } catch (e: Exception) {
             e.printStackTrace()
             editMode = true
@@ -119,5 +124,4 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
         val marginSize = preferences.getInt(TypographySettings.TYPOGRAPHY_MARGIN_SIZE, TypographySettings.DEFAULT_MARGIN_SIZE)
         return TypographySettings(fontFamily, fontSize, marginSize)
     }
-
 }

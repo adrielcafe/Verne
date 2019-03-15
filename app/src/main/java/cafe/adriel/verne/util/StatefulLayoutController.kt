@@ -19,5 +19,4 @@ object StatefulLayoutController {
             .withState(STATE_NOT_FOUND, LayoutInflater.from(context).inflate(R.layout.state_not_found, null))
             .withState(STATE_EMPTY, LayoutInflater.from(context).inflate(R.layout.state_empty, null))
             .build()
-
 }

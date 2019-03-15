@@ -7,5 +7,4 @@ interface ExplorerFragmentListener {
     fun onPrintHtml(fileName: String, html: String)
 
     fun onItemOpened(item: ExplorerItem)
-
 }

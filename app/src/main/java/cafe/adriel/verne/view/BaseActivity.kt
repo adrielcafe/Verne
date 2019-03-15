@@ -13,7 +13,7 @@ import com.etiennelenhart.eiffel.state.ViewState
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import com.franmontiel.localechanger.LocaleChanger
 
-abstract class BaseActivity<S: ViewState> : CoroutineScopedActivity() {
+abstract class BaseActivity<S : ViewState> : CoroutineScopedActivity() {
 
     // LocaleChanger overrides the original context, but we need it to print files
     protected var originalContext: Context? = null
@@ -22,14 +22,14 @@ abstract class BaseActivity<S: ViewState> : CoroutineScopedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
 
-        val darkMode = if(isDarkMode()) {
+        val darkMode = if (isDarkMode()) {
             AppCompatDelegate.MODE_NIGHT_YES
         } else {
             AppCompatDelegate.MODE_NIGHT_NO
         }
         AppCompatDelegate.setDefaultNightMode(darkMode)
 
-        if(isFullscreen()){
+        if (isFullscreen()) {
             window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
@@ -54,5 +54,4 @@ abstract class BaseActivity<S: ViewState> : CoroutineScopedActivity() {
     }
 
     protected abstract fun onStateUpdated(state: S)
-
 }

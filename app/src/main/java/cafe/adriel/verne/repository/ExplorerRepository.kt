@@ -19,5 +19,4 @@ interface ExplorerRepository<T> {
     suspend fun getPlainText(item: T): String
 
     suspend fun getHtmlText(item: T): String
-
 }

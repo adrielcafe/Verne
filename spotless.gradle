@@ -1,17 +1,20 @@
 apply plugin: "com.diffplug.gradle.spotless"
 
 spotless {
-  kotlin {
-    target "**/*.kt"
-    ktlint()
-    trimTrailingWhitespace()
-    endWithNewline()
-  }
-  java {
-    target "**/*.java"
-    trimTrailingWhitespace()
-    removeUnusedImports()
-    googleJavaFormat()
-    endWithNewline()
-  }
+
+    kotlin {
+        target "**/*.kt"
+        ktlint()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
+    java {
+        target "**/*.java"
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+
 }

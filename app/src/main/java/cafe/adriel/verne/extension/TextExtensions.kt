@@ -9,34 +9,34 @@ import androidx.core.text.toSpanned
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.aztec.Constants
-import java.util.*
+import java.util.StringTokenizer
 import kotlin.math.roundToInt
 
 private const val WORDS_PER_MINUTE = 200F
 
-suspend fun String.paragraphCount() = withContext(Dispatchers.Default){
+suspend fun String.paragraphCount() = withContext(Dispatchers.Default) {
     trim()
         .split('\n')
         .filter { it.isNotBlank() && it.trim() != Constants.ZWJ_STRING }
         .size
 }
 
-suspend fun String.wordCount() = withContext(Dispatchers.Default){
+suspend fun String.wordCount() = withContext(Dispatchers.Default) {
     val str = this@wordCount.replace(Constants.ZWJ_STRING, "")
     StringTokenizer(str).countTokens()
 }
 
-suspend fun String.charCount() = withContext(Dispatchers.Default){
+suspend fun String.charCount() = withContext(Dispatchers.Default) {
     val str = this@charCount.replace(Constants.ZWJ_STRING, "")
     val tokenizer = StringTokenizer(str)
     var count = 0
-    while(tokenizer.hasMoreTokens()){
+    while (tokenizer.hasMoreTokens()) {
         count += tokenizer.nextToken().length
     }
     count
 }
 
-suspend fun String.readTimeInSeconds() = withContext(Dispatchers.Default){
+suspend fun String.readTimeInSeconds() = withContext(Dispatchers.Default) {
     val wordCount = this@readTimeInSeconds.wordCount()
     val seconds = (wordCount / WORDS_PER_MINUTE) * 60
     seconds.roundToInt()
@@ -46,7 +46,7 @@ fun String.fromHtml() = HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMP
 
 fun String.share(activity: Activity, html: Boolean = false) =
     ShareCompat.IntentBuilder.from(activity).run {
-        if(html){
+        if (html) {
             setHtmlText(this@share)
             setType(ClipDescription.MIMETYPE_TEXT_HTML)
         } else {

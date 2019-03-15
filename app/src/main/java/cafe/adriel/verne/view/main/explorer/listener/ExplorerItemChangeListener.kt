@@ -15,13 +15,12 @@ class ExplorerItemChangeListener(dir: File, fireOnInit: Boolean, val listener: (
     }
 
     init {
-        if(fireOnInit) listener()
+        if (fireOnInit) listener()
     }
 
     override fun onEvent(event: Int, path: String?) {
-        if(EVENTS and event != 0) {
+        if (EVENTS and event != 0) {
             listener()
         }
     }
-
 }

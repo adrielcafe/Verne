@@ -22,21 +22,21 @@ fun EditText.showKeyboard() = context.getSystemService<InputMethodManager>()?.sh
 fun EditText.hideKeyboard() = context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
 
 fun View.showAnimated() {
-    if(visibility != View.VISIBLE) {
+    if (visibility != View.VISIBLE) {
         startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_in_bottom))
         visibility = View.VISIBLE
     }
 }
 
 fun View.hideAnimated() {
-    if(visibility != View.GONE) {
+    if (visibility != View.GONE) {
         startAnimation(AnimationUtils.loadAnimation(context, R.anim.slide_out_bottom))
         visibility = View.GONE
     }
 }
 
 fun ViewGroup.setMargins(@Px start: Int = 0, @Px top: Int = 0, @Px right: Int = 0, @Px bottom: Int = 0) {
-    when(layoutParams){
+    when (layoutParams) {
         is FrameLayout.LayoutParams -> (layoutParams as FrameLayout.LayoutParams).setMargins(start, top, right, bottom)
         is LinearLayout.LayoutParams -> (layoutParams as LinearLayout.LayoutParams).setMargins(start, top, right, bottom)
         is RelativeLayout.LayoutParams -> (layoutParams as RelativeLayout.LayoutParams).setMargins(start, top, right, bottom)

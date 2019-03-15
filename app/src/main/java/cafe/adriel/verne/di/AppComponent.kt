@@ -24,7 +24,6 @@ class AppComponent(private val app: Application) : Component {
         viewModel { EditorViewModel(app.applicationContext, get(), get()) }
         viewModel { TypographyViewModel(get()) }
     }
-    
-    override fun getModules() = listOf(preferenceModule, repositoryModule, viewModelModule)
 
+    override fun getModules() = listOf(preferenceModule, repositoryModule, viewModelModule)
 }

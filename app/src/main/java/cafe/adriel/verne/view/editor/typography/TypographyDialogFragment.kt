@@ -38,7 +38,7 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        with(vFontFamily){
+        with(vFontFamily) {
             context?.let {
                 adapter = FontFamilyAdapter(it)
             }
@@ -54,9 +54,9 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        with(vFontSize){
+        with(vFontSize) {
             forEach {
-                when(it) {
+                when (it) {
                     is EditText -> it.isFocusable = false
                     is ImageButton -> {
                         it.setImageResource(R.drawable.ic_keyboard_arrow_up)
@@ -77,9 +77,9 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        with(vMarginSize){
+        with(vMarginSize) {
             forEach {
-                when(it) {
+                when (it) {
                     is EditText -> it.isFocusable = false
                     is ImageButton -> {
                         it.setImageResource(R.drawable.ic_keyboard_arrow_up)
@@ -99,7 +99,5 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
                 }
             }
         }
-
     }
-
 }

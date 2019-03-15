@@ -14,12 +14,12 @@ import java.io.Serializable
 
 fun Activity.isFullScreen() = window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN != 0
 
-inline fun <reified T: Fragment> FragmentManager.getFragment() = findFragmentByTag(tagOf<T>()) as T?
+inline fun <reified T : Fragment> FragmentManager.getFragment() = findFragmentByTag(tagOf<T>()) as T?
 
-inline fun <reified T: Activity> Context.intentFor(vararg extras: Pair<String, Any> = emptyArray()) =
+inline fun <reified T : Activity> Context.intentFor(vararg extras: Pair<String, Any> = emptyArray()) =
     Intent(this, T::class.java).apply {
         extras.forEach {
-            when(it.second){
+            when (it.second) {
                 is Parcelable -> putExtra(it.first, it.second as Parcelable)
                 is Serializable -> putExtra(it.first, it.second as Serializable)
                 is String -> putExtra(it.first, it.second as String)

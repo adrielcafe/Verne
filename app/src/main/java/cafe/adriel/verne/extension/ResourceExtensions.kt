@@ -4,7 +4,11 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.view.View
-import androidx.annotation.*
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.FontRes
+import androidx.annotation.IntegerRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -45,7 +49,7 @@ fun View.font(@FontRes resId: Int, callback: (typeface: Typeface) -> Unit) = con
 
 fun Context.drawable(@DrawableRes resId: Int, tintColor: Int? = null) =
     ResourcesCompat.getDrawable(resources, resId, theme)?.apply {
-        if(tintColor != null){
+        if (tintColor != null) {
             DrawableCompat.setTint(this, tintColor)
         }
     }

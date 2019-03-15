@@ -4,9 +4,11 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class TypographySettings(val fontFamily: FontFamily = FontFamily.valueOf(DEFAULT_FONT_FAMILY),
-                              val fontSize: Int = DEFAULT_FONT_SIZE,
-                              val marginSize: Int = DEFAULT_MARGIN_SIZE) : Parcelable {
+data class TypographySettings(
+    val fontFamily: FontFamily = FontFamily.valueOf(DEFAULT_FONT_FAMILY),
+    val fontSize: Int = DEFAULT_FONT_SIZE,
+    val marginSize: Int = DEFAULT_MARGIN_SIZE
+) : Parcelable {
 
     companion object {
         const val TYPOGRAPHY_FONT_FAMILY = "typographyFontFamily"
@@ -17,5 +19,4 @@ data class TypographySettings(val fontFamily: FontFamily = FontFamily.valueOf(DE
         const val DEFAULT_FONT_SIZE = 18
         const val DEFAULT_MARGIN_SIZE = 20
     }
-
 }

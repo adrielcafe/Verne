@@ -52,9 +52,9 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
         onCurrentDirChange(currentDir)
     }
 
-    private fun onSearchModeChange(enabled: Boolean){
-        if (enabled){
-            if(::listener.isInitialized){
+    private fun onSearchModeChange(enabled: Boolean) {
+        if (enabled) {
+            if (::listener.isInitialized) {
                 listener.stopWatching()
             }
             updateState { it.copy(items = emptyList()) }
@@ -64,8 +64,8 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
         }
     }
 
-    private fun onCurrentDirChange(dir: File){
-        if(::listener.isInitialized){
+    private fun onCurrentDirChange(dir: File) {
+        if (::listener.isInitialized) {
             listener.stopWatching()
         }
         listener = ExplorerItemChangeListener(dir, true) {
@@ -74,65 +74,65 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
         listener.startWatching()
     }
 
-    private suspend fun selectItems(dir: File){
+    private suspend fun selectItems(dir: File) {
         // Check if is base dir or current dir, otherwise ignore
-        if(currentDir == dir || currentDir == explorerRepository.baseDir) {
+        if (currentDir == dir || currentDir == explorerRepository.baseDir) {
             updateState { it.copy(items = explorerRepository.select(dir)) }
         }
     }
 
     fun isSearchQueryEmpty() = searchQuery.isBlank()
 
-    suspend fun searchItems(query: String){
+    suspend fun searchItems(query: String) {
         searchQuery = query
         updateState { it.copy(items = explorerRepository.search(query)) }
     }
 
     suspend fun putItem(name: String, isFolder: Boolean): ExplorerItem {
-        val fileName = if(!isFolder && !name.endsWith(".html", true)){
+        val fileName = if (!isFolder && !name.endsWith(".html", true)) {
             "$name.html"
         } else {
             name
         }
         val file = File(currentDir, fileName)
-        val item = if(isFolder) ExplorerItem.Folder(file.path) else ExplorerItem.File(file.path)
+        val item = if (isFolder) ExplorerItem.Folder(file.path) else ExplorerItem.File(file.path)
         explorerRepository.create(item)
         return item
     }
 
-    suspend fun moveItem(item: ExplorerItem, parentDir: File){
+    suspend fun moveItem(item: ExplorerItem, parentDir: File) {
         explorerRepository.move(item, parentDir)
     }
 
-    suspend fun renameItem(item: ExplorerItem, newName: String){
+    suspend fun renameItem(item: ExplorerItem, newName: String) {
         explorerRepository.rename(item, newName)
     }
 
-    suspend fun softDeleteItem(item: ExplorerItem){
-        if(!item.isDeleted) {
+    suspend fun softDeleteItem(item: ExplorerItem) {
+        if (!item.isDeleted) {
             explorerRepository.rename(item, ".${item.file.name}")
         }
     }
 
-    suspend fun restoreItem(item: ExplorerItem){
+    suspend fun restoreItem(item: ExplorerItem) {
         val deletedFile = File(item.file.parent, ".${item.file.name}")
-        if(item.isDeleted) {
+        if (item.isDeleted) {
             explorerRepository.rename(item, item.file.name.removePrefix("."))
-        } else if(deletedFile.exists()){
+        } else if (deletedFile.exists()) {
             explorerRepository.rename(deletedFile.asExplorerItem(), deletedFile.name.removePrefix("."))
         }
     }
 
     suspend fun getPlainText(item: ExplorerItem.File) = try {
         explorerRepository.getPlainText(item)
-    } catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }
 
     suspend fun getHtmlText(item: ExplorerItem.File) = try {
         explorerRepository.getHtmlText(item)
-    } catch (e: Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }
@@ -153,5 +153,4 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
                 .create()
         }
     }
-
 }

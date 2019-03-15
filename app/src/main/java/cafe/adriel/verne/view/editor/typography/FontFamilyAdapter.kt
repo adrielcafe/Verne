@@ -21,7 +21,7 @@ class FontFamilyAdapter(context: Context) :
         val fontNameView = super.getView(position, convertView, parent) as TextView
         getItem(position)?.let { item ->
             fontNameView.text = item.fontName
-            if(typefaces.contains(position)){
+            if (typefaces.contains(position)) {
                 fontNameView.typeface = typefaces[position]
             } else {
                 context.font(item.resId) {
@@ -35,5 +35,4 @@ class FontFamilyAdapter(context: Context) :
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup) =
         getView(position, convertView, parent)
-
 }

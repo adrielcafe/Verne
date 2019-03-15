@@ -12,7 +12,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.recyclerview.widget.LinearLayoutManager
 import cafe.adriel.verne.R
-import cafe.adriel.verne.extension.*
+import cafe.adriel.verne.extension.color
+import cafe.adriel.verne.extension.colorFromAttr
+import cafe.adriel.verne.extension.hideAnimated
+import cafe.adriel.verne.extension.javaClass
+import cafe.adriel.verne.extension.long
+import cafe.adriel.verne.extension.setAnimatedState
+import cafe.adriel.verne.extension.share
+import cafe.adriel.verne.extension.showAnimated
 import cafe.adriel.verne.model.ExplorerItem
 import cafe.adriel.verne.util.AnalyticsUtil
 import cafe.adriel.verne.util.StatefulLayoutController
@@ -72,14 +79,14 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
                     else -> false
                 }
             }
-            .withOnPreClickListener { _, _, item, _  ->
+            .withOnPreClickListener { _, _, item, _ ->
                 when {
                     viewModel.searchMode -> false
                     else -> adapterActionModeHelper.onClick(item) ?: false
                 }
             }
             .withOnClickListener { _, _, item, _ ->
-                if(adapterActionModeHelper.isActive) {
+                if (adapterActionModeHelper.isActive) {
                     true
                 } else {
                     openItem(item.item)
@@ -115,7 +122,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
             }
         }
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             setSearchModeEnabled(viewModel.searchMode)
         }
     }
@@ -153,11 +160,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         return true
     }
 
-    private fun setItems(items: List<ExplorerItem>){
+    private fun setItems(items: List<ExplorerItem>) {
         launch {
-            val state = if(viewModel.searchMode && viewModel.isSearchQueryEmpty()){
+            val state = if (viewModel.searchMode && viewModel.isSearchQueryEmpty()) {
                 StatefulLayoutController.STATE_EMPTY
-            } else if(items.isEmpty()){
+            } else if (items.isEmpty()) {
                 StatefulLayoutController.STATE_NOT_FOUND
             } else {
                 StatefulLayoutController.STATE_CONTENT
@@ -174,11 +181,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         vItems.scrollTo(0, scrollY)
     }
 
-    private fun createItem(name: String, isFolder: Boolean = false){
+    private fun createItem(name: String, isFolder: Boolean = false) {
         launch {
             val newItem = viewModel.putItem(name, isFolder)
             openItem(newItem)
-            if(isFolder){
+            if (isFolder) {
                 AnalyticsUtil.logNewFolder()
             } else {
                 AnalyticsUtil.logNewFile(AnalyticsUtil.NEW_FILE_SOURCE_INTERNAL)
@@ -186,9 +193,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun openItem(item: ExplorerItem){
+    private fun openItem(item: ExplorerItem) {
         listener.onItemOpened(item)
-        when(item){
+        when (item) {
             is ExplorerItem.Folder -> {
                 viewModel.currentDir = item.file
             }
@@ -198,7 +205,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun printItem(item: ExplorerItem.File){
+    private fun printItem(item: ExplorerItem.File) {
         launch {
             viewModel.getHtmlText(item)?.let {
                 listener.onPrintHtml(item.title, it)
@@ -206,14 +213,14 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun shareItem(item: ExplorerItem.File){
+    private fun shareItem(item: ExplorerItem.File) {
         activity?.apply {
             MaterialDialog(this).show {
                 title(R.string.share_as)
                 negativeButton(R.string.cancel)
                 listItems(R.array.share_item_options, waitForPositiveButton = false) { _, index, _ ->
                     launch {
-                        when(index){
+                        when (index) {
                             // Text
                             0 -> viewModel.getPlainText(item)?.share(this@apply)
                             // HTML text
@@ -230,7 +237,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun deleteItems(items: List<ExplorerItem>){
+    private fun deleteItems(items: List<ExplorerItem>) {
         launch {
             view?.apply {
                 val text = resources.getQuantityString(R.plurals.items_deleted, items.size, items.size)
@@ -253,17 +260,17 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    fun search(query: String){
+    fun search(query: String) {
         launch { viewModel.searchItems(query) }
     }
 
-    fun setSearchModeEnabled(enabled: Boolean){
+    fun setSearchModeEnabled(enabled: Boolean) {
         launch {
             viewModel.searchMode = enabled
             delay(actionDelayMs)
-            if(enabled){
+            if (enabled) {
                 vExplorerFab.hideAnimated()
-                if(vExplorerFab.isOpen) {
+                if (vExplorerFab.isOpen) {
                     delay(actionDelayMs)
                     vExplorerFab.close(null)
                 }
@@ -273,8 +280,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun showNewItemDialog(isFolder: Boolean){
-        val title = if(isFolder) R.string.new_folder else R.string.new_file
+    private fun showNewItemDialog(isFolder: Boolean) {
+        val title = if (isFolder) R.string.new_folder else R.string.new_file
         context?.apply {
             MaterialDialog(this).show {
                 title(title)
@@ -291,7 +298,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun showRenameItemDialog(item: ExplorerItem){
+    private fun showRenameItemDialog(item: ExplorerItem) {
         context?.apply {
             MaterialDialog(this).show {
                 title(R.string.rename)
@@ -311,7 +318,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun showMoveItemsDialog(items: List<ExplorerItem>) = runWithPermissions(Permission.WRITE_EXTERNAL_STORAGE){
+    private fun showMoveItemsDialog(items: List<ExplorerItem>) = runWithPermissions(Permission.WRITE_EXTERNAL_STORAGE) {
         val filter = { file: File ->
             file.isDirectory && !file.isHidden
         }
@@ -329,7 +336,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun updateActionModeMenu(actionMode: ActionMode){
+    private fun updateActionModeMenu(actionMode: ActionMode) {
         val selectedItems = adapterSelectHelper?.selectedItems
         val hasFolderItem = selectedItems?.firstOrNull { it.item is ExplorerItem.Folder } != null
         val isSingleItem = selectedItems?.size == 1

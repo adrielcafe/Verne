@@ -69,5 +69,4 @@ class FastNestedScrollView(context: Context, attrs: AttributeSet) : NestedScroll
 
     @SuppressLint("RestrictedApi")
     override fun superComputeVerticalScrollRange() = super.computeVerticalScrollRange()
-
 }

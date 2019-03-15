@@ -18,9 +18,9 @@ private val fileFilter by lazy {
     FileFilter { !it.isDirectory && !it.isHidden }
 }
 
-fun File.asExplorerItem(): ExplorerItem = if(isDirectory) ExplorerItem.Folder(path) else ExplorerItem.File(path)
+fun File.asExplorerItem(): ExplorerItem = if (isDirectory) ExplorerItem.Folder(path) else ExplorerItem.File(path)
 
-suspend fun File.filesCount() = withContext(Dispatchers.IO){
+suspend fun File.filesCount() = withContext(Dispatchers.IO) {
     walk().fold(0) { acc, file ->
         acc + (file.listFiles(fileFilter)?.size ?: 0)
     }
@@ -35,7 +35,7 @@ fun File.share(activity: Activity) {
         .startChooser()
 }
 
-fun Uri.readText(context: Context) = when(scheme){
+fun Uri.readText(context: Context) = when (scheme) {
     "file" -> toFile().readText()
     "content" -> context.contentResolver.openInputStream(this)?.run {
         val text = readBytes().toString(Charsets.UTF_8)

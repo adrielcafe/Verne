@@ -14,9 +14,9 @@ inline fun debug(body: () -> Unit) {
     if (BuildConfig.DEBUG) body()
 }
 
-inline fun <reified T: Any> tagOf(): String = T::class.java.simpleName
+inline fun <reified T : Any> tagOf(): String = T::class.java.simpleName
 
-inline fun <reified T: Any> javaClass(): Class<T> = T::class.java
+inline fun <reified T : Any> javaClass(): Class<T> = T::class.java
 
 fun Uri.openInChromeTab(context: Context) {
     val packageName = CustomTabsHelper.getPackageNameToUse(context)
@@ -39,7 +39,7 @@ fun Uri.openInChromeTab(context: Context) {
 fun Uri.openInExternalBrowser(context: Context, showErrorMessage: Boolean = true) = try {
     context.startActivity(Intent(Intent.ACTION_VIEW, this))
 } catch (e: Exception) {
-    if(showErrorMessage) {
+    if (showErrorMessage) {
         Toast.makeText(context, context.getString(R.string.something_went_wrong), Toast.LENGTH_SHORT).show()
     }
     Crashlytics.logException(e)

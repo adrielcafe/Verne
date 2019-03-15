@@ -16,12 +16,11 @@ class MainViewModel : CoroutineScopedStateViewModel<MainViewState>() {
         initState { MainViewState() }
     }
 
-    fun printHtml(context: Context, fileName: String, html: String){
+    fun printHtml(context: Context, fileName: String, html: String) {
         CreatePdf(context)
             .setPdfName(fileName)
             .setContent(html)
             .openPrintDialog(true)
             .create()
     }
-
 }

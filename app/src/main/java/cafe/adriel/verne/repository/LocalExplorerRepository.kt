@@ -25,7 +25,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     }
 
     override suspend fun search(query: String, showDeleted: Boolean) = withContext(Dispatchers.IO) {
-        if(query.isBlank()){
+        if (query.isBlank()) {
             emptyList()
         } else {
             baseDir.walk()
@@ -36,7 +36,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     }
 
     override suspend fun select(dir: File?, showDeleted: Boolean) = withContext(Dispatchers.IO) {
-        with(dir ?: baseDir){
+        with(dir ?: baseDir) {
             listFiles()
                 .filter { selectFilter(it, showDeleted) }
                 .map { it.asExplorerItem() }
@@ -44,7 +44,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     }
 
     override suspend fun create(item: ExplorerItem) = withContext(Dispatchers.IO) {
-        when(item){
+        when (item) {
             is ExplorerItem.Folder -> item.file.mkdirs()
             is ExplorerItem.File -> item.file.createNewFile()
         }
@@ -57,7 +57,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     }
 
     override suspend fun rename(item: ExplorerItem, newName: String) = withContext(Dispatchers.IO) {
-        val newFileName = if(item is ExplorerItem.File && !newName.endsWith(".html", true)){
+        val newFileName = if (item is ExplorerItem.File && !newName.endsWith(".html", true)) {
             "$newName.html"
         } else {
             newName
@@ -75,5 +75,4 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     override suspend fun getHtmlText(item: ExplorerItem) = withContext(Dispatchers.IO) {
         item.file.readText()
     }
-
 }

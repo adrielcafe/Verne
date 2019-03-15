@@ -44,7 +44,7 @@ class MainActivity : BaseActivity<MainViewState>(),
                 getExplorerFragment()?.backToPreviousFolder()
             }
         }
-        with(vSearch){
+        with(vSearch) {
             setTextColor(Color.WHITE)
             setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
@@ -106,7 +106,7 @@ class MainActivity : BaseActivity<MainViewState>(),
     }
 
     override fun onAttachFragment(fragment: Fragment) {
-        when(fragment){
+        when (fragment) {
             is ExplorerFragment -> fragment.listener = this
         }
     }
@@ -124,7 +124,7 @@ class MainActivity : BaseActivity<MainViewState>(),
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when(item?.itemId){
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         R.id.action_settings -> {
             vDrawer.openDrawer(GravityCompat.END)
             true
@@ -144,7 +144,7 @@ class MainActivity : BaseActivity<MainViewState>(),
     }
 
     override fun onItemOpened(item: ExplorerItem) {
-        when(item){
+        when (item) {
             is ExplorerItem.Folder -> vBreadcrumbs.addItem(Krumb(item.title))
             is ExplorerItem.File -> vSearch.closeSearch()
         }
@@ -153,5 +153,4 @@ class MainActivity : BaseActivity<MainViewState>(),
     private fun getExplorerFragment() = supportFragmentManager.getFragment<ExplorerFragment>()
 
     private fun getSettingsFragment() = supportFragmentManager.getFragment<SettingsFragment>()
-
 }

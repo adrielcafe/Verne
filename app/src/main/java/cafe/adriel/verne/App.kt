@@ -20,7 +20,7 @@ import com.instabug.library.ui.onboarding.WelcomeMessage
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
-import java.util.*
+import java.util.Locale
 
 class App : Application() {
 
@@ -45,7 +45,7 @@ class App : Application() {
         initLanguage()
     }
 
-    private fun initDependencies(){
+    private fun initDependencies() {
         startKoin {
             logger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
             androidContext(this@App)
@@ -53,8 +53,8 @@ class App : Application() {
         }
     }
 
-    private fun initBugReporting(){
-        val theme = if(isDarkMode())
+    private fun initBugReporting() {
+        val theme = if (isDarkMode())
             InstabugColorTheme.InstabugColorThemeDark
         else
             InstabugColorTheme.InstabugColorThemeLight
@@ -67,23 +67,22 @@ class App : Application() {
         BugReporting.setOptions(Option.EMAIL_FIELD_OPTIONAL)
     }
 
-    private fun initLanguage(){
+    private fun initLanguage() {
         val supportedLanguages = resources
             .getStringArray(R.array.preference_language_values)
             .map { Locale(it) }
         LocaleChanger.initialize(applicationContext, supportedLanguages)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
-        if(!preferences.contains(SettingsFragment.APP_LANGUAGE)){
+        if (!preferences.contains(SettingsFragment.APP_LANGUAGE)) {
             var currentLanguage = LocaleChanger.getLocale().language
-            val languageSupported= resources
+            val languageSupported = resources
                 .getStringArray(R.array.preference_language_values)
                 .contains(currentLanguage)
-            if(!languageSupported){
+            if (!languageSupported) {
                 currentLanguage = Locale.ENGLISH.language
             }
             preferences.edit { putString(SettingsFragment.APP_LANGUAGE, currentLanguage) }
         }
     }
-
 }

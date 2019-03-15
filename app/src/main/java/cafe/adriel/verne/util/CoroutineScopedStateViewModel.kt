@@ -17,5 +17,4 @@ abstract class CoroutineScopedStateViewModel<T : ViewState> : StateViewModel<T>(
         super.onCleared()
         coroutineJob.cancel()
     }
-
 }

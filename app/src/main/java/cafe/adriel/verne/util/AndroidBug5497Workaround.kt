@@ -17,12 +17,12 @@ class AndroidBug5497Workaround(private val activity: Activity) {
     private var usableHeightPrevious = 0
 
     fun addListener() {
-        if(viewTreeObserver.isAlive)
+        if (viewTreeObserver.isAlive)
             viewTreeObserver.addOnGlobalLayoutListener(listener)
     }
 
     fun removeListener() {
-        if(viewTreeObserver.isAlive)
+        if (viewTreeObserver.isAlive)
             viewTreeObserver.removeOnGlobalLayoutListener(listener)
     }
 

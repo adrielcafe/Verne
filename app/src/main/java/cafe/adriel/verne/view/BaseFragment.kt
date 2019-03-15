@@ -6,7 +6,7 @@ import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedFragment
 import com.etiennelenhart.eiffel.state.ViewState
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 
-abstract class BaseFragment<S: ViewState> : CoroutineScopedFragment() {
+abstract class BaseFragment<S : ViewState> : CoroutineScopedFragment() {
 
     protected abstract val viewModel: StateViewModel<S>
 
@@ -16,5 +16,4 @@ abstract class BaseFragment<S: ViewState> : CoroutineScopedFragment() {
     }
 
     protected abstract fun onStateUpdated(state: S)
-
 }

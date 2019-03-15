@@ -34,5 +34,4 @@ enum class FontFamily(val fontName: String, @FontRes val resId: Int) {
             values().sortedBy { it.fontName }
         }
     }
-
 }

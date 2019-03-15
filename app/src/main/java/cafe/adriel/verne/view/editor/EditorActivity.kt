@@ -16,7 +16,23 @@ import androidx.core.view.forEachIndexed
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import cafe.adriel.verne.BuildConfig
 import cafe.adriel.verne.R
-import cafe.adriel.verne.extension.*
+import cafe.adriel.verne.extension.color
+import cafe.adriel.verne.extension.colorFromAttr
+import cafe.adriel.verne.extension.dpToPx
+import cafe.adriel.verne.extension.drawable
+import cafe.adriel.verne.extension.font
+import cafe.adriel.verne.extension.fromHtml
+import cafe.adriel.verne.extension.hasSpans
+import cafe.adriel.verne.extension.hideAnimated
+import cafe.adriel.verne.extension.hideKeyboard
+import cafe.adriel.verne.extension.intentFor
+import cafe.adriel.verne.extension.long
+import cafe.adriel.verne.extension.openInChromeTab
+import cafe.adriel.verne.extension.readText
+import cafe.adriel.verne.extension.setAnimatedState
+import cafe.adriel.verne.extension.setMargins
+import cafe.adriel.verne.extension.showAnimated
+import cafe.adriel.verne.extension.showKeyboard
 import cafe.adriel.verne.model.ExplorerItem
 import cafe.adriel.verne.util.AnalyticsUtil
 import cafe.adriel.verne.util.AndroidBug5497Workaround
@@ -24,7 +40,6 @@ import cafe.adriel.verne.util.StatefulLayoutController
 import cafe.adriel.verne.view.BaseActivity
 import cafe.adriel.verne.view.editor.typography.TypographyDialogFragment
 import com.afollestad.materialdialogs.MaterialDialog
-import com.github.ajalt.timberkt.e
 import com.rw.keyboardlistener.KeyboardUtils
 import kotlinx.android.synthetic.main.activity_editor.*
 import kotlinx.coroutines.Dispatchers
@@ -86,7 +101,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         vToolbar.overflowIcon?.setTint(colorFromAttr(R.attr.actionMenuTextColor))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             viewModel.item = getItemFromIntent(intent)
         }
 
@@ -100,9 +115,9 @@ class EditorActivity : BaseActivity<EditorViewState>() {
             false
         }
         vEditor.setOnFocusChangeListener { _, hasFocus ->
-            if(hasFocus && viewModel.editMode){
+            if (hasFocus && viewModel.editMode) {
                 vEditorToolbar.showAnimated()
-            } else if(keyboardVisible || vTitle.hasFocus()){
+            } else if (keyboardVisible || vTitle.hasFocus()) {
                 vEditorToolbar.visibility = View.GONE
             } else {
                 vEditorToolbar.hideAnimated()
@@ -121,7 +136,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
     }
 
     override fun onBackPressed() {
-        if(viewModel.editMode){
+        if (viewModel.editMode) {
             launch { saveText() }
         } else {
             super.onBackPressed()
@@ -153,9 +168,9 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?) = when(item?.itemId){
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         android.R.id.home -> {
-            if(viewModel.editMode){
+            if (viewModel.editMode) {
                 launch { saveText() }
             } else {
                 NavUtils.navigateUpFromSameTask(this)
@@ -189,7 +204,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
             setUndoMenuItemEnabled(vEditor.history.undoValid())
             setRedoMenuItemEnabled(vEditor.history.redoValid())
 
-            with(settings){
+            with(settings) {
                 font(fontFamily.resId) {
                     vTitle.typeface = it
                     vEditor.typeface = it
@@ -206,7 +221,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         }
     }
 
-    private fun setupEditor(){
+    private fun setupEditor() {
         vEditor.setToolbar(vEditorToolbar)
         vEditor.isInCalypsoMode = false
         vEditor.history.setHistoryListener(object : IHistoryListener {
@@ -236,13 +251,13 @@ class EditorActivity : BaseActivity<EditorViewState>() {
             var linkButtonIndex = -1
             forEachIndexed { index, view ->
                 view.visibility = if (view.id in TOOLBAR_BUTTONS) View.VISIBLE else View.GONE
-                if(view.id == R.id.format_bar_button_link){
+                if (view.id == R.id.format_bar_button_link) {
                     linkButtonView = view
                     linkButtonIndex = index
                 }
             }
             // Move Link Button to a new position
-            if(linkButtonView != null && linkButtonIndex >= 0){
+            if (linkButtonView != null && linkButtonIndex >= 0) {
                 removeViewAt(linkButtonIndex)
                 addView(linkButtonView, 2)
             }
@@ -278,8 +293,8 @@ class EditorActivity : BaseActivity<EditorViewState>() {
     }
 
     private suspend fun loadText() {
-        if(externalText != null){
-            if(externalText?.hasSpans() == true){
+        if (externalText != null) {
+            if (externalText?.hasSpans() == true) {
                 vEditor.setText(externalText)
             } else {
                 val html = externalText?.toString()?.replace("\n", "<br>")
@@ -294,36 +309,36 @@ class EditorActivity : BaseActivity<EditorViewState>() {
     }
 
     private suspend fun saveText(silent: Boolean = false) {
-        if(!silent) {
+        if (!silent) {
             supportActionBar?.setHomeAsUpIndicator(loadingDrawable)
             vEditor.hideKeyboard()
             delay(actionDelayMs)
         }
 
-        withContext(Dispatchers.Default){
+        withContext(Dispatchers.Default) {
             val title = vTitle.text.toString()
             val text = vEditor.toHtml()
             viewModel.saveText(title, text)
         }
 
-        if(!silent) {
+        if (!silent) {
             viewModel.toggleEditMode()
         }
     }
 
-    private fun setUndoMenuItemEnabled(enabled: Boolean){
-        if(::menu.isInitialized) {
+    private fun setUndoMenuItemEnabled(enabled: Boolean) {
+        if (::menu.isInitialized) {
             menu.findItem(R.id.action_undo).isEnabled = enabled
         }
     }
 
-    private fun setRedoMenuItemEnabled(enabled: Boolean){
-        if(::menu.isInitialized) {
+    private fun setRedoMenuItemEnabled(enabled: Boolean) {
+        if (::menu.isInitialized) {
             menu.findItem(R.id.action_redo).isEnabled = enabled
         }
     }
 
-    private fun setEditModeEnabled(enabled: Boolean){
+    private fun setEditModeEnabled(enabled: Boolean) {
         vTitle.isFocusable = enabled
         vTitle.isFocusableInTouchMode = enabled
 
@@ -331,7 +346,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         vEditor.isFocusableInTouchMode = enabled
         vEditor.setUrlClickable(!enabled)
 
-        if(enabled){
+        if (enabled) {
             supportActionBar?.setHomeAsUpIndicator(saveDrawable)
             vScroll.setMargins(bottom = resources.getDimensionPixelSize(R.dimen.aztec_format_bar_height))
             vEditMode.hide()
@@ -342,11 +357,11 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         }
     }
 
-    private fun showTypographyDialog(){
+    private fun showTypographyDialog() {
         TypographyDialogFragment.show(supportFragmentManager)
     }
 
-    private fun showStatisticsDialog(){
+    private fun showStatisticsDialog() {
         vEditor.text?.toString()?.let { text ->
             launch {
                 val message = viewModel.getTextStatistics(text)
@@ -359,5 +374,4 @@ class EditorActivity : BaseActivity<EditorViewState>() {
             }
         }
     }
-
 }

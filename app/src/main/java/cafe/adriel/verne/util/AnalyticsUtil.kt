@@ -87,5 +87,4 @@ object AnalyticsUtil {
         Bundle().apply {
             putInt(FirebaseAnalytics.Param.VALUE, value)
         })
-
 }

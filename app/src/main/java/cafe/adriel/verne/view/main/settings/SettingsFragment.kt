@@ -6,12 +6,20 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.preference.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceScreen
+import androidx.preference.forEach
 import androidx.recyclerview.widget.RecyclerView
 import cafe.adriel.verne.App
 import cafe.adriel.verne.BuildConfig
 import cafe.adriel.verne.R
-import cafe.adriel.verne.extension.*
+import cafe.adriel.verne.extension.colorFromAttr
+import cafe.adriel.verne.extension.long
+import cafe.adriel.verne.extension.openInChromeTab
+import cafe.adriel.verne.extension.openInExternalBrowser
+import cafe.adriel.verne.extension.share
 import cafe.adriel.verne.util.AnalyticsUtil
 import com.crashlytics.android.Crashlytics
 import com.franmontiel.localechanger.LocaleChanger
@@ -20,7 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.Locale
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -65,14 +73,14 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         GlobalScope.launch(Dispatchers.Main) {
             delay(actionDelayMs)
-            when(preference?.key){
-                APP_DARK_MODE -> if(newValue is Boolean){
+            when (preference?.key) {
+                APP_DARK_MODE -> if (newValue is Boolean) {
                     AnalyticsUtil.logSwitchDarkMode(newValue)
                 }
-                APP_FULLSCREEN -> if(newValue is Boolean){
+                APP_FULLSCREEN -> if (newValue is Boolean) {
                     AnalyticsUtil.logSwitchFullScreen(newValue)
                 }
-                APP_LANGUAGE -> if(newValue is String) {
+                APP_LANGUAGE -> if (newValue is String) {
                     LocaleChanger.setLocale(Locale(newValue))
                     AnalyticsUtil.logSwitchLanguage(newValue)
                 }
@@ -82,7 +90,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
         return true
     }
 
-    override fun onPreferenceClick(preference: Preference?) = when(preference?.key){
+    override fun onPreferenceClick(preference: Preference?) = when (preference?.key) {
         ABOUT_CONTACT_US -> {
             sendEmail()
             true
@@ -144,5 +152,4 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
             }
         }
     }
-
 }

@@ -26,5 +26,4 @@ class TypographyViewModel(private val preferences: SharedPreferences) : Coroutin
     var marginSize: Int
         get() = preferences.getInt(TypographySettings.TYPOGRAPHY_MARGIN_SIZE, TypographySettings.DEFAULT_MARGIN_SIZE)
         set(value) = preferences.edit { putInt(TypographySettings.TYPOGRAPHY_MARGIN_SIZE, value) }
-
 }

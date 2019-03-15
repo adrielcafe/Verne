@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.text.TextUtils
-import java.util.*
 
 // Based on https://github.com/saurabharora90/CustomTabs-Kotlin
 object CustomTabsHelper {
@@ -44,9 +43,9 @@ object CustomTabsHelper {
             packageNameToUse = null
         } else if (packagesSupportingCustomTabs.size == 1) {
             packageNameToUse = packagesSupportingCustomTabs[0]
-        } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName)
-            && !hasSpecializedHandlerIntents(context, activityIntent)
-            && packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)) {
+        } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName) &&
+            !hasSpecializedHandlerIntents(context, activityIntent) &&
+            packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)) {
             packageNameToUse = defaultViewHandlerPackageName
         } else if (packagesSupportingCustomTabs.contains(STABLE_PACKAGE)) {
             packageNameToUse = STABLE_PACKAGE

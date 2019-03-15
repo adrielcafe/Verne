@@ -4,7 +4,8 @@ import android.content.Context
 import cafe.adriel.verne.R
 import org.ocpsoft.prettytime.PrettyTime
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 private val dateFormatterShort by lazy {
     SimpleDateFormat.getDateTimeInstance(SimpleDateFormat.SHORT, SimpleDateFormat.MEDIUM)
