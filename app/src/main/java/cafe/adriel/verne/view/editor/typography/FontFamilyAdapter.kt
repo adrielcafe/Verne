@@ -9,8 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.util.contains
 import cafe.adriel.verne.R
-import cafe.adriel.verne.model.FontFamily
 import cafe.adriel.verne.extension.font
+import cafe.adriel.verne.model.FontFamily
 
 class FontFamilyAdapter(context: Context) :
     ArrayAdapter<FontFamily>(context, R.layout.item_font_family, FontFamily.sortedValues) {

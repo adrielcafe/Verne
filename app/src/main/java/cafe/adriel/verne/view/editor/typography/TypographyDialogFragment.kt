@@ -11,10 +11,10 @@ import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
 import cafe.adriel.krumbsview.util.tintDrawable
 import cafe.adriel.verne.R
-import cafe.adriel.verne.model.FontFamily
-import cafe.adriel.verne.util.AnalyticsUtil
 import cafe.adriel.verne.extension.colorFromAttr
 import cafe.adriel.verne.extension.tagOf
+import cafe.adriel.verne.model.FontFamily
+import cafe.adriel.verne.util.AnalyticsUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import kotlinx.android.synthetic.main.fragment_typography.*

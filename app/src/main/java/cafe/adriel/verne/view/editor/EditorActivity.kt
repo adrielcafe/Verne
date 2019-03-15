@@ -155,6 +155,12 @@ class EditorActivity : BaseActivity<EditorViewState>() {
         super.onPause()
     }
 
+    override fun onDestroy() {
+        KeyboardUtils.removeAllKeyboardToggleListeners()
+        vEditor.setOnUrlClickListener(null)
+        super.onDestroy()
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         viewModel.requestStateUpdate()
