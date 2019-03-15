@@ -128,7 +128,7 @@ dependencies {
 
     // Forks
     // https://github.com/adrielcafe/AztecEditor-Android
-    implementation "com.github.adrielcafe.AztecEditor-Android:aztec:03453d1e57"
+    implementation "com.github.adrielcafe.AztecEditor-Android:aztec:c0ed37e3d3"
     // https://github.com/adrielcafe/material-dialogs
     implementation "com.github.adrielcafe.material-dialogs:core:11644437f8"
     implementation "com.github.adrielcafe.material-dialogs:input:11644437f8"
