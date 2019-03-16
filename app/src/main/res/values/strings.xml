@@ -46,6 +46,8 @@
     <string name="delete">Delete</string>
     <string name="move">Move</string>
     <string name="print">Print</string>
+    <string name="unsupported_file_format">Unsupported file format</string>
+    <string name="file_empty">File is empty</string>
 
     <string name="english" translatable="false">English</string>
     <string name="portuguese" translatable="false">Português</string>

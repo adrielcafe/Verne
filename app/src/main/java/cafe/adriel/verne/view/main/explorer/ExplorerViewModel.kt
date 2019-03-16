@@ -11,7 +11,6 @@ import com.uttampanchasara.pdfgenerator.CreatePdf
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class ExplorerViewModel(private val appContext: Context, private val explorerRepository: LocalExplorerRepository) : CoroutineScopedStateViewModel<ExplorerViewState>() {
@@ -147,7 +146,7 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
                         it.resume(File(filePath))
                     }
                     override fun onFailure(errorMsg: String) {
-                        it.resumeWithException(Exception(errorMsg))
+                        updateState { it.copy(exception = RuntimeException(errorMsg)) }
                     }
                 })
                 .create()

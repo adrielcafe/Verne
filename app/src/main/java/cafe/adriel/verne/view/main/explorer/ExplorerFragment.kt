@@ -130,6 +130,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
     override fun onStateUpdated(state: ExplorerViewState) {
         state.apply {
             items?.let { setItems(it) }
+            exception?.let { Snackbar.make(vStateLayout, it.localizedMessage, Snackbar.LENGTH_SHORT).show() }
         }
     }
 
@@ -214,6 +215,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
     }
 
     private fun shareItem(item: ExplorerItem.File) {
+        if(item.isEmpty){
+            Snackbar.make(vStateLayout, R.string.file_empty, Snackbar.LENGTH_SHORT).show()
+            return
+        }
+
         activity?.apply {
             MaterialDialog(this).show {
                 title(R.string.share_as)

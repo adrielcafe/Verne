@@ -46,4 +46,6 @@
     <string name="delete">Excluir</string>
     <string name="move">Mover</string>
     <string name="print">Imprimir</string>
+    <string name="unsupported_file_format">Formato de arquivo não suportado</string>
+    <string name="file_empty">O arquivo está vazio</string>
 </resources>

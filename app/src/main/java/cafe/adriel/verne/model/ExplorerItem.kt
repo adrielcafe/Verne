@@ -15,6 +15,7 @@ sealed class ExplorerItem(open val path: String) : Parcelable {
     val file by lazy { java.io.File(path) }
     val title by lazy { file.nameWithoutExtension }
     val isDeleted by lazy { file.isHidden }
+    val isEmpty by lazy { file.length() == 0L }
     val pathAfterBaseDir by lazy {
         val path = file.parent.substringAfter(App.BASE_DIR_NAME, "/")
         if (path.isBlank()) "/" else path

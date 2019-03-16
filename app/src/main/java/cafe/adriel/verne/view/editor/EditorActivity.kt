@@ -40,6 +40,7 @@ import cafe.adriel.verne.util.StatefulLayoutController
 import cafe.adriel.verne.view.BaseActivity
 import cafe.adriel.verne.view.editor.typography.TypographyDialogFragment
 import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.snackbar.Snackbar
 import com.rw.keyboardlistener.KeyboardUtils
 import kotlinx.android.synthetic.main.activity_editor.*
 import kotlinx.coroutines.Dispatchers
@@ -288,7 +289,12 @@ class EditorActivity : BaseActivity<EditorViewState>() {
                 intent.hasExtra(Intent.EXTRA_TEXT) -> intent.getCharSequenceExtra(Intent.EXTRA_TEXT)
                 intent.hasExtra(Intent.EXTRA_STREAM) -> {
                     val uri = intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)
-                    uri?.readText(this)
+                    if(uri?.path?.endsWith(".html") == true) {
+                        uri.readText(this)
+                    } else {
+                        Snackbar.make(vRoot, R.string.unsupported_file_format, Snackbar.LENGTH_SHORT).show()
+                        null
+                    }
                 }
                 intent.data != null -> intent.data?.readText(this)
                 else -> null
