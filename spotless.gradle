@@ -1,14 +1,12 @@
 apply plugin: "com.diffplug.gradle.spotless"
 
 spotless {
-
     kotlin {
         target "**/*.kt"
         ktlint()
         trimTrailingWhitespace()
         endWithNewline()
     }
-
     java {
         target "**/*.java"
         googleJavaFormat()
@@ -16,5 +14,4 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
-
 }

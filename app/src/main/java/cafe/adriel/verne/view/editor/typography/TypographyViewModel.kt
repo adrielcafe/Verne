@@ -12,7 +12,7 @@ class TypographyViewModel(private val preferences: SharedPreferences) : Coroutin
         get() {
             val value = preferences.getString(TypographySettings.TYPOGRAPHY_FONT_FAMILY, null)
             return try {
-                FontFamily.valueOf(value)
+                FontFamily.valueOf(value!!)
             } catch (e: Exception) {
                 FontFamily.valueOf(TypographySettings.DEFAULT_FONT_FAMILY)
             }

@@ -49,15 +49,15 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        findPreference<Preference>(APP_DARK_MODE).onPreferenceChangeListener = this
-        findPreference<Preference>(APP_FULLSCREEN).onPreferenceChangeListener = this
-        findPreference<Preference>(APP_LANGUAGE).onPreferenceChangeListener = this
+        findPreference<Preference>(APP_DARK_MODE)?.onPreferenceChangeListener = this
+        findPreference<Preference>(APP_FULLSCREEN)?.onPreferenceChangeListener = this
+        findPreference<Preference>(APP_LANGUAGE)?.onPreferenceChangeListener = this
 
-        findPreference<Preference>(ABOUT_CONTACT_US).onPreferenceClickListener = this
-        findPreference<Preference>(ABOUT_REPORT_BUG).onPreferenceClickListener = this
-        findPreference<Preference>(ABOUT_SHARE).onPreferenceClickListener = this
-        findPreference<Preference>(ABOUT_RATE_REVIEW).onPreferenceClickListener = this
-        findPreference<Preference>(ABOUT_PRIVACY_POLICY).onPreferenceClickListener = this
+        findPreference<Preference>(ABOUT_CONTACT_US)?.onPreferenceClickListener = this
+        findPreference<Preference>(ABOUT_REPORT_BUG)?.onPreferenceClickListener = this
+        findPreference<Preference>(ABOUT_SHARE)?.onPreferenceClickListener = this
+        findPreference<Preference>(ABOUT_RATE_REVIEW)?.onPreferenceClickListener = this
+        findPreference<Preference>(ABOUT_PRIVACY_POLICY)?.onPreferenceClickListener = this
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

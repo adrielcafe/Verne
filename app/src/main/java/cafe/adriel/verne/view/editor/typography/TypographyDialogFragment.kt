@@ -18,7 +18,7 @@ import cafe.adriel.verne.util.AnalyticsUtil
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import kotlinx.android.synthetic.main.fragment_typography.*
-import org.koin.android.viewmodel.ext.viewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class TypographyDialogFragment : BottomSheetDialogFragment() {
 

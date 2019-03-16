@@ -41,7 +41,7 @@ import com.mikepenz.fastadapter_extensions.ActionModeHelper
 import kotlinx.android.synthetic.main.fragment_explorer.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.koin.android.viewmodel.ext.viewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 import java.io.File
 
 class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.ActionItemClickedListener {

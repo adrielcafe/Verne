@@ -20,6 +20,7 @@ import com.instabug.library.invocation.InstabugInvocationEvent
 import com.instabug.library.ui.onboarding.WelcomeMessage
 import com.squareup.leakcanary.LeakCanary
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import java.util.Locale
@@ -64,7 +65,7 @@ class App : Application() {
 
     private fun initModules() {
         startKoin {
-            logger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
+            androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
             androidContext(applicationContext)
             modules(AppComponent(applicationContext).getModules())
         }
