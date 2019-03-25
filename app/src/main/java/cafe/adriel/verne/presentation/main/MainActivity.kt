@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main
+package cafe.adriel.verne.presentation.main
 
 import android.content.Intent
 import android.graphics.Color
@@ -14,11 +14,11 @@ import cafe.adriel.verne.R
 import cafe.adriel.verne.extension.getFragment
 import cafe.adriel.verne.extension.tagOf
 import cafe.adriel.verne.model.ExplorerItem
+import cafe.adriel.verne.presentation.BaseActivity
+import cafe.adriel.verne.presentation.main.explorer.ExplorerFragment
+import cafe.adriel.verne.presentation.main.explorer.listener.ExplorerFragmentListener
+import cafe.adriel.verne.presentation.main.settings.SettingsFragment
 import cafe.adriel.verne.util.AnalyticsUtil
-import cafe.adriel.verne.view.BaseActivity
-import cafe.adriel.verne.view.main.explorer.ExplorerFragment
-import cafe.adriel.verne.view.main.explorer.listener.ExplorerFragmentListener
-import cafe.adriel.verne.view.main.settings.SettingsFragment
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.ferfalk.simplesearchview.SimpleSearchViewListener
 import com.google.android.material.snackbar.Snackbar

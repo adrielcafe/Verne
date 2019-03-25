@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.explorer.listener
+package cafe.adriel.verne.presentation.main.explorer.listener
 
 import cafe.adriel.verne.model.ExplorerItem
 

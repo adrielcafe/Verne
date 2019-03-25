@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.custom
+package cafe.adriel.verne.presentation.custom
 
 import android.annotation.SuppressLint
 import android.content.Context

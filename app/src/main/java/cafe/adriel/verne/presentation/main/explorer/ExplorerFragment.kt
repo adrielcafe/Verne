@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.explorer
+package cafe.adriel.verne.presentation.main.explorer
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.recyclerview.widget.LinearLayoutManager
 import cafe.adriel.verne.R
 import cafe.adriel.verne.extension.color
 import cafe.adriel.verne.extension.colorFromAttr
@@ -23,9 +22,9 @@ import cafe.adriel.verne.extension.showAnimated
 import cafe.adriel.verne.model.ExplorerItem
 import cafe.adriel.verne.util.AnalyticsUtil
 import cafe.adriel.verne.util.StatefulLayoutController
-import cafe.adriel.verne.view.BaseFragment
-import cafe.adriel.verne.view.editor.EditorActivity
-import cafe.adriel.verne.view.main.explorer.listener.ExplorerFragmentListener
+import cafe.adriel.verne.presentation.BaseFragment
+import cafe.adriel.verne.presentation.editor.EditorActivity
+import cafe.adriel.verne.presentation.main.explorer.listener.ExplorerFragmentListener
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.afollestad.materialdialogs.MaterialDialog
@@ -105,7 +104,6 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
 
         with(vItems) {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
             adapter = this@ExplorerFragment.adapter
             itemAnimator = null
         }

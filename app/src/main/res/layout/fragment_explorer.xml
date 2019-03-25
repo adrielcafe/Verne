@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.main.explorer.ExplorerFragment">
+    tools:context=".presentation.main.explorer.ExplorerFragment">
 
     <cz.kinst.jakub.view.StatefulLayout
         android:id="@+id/vStateLayout"
@@ -15,7 +15,8 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/vItems"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     </cz.kinst.jakub.view.StatefulLayout>
 

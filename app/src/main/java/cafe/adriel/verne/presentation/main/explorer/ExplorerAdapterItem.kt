@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.explorer
+package cafe.adriel.verne.presentation.main.explorer
 
 import android.view.View
 import androidx.core.view.ViewCompat

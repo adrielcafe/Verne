@@ -1,6 +1,8 @@
 package cafe.adriel.verne
 
 import android.app.Application
+import android.content.res.Configuration
+import android.os.Build
 import android.os.StrictMode
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
@@ -8,8 +10,9 @@ import cafe.adriel.verne.di.AppComponent
 import cafe.adriel.verne.extension.color
 import cafe.adriel.verne.extension.debug
 import cafe.adriel.verne.extension.isDarkMode
+import cafe.adriel.verne.extension.minSdk
+import cafe.adriel.verne.presentation.main.settings.SettingsFragment
 import cafe.adriel.verne.util.AnalyticsUtil
-import cafe.adriel.verne.view.main.settings.SettingsFragment
 import com.franmontiel.localechanger.LocaleChanger
 import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
@@ -24,6 +27,8 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import java.util.Locale
+
+
 
 class App : Application() {
 
@@ -49,6 +54,12 @@ class App : Application() {
                 StrictMode.ThreadPolicy.Builder()
                     .detectAll()
                     .permitDiskReads()
+                    .also {
+                        minSdk(Build.VERSION_CODES.M){
+                            // TODO Caused by AztecText, fix and send a PR when possible
+                            it.permitResourceMismatches()
+                        }
+                    }
                     .penaltyLog()
                     .penaltyDropBox()
                     .penaltyDeath()
@@ -61,6 +72,11 @@ class App : Application() {
         initModules()
         initBugReporting()
         initLanguage()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        LocaleChanger.onConfigurationChanged()
     }
 
     private fun initModules() {
@@ -88,18 +104,12 @@ class App : Application() {
     private fun initLanguage() {
         val supportedLanguages = resources
             .getStringArray(R.array.preference_language_values)
-            .map { Locale(it) }
+            .map { Locale.forLanguageTag(it) }
         LocaleChanger.initialize(applicationContext, supportedLanguages)
 
         val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         if (!preferences.contains(SettingsFragment.APP_LANGUAGE)) {
-            var currentLanguage = LocaleChanger.getLocale().language
-            val languageSupported = resources
-                .getStringArray(R.array.preference_language_values)
-                .contains(currentLanguage)
-            if (!languageSupported) {
-                currentLanguage = Locale.ENGLISH.language
-            }
+            val currentLanguage = LocaleChanger.getLocale().language
             preferences.edit { putString(SettingsFragment.APP_LANGUAGE, currentLanguage) }
         }
     }

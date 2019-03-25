@@ -8,7 +8,7 @@ import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.preference.PreferenceManager
-import cafe.adriel.verne.view.main.settings.SettingsFragment
+import cafe.adriel.verne.presentation.main.settings.SettingsFragment
 import org.koin.ext.getFullName
 import java.io.Serializable
 

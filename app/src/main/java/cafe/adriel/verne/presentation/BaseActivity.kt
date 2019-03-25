@@ -1,7 +1,6 @@
-package cafe.adriel.verne.view
+package cafe.adriel.verne.presentation
 
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
@@ -12,21 +11,19 @@ import cafe.adriel.verne.extension.isFullscreen
 import com.etiennelenhart.eiffel.state.ViewState
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import com.franmontiel.localechanger.LocaleChanger
+import com.franmontiel.localechanger.utils.ActivityRecreationHelper
 
 abstract class BaseActivity<S : ViewState> : CoroutineScopedActivity() {
 
-    // LocaleChanger overrides the original context, but we need it to print files
-    protected var originalContext: Context? = null
     protected abstract val viewModel: StateViewModel<S>
+
+    // LocaleChanger overrides the original context, but we need it to print files
+    protected lateinit var originalContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
 
-        val darkMode = if (isDarkMode()) {
-            AppCompatDelegate.MODE_NIGHT_YES
-        } else {
-            AppCompatDelegate.MODE_NIGHT_NO
-        }
+        val darkMode = if (isDarkMode()) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(darkMode)
 
         if (isFullscreen()) {
@@ -43,12 +40,17 @@ abstract class BaseActivity<S : ViewState> : CoroutineScopedActivity() {
         viewModel.observeState(this, ::onStateUpdated)
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        LocaleChanger.onConfigurationChanged()
+    override fun onResume() {
+        super.onResume()
+        ActivityRecreationHelper.onResume(this)
     }
 
-    override fun attachBaseContext(newBase: Context?) {
+    override fun onDestroy() {
+        ActivityRecreationHelper.onDestroy(this)
+        super.onDestroy()
+    }
+
+    override fun attachBaseContext(newBase: Context) {
         originalContext = newBase
         super.attachBaseContext(LocaleChanger.configureBaseContext(newBase))
     }

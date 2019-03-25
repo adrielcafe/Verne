@@ -3,10 +3,10 @@ package cafe.adriel.verne.di
 import android.content.Context
 import android.preference.PreferenceManager
 import cafe.adriel.verne.repository.LocalExplorerRepository
-import cafe.adriel.verne.view.editor.EditorViewModel
-import cafe.adriel.verne.view.editor.typography.TypographyViewModel
-import cafe.adriel.verne.view.main.MainViewModel
-import cafe.adriel.verne.view.main.explorer.ExplorerViewModel
+import cafe.adriel.verne.presentation.editor.EditorViewModel
+import cafe.adriel.verne.presentation.editor.typography.TypographyViewModel
+import cafe.adriel.verne.presentation.main.MainViewModel
+import cafe.adriel.verne.presentation.main.explorer.ExplorerViewModel
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

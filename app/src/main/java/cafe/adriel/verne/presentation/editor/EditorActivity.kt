@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.editor
+package cafe.adriel.verne.presentation.editor
 
 import android.content.Context
 import android.content.Intent
@@ -34,11 +34,11 @@ import cafe.adriel.verne.extension.setMargins
 import cafe.adriel.verne.extension.showAnimated
 import cafe.adriel.verne.extension.showKeyboard
 import cafe.adriel.verne.model.ExplorerItem
+import cafe.adriel.verne.presentation.BaseActivity
+import cafe.adriel.verne.presentation.editor.typography.TypographyDialogFragment
 import cafe.adriel.verne.util.AnalyticsUtil
 import cafe.adriel.verne.util.AndroidBug5497Workaround
 import cafe.adriel.verne.util.StatefulLayoutController
-import cafe.adriel.verne.view.BaseActivity
-import cafe.adriel.verne.view.editor.typography.TypographyDialogFragment
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import com.rw.keyboardlistener.KeyboardUtils

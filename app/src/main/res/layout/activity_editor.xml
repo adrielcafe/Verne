@@ -6,7 +6,7 @@
     android:id="@+id/vRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.editor.EditorActivity">
+    tools:context=".presentation.editor.EditorActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
         android:keepScreenOn="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <cafe.adriel.verne.view.custom.FastNestedScrollView
+        <cafe.adriel.verne.presentation.custom.FastNestedScrollView
             android:id="@+id/vScroll"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -91,7 +91,7 @@
 
             </LinearLayout>
 
-        </cafe.adriel.verne.view.custom.FastNestedScrollView>
+        </cafe.adriel.verne.presentation.custom.FastNestedScrollView>
 
     </cz.kinst.jakub.view.StatefulLayout>
 

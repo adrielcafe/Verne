@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.editor
+package cafe.adriel.verne.presentation.editor
 
 import android.content.Context
 import android.content.SharedPreferences

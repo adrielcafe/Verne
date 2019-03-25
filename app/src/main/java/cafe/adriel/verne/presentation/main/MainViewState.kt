@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main
+package cafe.adriel.verne.presentation.main
 
 import com.etiennelenhart.eiffel.state.ViewState
 

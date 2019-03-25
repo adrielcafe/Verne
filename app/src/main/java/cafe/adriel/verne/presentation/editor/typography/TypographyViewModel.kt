@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.editor.typography
+package cafe.adriel.verne.presentation.editor.typography
 
 import android.content.SharedPreferences
 import androidx.core.content.edit

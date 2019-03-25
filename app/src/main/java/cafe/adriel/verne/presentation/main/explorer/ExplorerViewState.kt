@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.explorer
+package cafe.adriel.verne.presentation.main.explorer
 
 import cafe.adriel.verne.model.ExplorerItem
 import com.etiennelenhart.eiffel.state.ViewState

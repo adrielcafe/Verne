@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.editor
+package cafe.adriel.verne.presentation.editor
 
 import cafe.adriel.verne.model.TypographySettings
 import com.etiennelenhart.eiffel.state.ViewState

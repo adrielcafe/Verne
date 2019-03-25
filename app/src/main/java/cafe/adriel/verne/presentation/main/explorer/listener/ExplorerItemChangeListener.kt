@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.explorer.listener
+package cafe.adriel.verne.presentation.main.explorer.listener
 
 import android.os.FileObserver
 import java.io.File

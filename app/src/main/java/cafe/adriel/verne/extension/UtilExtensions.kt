@@ -3,6 +3,7 @@ package cafe.adriel.verne.extension
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import cafe.adriel.verne.BuildConfig
@@ -12,6 +13,10 @@ import com.crashlytics.android.Crashlytics
 
 inline fun debug(body: () -> Unit) {
     if (BuildConfig.DEBUG) body()
+}
+
+inline fun minSdk(sdk: Int, body: () -> Unit) {
+    if (Build.VERSION.SDK_INT >= sdk) body()
 }
 
 inline fun <reified T : Any> tagOf(): String = T::class.java.simpleName

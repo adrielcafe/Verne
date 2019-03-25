@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view
+package cafe.adriel.verne.presentation
 
 import android.os.Bundle
 import android.view.View

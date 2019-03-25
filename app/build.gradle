@@ -99,7 +99,7 @@ dependencies {
     implementation "com.google.firebase:firebase-perf:16.2.4"
 
     // DI
-    implementation "org.koin:koin-android-viewmodel:2.0.0-beta-4"
+    implementation "org.koin:koin-android-viewmodel:2.0.0-rc-1"
 
     // State
     implementation "com.github.etiennelenhart:eiffel:4.1.0"
@@ -126,12 +126,12 @@ dependencies {
     implementation "com.github.ravindu1024:android-keyboardlistener:1.0.0"
     implementation "org.ocpsoft.prettytime:prettytime:4.0.2.Final"
     implementation "com.github.franmontiel:LocaleChanger:0.9.2"
-    implementation "com.uttampanchasara.pdfgenerator:pdfgenerator:1.0"
+    implementation "com.uttampanchasara.pdfgenerator:pdfgenerator:1.1"
     implementation "com.afollestad:assent:2.2.3"
 
     // Forks
     // https://github.com/adrielcafe/AztecEditor-Android
-    implementation "com.github.adrielcafe.AztecEditor-Android:aztec:c0ed37e3d3"
+    implementation "com.github.adrielcafe.AztecEditor-Android:aztec:$azteceditor_version"
     // https://github.com/adrielcafe/material-dialogs
     implementation "com.github.adrielcafe.material-dialogs:core:$materialdialogs_version"
     implementation "com.github.adrielcafe.material-dialogs:input:$materialdialogs_version"

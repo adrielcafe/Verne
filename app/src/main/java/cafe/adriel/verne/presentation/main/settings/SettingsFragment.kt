@@ -1,4 +1,4 @@
-package cafe.adriel.verne.view.main.settings
+package cafe.adriel.verne.presentation.main.settings
 
 import android.content.Intent
 import android.net.Uri
@@ -29,6 +29,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
+
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
@@ -72,7 +73,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         GlobalScope.launch(Dispatchers.Main) {
-            delay(actionDelayMs)
             when (preference?.key) {
                 APP_DARK_MODE -> if (newValue is Boolean) {
                     AnalyticsUtil.logSwitchDarkMode(newValue)
@@ -81,10 +81,11 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                     AnalyticsUtil.logSwitchFullScreen(newValue)
                 }
                 APP_LANGUAGE -> if (newValue is String) {
-                    LocaleChanger.setLocale(Locale(newValue))
+                    LocaleChanger.setLocale(Locale.forLanguageTag(newValue))
                     AnalyticsUtil.logSwitchLanguage(newValue)
                 }
             }
+            delay(actionDelayMs)
             activity?.recreate()
         }
         return true

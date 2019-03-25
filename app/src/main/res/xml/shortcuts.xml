@@ -7,6 +7,6 @@
         <intent
             android:action="cafe.adriel.verne.action.NEW_FILE"
             android:targetPackage="cafe.adriel.verne"
-            android:targetClass="cafe.adriel.verne.view.editor.EditorActivity" />
+            android:targetClass="cafe.adriel.verne.presentation.editor.EditorActivity" />
     </shortcut>
 </shortcuts>

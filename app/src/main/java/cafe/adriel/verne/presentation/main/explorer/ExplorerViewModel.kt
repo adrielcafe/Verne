@@ -1,12 +1,12 @@
-package cafe.adriel.verne.view.main.explorer
+package cafe.adriel.verne.presentation.main.explorer
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import cafe.adriel.verne.extension.asExplorerItem
 import cafe.adriel.verne.model.ExplorerItem
+import cafe.adriel.verne.presentation.main.explorer.listener.ExplorerItemChangeListener
 import cafe.adriel.verne.repository.LocalExplorerRepository
 import cafe.adriel.verne.util.CoroutineScopedStateViewModel
-import cafe.adriel.verne.view.main.explorer.listener.ExplorerItemChangeListener
 import com.uttampanchasara.pdfgenerator.CreatePdf
 import kotlinx.coroutines.launch
 import java.io.File
@@ -138,18 +138,20 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
 
     suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCoroutine {
         launch {
-            CreatePdf(appContext)
-                .setPdfName(item.title)
-                .setContent(getHtmlText(item))
-                .setCallbackListener(object : CreatePdf.PdfCallbackListener {
-                    override fun onSuccess(filePath: String) {
-                        it.resume(File(filePath))
-                    }
-                    override fun onFailure(errorMsg: String) {
-                        updateState { it.copy(exception = RuntimeException(errorMsg)) }
-                    }
-                })
-                .create()
+            getHtmlText(item)?.let { text ->
+                CreatePdf(appContext)
+                    .setPdfName(item.title)
+                    .setContent(text)
+                    .setCallbackListener(object : CreatePdf.PdfCallbackListener {
+                        override fun onSuccess(filePath: String) {
+                            it.resume(File(filePath))
+                        }
+                        override fun onFailure(errorMsg: String) {
+                            updateState { it.copy(exception = RuntimeException(errorMsg)) }
+                        }
+                    })
+                    .create()
+            }
         }
     }
 }

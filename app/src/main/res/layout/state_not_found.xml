@@ -10,7 +10,7 @@
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:srcCompat="@drawable/ic_find_in_page"
+        android:src="@drawable/ic_find_in_page"
         app:tint="?android:textColorSecondary"/>
 
     <TextView

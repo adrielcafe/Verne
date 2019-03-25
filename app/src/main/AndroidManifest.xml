@@ -22,7 +22,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".view.main.MainActivity"
+            android:name=".presentation.main.MainActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"
             android:launchMode="singleTop">
             <intent-filter>
@@ -35,9 +35,9 @@
         </activity>
 
         <activity
-            android:name=".view.editor.EditorActivity"
+            android:name=".presentation.editor.EditorActivity"
             android:windowSoftInputMode="adjustResize|stateHidden"
-            android:parentActivityName=".view.main.MainActivity"
+            android:parentActivityName=".presentation.main.MainActivity"
             android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
