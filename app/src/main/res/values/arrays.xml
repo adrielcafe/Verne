@@ -8,14 +8,4 @@
         <item>@string/pdf_file</item>
     </string-array>
 
-    <string-array name="preference_language_entries">
-        <item>@string/english</item>
-        <item>@string/portuguese</item>
-    </string-array>
-
-    <string-array name="preference_language_values">
-        <item>en</item>
-        <item>pt</item>
-    </string-array>
-
 </resources>

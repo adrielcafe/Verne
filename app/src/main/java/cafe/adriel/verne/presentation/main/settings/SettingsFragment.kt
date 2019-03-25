@@ -22,21 +22,17 @@ import cafe.adriel.verne.extension.openInExternalBrowser
 import cafe.adriel.verne.extension.share
 import cafe.adriel.verne.util.AnalyticsUtil
 import com.crashlytics.android.Crashlytics
-import com.franmontiel.localechanger.LocaleChanger
 import com.instabug.bug.BugReporting
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Locale
-
 
 class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
         const val APP_DARK_MODE = "appDarkMode"
         const val APP_FULLSCREEN = "appFullscreen"
-        const val APP_LANGUAGE = "appLanguage"
 
         const val ABOUT_CONTACT_US = "aboutContactUs"
         const val ABOUT_REPORT_BUG = "aboutReportBug"
@@ -52,7 +48,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
 
         findPreference<Preference>(APP_DARK_MODE)?.onPreferenceChangeListener = this
         findPreference<Preference>(APP_FULLSCREEN)?.onPreferenceChangeListener = this
-        findPreference<Preference>(APP_LANGUAGE)?.onPreferenceChangeListener = this
 
         findPreference<Preference>(ABOUT_CONTACT_US)?.onPreferenceClickListener = this
         findPreference<Preference>(ABOUT_REPORT_BUG)?.onPreferenceClickListener = this
@@ -79,10 +74,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 }
                 APP_FULLSCREEN -> if (newValue is Boolean) {
                     AnalyticsUtil.logSwitchFullScreen(newValue)
-                }
-                APP_LANGUAGE -> if (newValue is String) {
-                    LocaleChanger.setLocale(Locale.forLanguageTag(newValue))
-                    AnalyticsUtil.logSwitchLanguage(newValue)
                 }
             }
             delay(actionDelayMs)

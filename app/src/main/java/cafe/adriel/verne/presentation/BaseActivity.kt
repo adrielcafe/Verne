@@ -5,20 +5,16 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedActivity
+import cafe.adriel.verne.App
 import cafe.adriel.verne.R
 import cafe.adriel.verne.extension.isDarkMode
 import cafe.adriel.verne.extension.isFullscreen
 import com.etiennelenhart.eiffel.state.ViewState
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
-import com.franmontiel.localechanger.LocaleChanger
-import com.franmontiel.localechanger.utils.ActivityRecreationHelper
 
 abstract class BaseActivity<S : ViewState> : CoroutineScopedActivity() {
 
     protected abstract val viewModel: StateViewModel<S>
-
-    // LocaleChanger overrides the original context, but we need it to print files
-    protected lateinit var originalContext: Context
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -38,21 +34,6 @@ abstract class BaseActivity<S : ViewState> : CoroutineScopedActivity() {
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         viewModel.observeState(this, ::onStateUpdated)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        ActivityRecreationHelper.onResume(this)
-    }
-
-    override fun onDestroy() {
-        ActivityRecreationHelper.onDestroy(this)
-        super.onDestroy()
-    }
-
-    override fun attachBaseContext(newBase: Context) {
-        originalContext = newBase
-        super.attachBaseContext(LocaleChanger.configureBaseContext(newBase))
     }
 
     protected abstract fun onStateUpdated(state: S)

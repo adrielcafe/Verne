@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/settings">
 
@@ -14,13 +12,6 @@
             android:key="appFullscreen"
             android:title="@string/fullscreen"
             android:defaultValue="false"/>
-
-        <ListPreference
-            android:key="appLanguage"
-            android:title="@string/language"
-            android:entries="@array/preference_language_entries"
-            android:entryValues="@array/preference_language_values"
-            app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>
 

@@ -125,7 +125,6 @@ dependencies {
     implementation "com.github.ajalt:timberkt:1.5.1"
     implementation "com.github.ravindu1024:android-keyboardlistener:1.0.0"
     implementation "org.ocpsoft.prettytime:prettytime:4.0.2.Final"
-    implementation "com.github.franmontiel:LocaleChanger:0.9.2"
     implementation "com.uttampanchasara.pdfgenerator:pdfgenerator:1.1"
     implementation "com.afollestad:assent:2.2.3"
 

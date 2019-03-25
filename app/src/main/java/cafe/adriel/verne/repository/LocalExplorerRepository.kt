@@ -21,7 +21,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     }
 
     override val baseDir by lazy {
-        File(appContext.filesDir, App.BASE_DIR_NAME)
+        File(appContext.filesDir, App.BASE_DIR_NAME).apply { mkdirs() }
     }
 
     override suspend fun search(query: String, showDeleted: Boolean) = withContext(Dispatchers.IO) {
@@ -37,7 +37,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
 
     override suspend fun select(dir: File?, showDeleted: Boolean) = withContext(Dispatchers.IO) {
         with(dir ?: baseDir) {
-            listFiles()
+            (listFiles() ?: emptyArray())
                 .filter { selectFilter(it, showDeleted) }
                 .map { it.asExplorerItem() }
         }
@@ -46,10 +46,7 @@ class LocalExplorerRepository(private val appContext: Context) : ExplorerReposit
     override suspend fun create(item: ExplorerItem) = withContext(Dispatchers.IO) {
         when (item) {
             is ExplorerItem.Folder -> item.file.mkdirs()
-            is ExplorerItem.File -> item.file.run {
-                mkdirs()
-                createNewFile()
-            }
+            is ExplorerItem.File -> item.file.createNewFile()
         }
     }
 

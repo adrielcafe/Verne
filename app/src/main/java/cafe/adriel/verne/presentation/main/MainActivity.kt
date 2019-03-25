@@ -137,10 +137,8 @@ class MainActivity : BaseActivity<MainViewState>(),
     }
 
     override fun onPrintHtml(fileName: String, html: String) {
-        originalContext?.apply {
-            viewModel.printHtml(this, fileName, html)
-            AnalyticsUtil.logPrint()
-        }
+        viewModel.printHtml(this, fileName, html)
+        AnalyticsUtil.logPrint()
     }
 
     override fun onItemOpened(item: ExplorerItem) {
