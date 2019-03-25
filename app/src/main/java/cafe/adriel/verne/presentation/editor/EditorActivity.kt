@@ -351,9 +351,11 @@ class EditorActivity : BaseActivity<EditorViewState>() {
     }
 
     private fun setEditModeEnabled(enabled: Boolean) {
+        vTitle.isCursorVisible = enabled
         vTitle.isFocusable = enabled
         vTitle.isFocusableInTouchMode = enabled
 
+        vEditor.isCursorVisible = enabled
         vEditor.isFocusable = enabled
         vEditor.isFocusableInTouchMode = enabled
         vEditor.setUrlClickable(!enabled)
