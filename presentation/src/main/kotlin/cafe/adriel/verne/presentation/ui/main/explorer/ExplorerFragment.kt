@@ -173,9 +173,11 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
 
         val scrollY = vItems.scrollY
         val adapterItems = items
+            .asSequence()
             .sortedBy { it.title.toLowerCase() } // Secondary comparator
             .sortedBy { it is ExplorerItem.File } // Primary comparator
             .map { ExplorerAdapterItem(it, viewModel.searchMode) }
+            .toList()
         adapter.set(adapterItems)
         vItems.scrollTo(0, scrollY)
     }

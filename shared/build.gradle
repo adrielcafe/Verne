@@ -16,5 +16,6 @@ dependencies {
     implementation appDependencies.coroutines
 
     // Util
+    implementation appDependencies.koinCore
     implementation appDependencies.timberKt
 }

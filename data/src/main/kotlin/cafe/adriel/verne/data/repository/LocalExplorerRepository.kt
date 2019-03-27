@@ -1,6 +1,6 @@
 package cafe.adriel.verne.data.repository
 
-import cafe.adriel.verne.data.extension.asExplorerItem
+import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.domain.repository.ExplorerRepository
@@ -28,6 +28,7 @@ class LocalExplorerRepository(override val baseDir: BaseDir) : ExplorerRepositor
             emptyList()
         } else {
             baseDir.file.walk()
+                .asSequence()
                 .filter { searchFilter(it, query, showDeleted) }
                 .map { it.asExplorerItem() }
                 .toList()
@@ -37,8 +38,10 @@ class LocalExplorerRepository(override val baseDir: BaseDir) : ExplorerRepositor
     override suspend fun select(dir: File?, showDeleted: Boolean) = withContext(Dispatchers.IO) {
         with(dir ?: baseDir.file) {
             (listFiles() ?: emptyArray())
+                .asSequence()
                 .filter { selectFilter(it, showDeleted) }
                 .map { it.asExplorerItem() }
+                .toList()
         }
     }
 

@@ -3,13 +3,16 @@ package cafe.adriel.verne
 import android.app.Application
 import android.os.Build
 import android.os.StrictMode
+import cafe.adriel.verne.data.di.DataComponent
 import cafe.adriel.verne.di.AppComponent
+import cafe.adriel.verne.interactor.di.InteractorComponent
+import cafe.adriel.verne.presentation.di.PresentationComponent
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.isDarkMode
 import cafe.adriel.verne.presentation.extension.minSdk
 import cafe.adriel.verne.presentation.util.AnalyticsUtil
-import cafe.adriel.verne.shared.extension.runIfDebug
 import cafe.adriel.verne.shared.extension.isDebug
+import cafe.adriel.verne.shared.extension.runIfDebug
 import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
 import com.instabug.bug.invocation.Option
@@ -27,7 +30,6 @@ class App : Application() {
 
     companion object {
         const val BASE_DIR_NAME = "${BuildConfig.APPLICATION_ID}.db"
-
     }
 
     override fun onCreate() {
@@ -67,10 +69,15 @@ class App : Application() {
     }
 
     private fun initModules() {
+        val modules =
+            AppComponent(applicationContext).getModules() +
+            PresentationComponent(applicationContext).getModules() +
+            InteractorComponent().getModules() +
+            DataComponent().getModules()
         startKoin {
             androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
             androidContext(applicationContext)
-            modules(AppComponent(applicationContext).getModules())
+            modules(modules)
         }
     }
 

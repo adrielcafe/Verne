@@ -113,7 +113,6 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
                 context?.startActivity(this)
             }
         } catch (e: Exception) {
-//            Crashlytics.logException(e)
             e.printStackTrace()
             Toast.makeText(context, "Oops! No Email app found :/", Toast.LENGTH_LONG).show()
         }

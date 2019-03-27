@@ -1,4 +1,4 @@
-package cafe.adriel.verne.data.extension
+package cafe.adriel.verne.domain.extension
 
 import cafe.adriel.verne.domain.model.ExplorerItem
 import java.io.File

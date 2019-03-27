@@ -1,4 +1,4 @@
-package cafe.adriel.verne.di
+package cafe.adriel.verne.shared.di
 
 import org.koin.core.module.Module
 

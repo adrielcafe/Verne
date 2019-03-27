@@ -3,7 +3,7 @@ package cafe.adriel.verne.presentation.ui.main.explorer
 import android.content.Context
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
-import cafe.adriel.verne.data.extension.asExplorerItem
+import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.repository.ExplorerRepository
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerItemChangeListener
