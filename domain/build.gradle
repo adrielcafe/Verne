@@ -1,0 +1,16 @@
+apply plugin: 'kotlin'
+apply plugin: 'com.github.ben-manes.versions'
+
+apply from: '../dependencies.gradle'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin/'
+}
+
+dependencies {
+    // Kotlin
+    implementation appDependencies.kotlin
+}

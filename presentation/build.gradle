@@ -1,0 +1,114 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.ben-manes.versions'
+
+apply from: '../version.gradle'
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+
+        versionCode appVersionCode
+        versionName appVersionName
+
+        buildConfigField 'String', 'PROVIDER_AUTHORITY', '"cafe.adriel.verne.provider"'
+        buildConfigField 'String', 'CONTACT_EMAIL', '"contact@verne.app"'
+        buildConfigField 'String', 'PRIVACY_POLICY_URL', '"https://adriel.cafe/privacy_policy/verne"'
+        buildConfigField 'String', 'PLAY_STORE_URL', '"https://play.google.com/store/apps/details?id=cafe.adriel.verne"'
+        buildConfigField 'String', 'MARKET_URL', '"market://details?id=cafe.adriel.verne"'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin/'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
+    androidExtensions {
+        experimental true
+        defaultCacheImplementation "SPARSE_ARRAY"
+    }
+}
+
+kapt {
+    useBuildCache true
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':interactor')
+    implementation project(':domain')
+    // TODO Remove data module after implement interactors
+    implementation project(':data')
+    implementation project(':shared')
+
+    // Kotlin
+    implementation appDependencies.kotlin
+    implementation appDependencies.coroutines
+    implementation appDependencies.androidCoroutineScopesAppCompat
+    implementation appDependencies.androidCoroutineScopesViewModel
+
+    // Android
+    implementation appDependencies.material
+    implementation appDependencies.appCompat
+    implementation appDependencies.preference
+    implementation appDependencies.constraintLayout
+    implementation appDependencies.lifecycle
+    implementation appDependencies.browser
+
+    // Android KTX
+    implementation appDependencies.coreKtx
+    implementation appDependencies.preferenceKtx
+    implementation appDependencies.fragmentKtx
+
+    // Firebase
+    implementation appDependencies.firebaseCore
+
+    // Quality
+    implementation appDependencies.instabug
+
+    // View
+    implementation appDependencies.krumbsView
+    implementation appDependencies.fastAdapter
+    implementation appDependencies.fastAdapterCommons
+    implementation appDependencies.fastAdapterExtensions
+    implementation appDependencies.fabOptions
+    implementation appDependencies.simpleSearchView
+    implementation appDependencies.numberSlidingPicker
+    implementation appDependencies.statefulLayout
+
+    // Util
+    implementation appDependencies.koinViewModel
+    implementation appDependencies.eiffel
+    implementation appDependencies.timberKt
+    implementation appDependencies.keyboardListener
+    implementation appDependencies.prettyTime
+    implementation appDependencies.pdfGenerator
+    implementation appDependencies.assent
+
+    // Forks
+    // https://github.com/adrielcafe/AztecEditor-Android
+    implementation appDependencies.aztecEditor
+    // https://github.com/adrielcafe/material-dialogs
+    implementation appDependencies.materialDialogsCore
+    implementation appDependencies.materialDialogsInput
+    implementation appDependencies.materialDialogsFiles
+
+    // Test
+    testImplementation testDependencies.junit
+    androidTestImplementation testDependencies.espresso
+    androidTestImplementation testDependencies.runner
+}

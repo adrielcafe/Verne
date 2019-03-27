@@ -1,29 +1,18 @@
 buildscript {
-    ext {
-        kotlin_version = '1.3.21'
-        androidcoroutinescopes_version = '1.0.1'
-        leakcanary_version = '1.6.3'
-        fastadapter_version = '3.3.1'
-        azteceditor_version = 'develop-SNAPSHOT'
-        materialdialogs_version = 'master-SNAPSHOT'
-    }
+    apply from: 'dependencies.gradle'
     repositories {
         google()
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0-rc02'
-        classpath "com.google.gms:google-services:4.2.0"
-        classpath "com.google.firebase:firebase-plugins:1.1.5"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "io.fabric.tools:gradle:1.27.1"
-        classpath "com.github.ben-manes:gradle-versions-plugin:0.20.0"
+        classpath projectDependencies.androidGradle
+        classpath projectDependencies.googleServices
+        classpath projectDependencies.firebasePlugin
+        classpath projectDependencies.kotlinPlugin
+        classpath projectDependencies.fabric
+        classpath projectDependencies.gradleVersions
     }
-}
-
-plugins {
-    id "com.diffplug.gradle.spotless" version "3.19.0"
 }
 
 allprojects {
@@ -31,7 +20,13 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven { url 'https://maven.fabric.io/public' }
         maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.fabric.io/public' }
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
     }
 }

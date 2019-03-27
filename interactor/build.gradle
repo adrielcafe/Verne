@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.ben-manes.versions'
+
+apply from: '../dependencies.gradle'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin/'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
+    androidExtensions {
+        experimental true
+        defaultCacheImplementation "SPARSE_ARRAY"
+    }
+}
+
+kapt {
+    useBuildCache true
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':shared')
+
+    // Kotlin
+    implementation appDependencies.kotlin
+    implementation appDependencies.coroutines
+
+    // Util
+    implementation appDependencies.timberKt
+
+    // Test
+    testImplementation testDependencies.junit
+    androidTestImplementation testDependencies.espresso
+    androidTestImplementation testDependencies.runner
+}
