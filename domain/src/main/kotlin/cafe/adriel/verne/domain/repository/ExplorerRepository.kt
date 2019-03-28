@@ -1,22 +1,20 @@
 package cafe.adriel.verne.domain.repository
 
-import cafe.adriel.verne.domain.model.BaseDir
-import cafe.adriel.verne.domain.model.ExplorerItem
 import java.io.File
 
 interface ExplorerRepository {
 
-    val baseDir: BaseDir
+    suspend fun search(query: String, showDeleted: Boolean = false): Sequence<File>
 
-    suspend fun search(query: String, showDeleted: Boolean = false): List<ExplorerItem>
+    suspend fun select(dir: File, showDeleted: Boolean = false): Sequence<File>
 
-    suspend fun select(dir: File? = null, showDeleted: Boolean = false): List<ExplorerItem>
+    suspend fun create(file: File, isFolder: Boolean): Boolean
 
-    suspend fun create(item: ExplorerItem): Boolean
+    suspend fun move(file: File, parentDir: File): File
 
-    suspend fun move(item: ExplorerItem, parentDir: File): File
+    suspend fun rename(file: File, newName: String): File
 
-    suspend fun rename(item: ExplorerItem, newName: String): File
+    suspend fun getText(file: File): String
 
-    suspend fun getHtmlText(item: ExplorerItem): String
+    suspend fun setText(file: File, text: String): Boolean
 }

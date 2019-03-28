@@ -12,8 +12,8 @@ class PresentationComponent(private val appContext: Context) : Component {
 
     private val viewModelModule = module {
         viewModel { MainViewModel() }
-        viewModel { ExplorerViewModel(appContext, get()) }
-        viewModel { EditorViewModel(appContext, get(), get(), get(), get()) }
+        viewModel { ExplorerViewModel(appContext, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { EditorViewModel(appContext, get(), get(), get(), get(), get(), get()) }
     }
 
     override fun getModules() = listOf(viewModelModule)

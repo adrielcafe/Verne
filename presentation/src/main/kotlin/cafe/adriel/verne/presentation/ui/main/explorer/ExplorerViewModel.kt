@@ -4,8 +4,14 @@ import android.content.Context
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
 import cafe.adriel.verne.domain.extension.asExplorerItem
-import cafe.adriel.verne.domain.repository.ExplorerRepository
+import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
+import cafe.adriel.verne.interactor.explorer.CreateItemExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.ItemTextExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.MoveItemExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.RenameItemExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.SearchItemsExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.SelectItemsExplorerInteractor
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerItemChangeListener
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import com.uttampanchasara.pdfgenerator.CreatePdf
@@ -14,7 +20,16 @@ import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class ExplorerViewModel(private val appContext: Context, private val explorerRepository: ExplorerRepository) : CoroutineScopedStateViewModel<ExplorerViewState>() {
+class ExplorerViewModel(
+    private val appContext: Context,
+    private val baseDir: BaseDir,
+    private val searchItemsInteractor: SearchItemsExplorerInteractor,
+    private val selectItemsInteractor: SelectItemsExplorerInteractor,
+    private val createItemInteractor: CreateItemExplorerInteractor,
+    private val moveItemInteractor: MoveItemExplorerInteractor,
+    private val renameItemInteractor: RenameItemExplorerInteractor,
+    private val itemTextInteractor: ItemTextExplorerInteractor
+) : CoroutineScopedStateViewModel<ExplorerViewState>() {
 
     override val state = MutableLiveData<ExplorerViewState>()
 
@@ -26,7 +41,7 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
             field = value
             onSearchModeChange(searchMode)
         }
-    var currentDir: File = explorerRepository.baseDir.file
+    var currentDir: ExplorerItem.Folder = baseDir.item
         set(value) {
             field = value
             onCurrentDirChange(currentDir)
@@ -40,13 +55,15 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
     fun goToParentDir() = if (isBaseDir()) {
         false
     } else {
-        currentDir = currentDir.parentFile
+        currentDir = ExplorerItem.Folder(currentDir.file.parent)
         true
     }
 
-    fun getBaseDir() = explorerRepository.baseDir
+    fun getBaseDir() = baseDir
 
-    private fun isBaseDir() = currentDir == explorerRepository.baseDir.file
+    fun isSearchQueryEmpty() = searchQuery.isBlank()
+
+    private fun isBaseDir() = currentDir == baseDir.item
 
     private fun refreshCurrentDir() {
         onCurrentDirChange(currentDir)
@@ -64,62 +81,56 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
         }
     }
 
-    private fun onCurrentDirChange(dir: File) {
+    private fun onCurrentDirChange(dir: ExplorerItem.Folder) {
         if (::listener.isInitialized) {
             listener.stopWatching()
         }
-        listener = ExplorerItemChangeListener(dir, true) {
-            launch { selectItems(dir) }
+        listener = ExplorerItemChangeListener(dir.file, true) {
+            launch {
+                selectItems(dir)
+            }
         }
         listener.startWatching()
     }
 
-    private suspend fun selectItems(dir: File) {
+    private suspend fun selectItems(folder: ExplorerItem.Folder) {
         // Check if is base dir or current dir, otherwise ignore
-        if (currentDir == dir || currentDir == explorerRepository.baseDir.file) {
-            updateState { it.copy(items = explorerRepository.select(dir)) }
+        if (currentDir == folder || currentDir == baseDir.item) {
+            updateState { it.copy(items = selectItemsInteractor(folder)) }
         }
     }
-
-    fun isSearchQueryEmpty() = searchQuery.isBlank()
 
     suspend fun searchItems(query: String) {
         searchQuery = query
-        updateState { it.copy(items = explorerRepository.search(query)) }
+        updateState { it.copy(items = searchItemsInteractor(query)) }
     }
 
     suspend fun putItem(name: String, isFolder: Boolean): ExplorerItem {
-        val fileName = if (!isFolder && !name.endsWith(".html", true)) {
-            "$name.html"
-        } else {
-            name
-        }
-        val file = File(currentDir, fileName)
-        val item = if (isFolder) ExplorerItem.Folder(file.path) else ExplorerItem.File(file.path)
-        explorerRepository.create(item)
-        return item
+        return createItemInteractor(currentDir, name, isFolder)
     }
 
-    suspend fun moveItem(item: ExplorerItem, parentDir: File) {
-        explorerRepository.move(item, parentDir)
+    suspend fun moveItem(item: ExplorerItem, to: ExplorerItem.Folder) {
+        moveItemInteractor(item, to)
     }
 
     suspend fun renameItem(item: ExplorerItem, newName: String) {
-        explorerRepository.rename(item, newName)
+        renameItemInteractor(item, newName)
     }
 
+    // TODO Move to Interactor
     suspend fun softDeleteItem(item: ExplorerItem) {
         if (!item.isDeleted) {
-            explorerRepository.rename(item, ".${item.file.name}")
+            renameItemInteractor(item, ".${item.file.name}")
         }
     }
 
+    // TODO Move to Interactor
     suspend fun restoreItem(item: ExplorerItem) {
         val deletedFile = File(item.file.parent, ".${item.file.name}")
         if (item.isDeleted) {
-            explorerRepository.rename(item, item.file.name.removePrefix("."))
+            renameItemInteractor(item, item.file.name.removePrefix("."))
         } else if (deletedFile.exists()) {
-            explorerRepository.rename(deletedFile.asExplorerItem(), deletedFile.name.removePrefix("."))
+            renameItemInteractor(deletedFile.asExplorerItem(), deletedFile.name.removePrefix("."))
         }
     }
 
@@ -136,7 +147,7 @@ class ExplorerViewModel(private val appContext: Context, private val explorerRep
     }
 
     suspend fun getHtmlText(item: ExplorerItem.File) = try {
-        explorerRepository.getHtmlText(item)
+        itemTextInteractor.get(item)
     } catch (e: Exception) {
         e.printStackTrace()
         null

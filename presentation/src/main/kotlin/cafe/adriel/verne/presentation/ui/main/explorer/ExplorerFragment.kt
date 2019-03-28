@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
@@ -197,9 +198,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
     private fun openItem(item: ExplorerItem) {
         listener.onItemOpened(item)
         when (item) {
-            is ExplorerItem.Folder -> {
-                viewModel.currentDir = item.file
-            }
+            is ExplorerItem.Folder -> viewModel.currentDir = item
             is ExplorerItem.File -> context?.apply {
                 EditorActivity.start(this, item)
             }
@@ -261,9 +260,12 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         }
     }
 
-    private fun moveItems(items: List<ExplorerItem>, dir: File) {
+    private fun moveItems(items: List<ExplorerItem>, folder: File) {
         launch {
-            items.forEach { viewModel.moveItem(it, dir) }
+            val item = folder.asExplorerItem()
+            if(item is ExplorerItem.Folder) {
+                items.forEach { viewModel.moveItem(it, item) }
+            }
         }
     }
 

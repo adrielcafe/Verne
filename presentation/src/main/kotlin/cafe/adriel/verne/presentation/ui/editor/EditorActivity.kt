@@ -283,7 +283,7 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
         }
     }
 
-    private fun getItemFromIntent(intent: Intent): ExplorerItem = when {
+    private fun getItemFromIntent(intent: Intent): ExplorerItem.File = when {
         intent.hasExtra(EXTRA_FILE_PATH) -> {
             val filePath = intent.getStringExtra(EXTRA_FILE_PATH)
             ExplorerItem.File(filePath)

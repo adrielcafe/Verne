@@ -2,8 +2,10 @@ package cafe.adriel.verne.presentation.ui.editor
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
-import cafe.adriel.verne.domain.repository.ExplorerRepository
+import cafe.adriel.verne.interactor.explorer.ItemTextExplorerInteractor
+import cafe.adriel.verne.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.interactor.preference.FontFamilyPreferenceInteractor
 import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
 import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
@@ -17,15 +19,16 @@ import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import cafe.adriel.verne.shared.extension.formatShort
-import kotlinx.coroutines.Dispatchers
+import cafe.adriel.verne.shared.extension.withIo
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
 
 class EditorViewModel(
     private val appContext: Context,
-    private val explorerRepository: ExplorerRepository,
+    private val baseDir: BaseDir,
+    private val renameItemInteractor: RenameItemExplorerInteractor,
+    private val itemTextInteractor: ItemTextExplorerInteractor,
     private val fontFamily: FontFamilyPreferenceInteractor,
     private val fontSize: FontSizePreferenceInteractor,
     private val marginSize: MarginSizePreferenceInteractor
@@ -33,7 +36,7 @@ class EditorViewModel(
 
     override val state = MutableLiveData<EditorViewState>()
 
-    lateinit var item: ExplorerItem
+    lateinit var item: ExplorerItem.File
     var editMode = false
         set(value) {
             field = value
@@ -59,29 +62,27 @@ class EditorViewModel(
         editMode = !editMode
     }
 
-    fun createEmptyFileItem(name: String? = null): ExplorerItem {
-        val fileName = name ?: Calendar.getInstance().time.formatShort().replace('/', '-')
-        val file = File(explorerRepository.baseDir.path, fileName)
+    fun createEmptyFileItem(name: String? = null): ExplorerItem.File {
+        val fileName = name ?: getDefaultFileName()
+        val file = File(baseDir.path, fileName)
         return ExplorerItem.File(file.path)
     }
 
-    suspend fun saveText(title: String, text: String) = withContext(Dispatchers.IO) {
+    suspend fun saveText(title: String, text: String) = withIo {
         try {
             // Rename the file if the title has changed
             if (title != item.title) {
-                val newFile = explorerRepository.rename(item, title)
-                item = ExplorerItem.File(newFile.path)
+                item = renameItemInteractor(item, title) as ExplorerItem.File
             }
-            explorerRepository.create(item)
-            item.file.writeText(text)
+            itemTextInteractor.set(item, text)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    suspend fun getHtmlText() = withContext(Dispatchers.IO) {
+    suspend fun getHtmlText() = withIo {
         try {
-            explorerRepository.getHtmlText(item)
+            itemTextInteractor.get(item)
                 .also { if (it.isBlank()) editMode = true }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -117,4 +118,10 @@ class EditorViewModel(
 
     private suspend fun getSettings() =
         TypographySettings(FontFamily.valueOf(fontFamily.get()), fontSize.get(), marginSize.get())
+
+    private fun getDefaultFileName() =
+        Calendar.getInstance()
+            .time
+            .formatShort()
+            .replace('/', '-')
 }
