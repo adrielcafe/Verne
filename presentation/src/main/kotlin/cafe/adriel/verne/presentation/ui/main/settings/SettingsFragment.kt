@@ -20,13 +20,12 @@ import cafe.adriel.verne.presentation.extension.openInChromeTab
 import cafe.adriel.verne.presentation.extension.openInExternalBrowser
 import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.util.AnalyticsUtil
+import cafe.adriel.verne.shared.extension.launchMain
 import com.instabug.bug.BugReporting
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
+class SettingsFragment :
+    PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
         const val APP_DARK_MODE = "appDarkMode"
@@ -65,7 +64,7 @@ class SettingsFragment : PreferenceFragmentCompat(), Preference.OnPreferenceChan
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        GlobalScope.launch(Dispatchers.Main) {
+        launchMain {
             when (preference?.key) {
                 APP_DARK_MODE -> if (newValue is Boolean) {
                     AnalyticsUtil.logSwitchDarkMode(newValue)

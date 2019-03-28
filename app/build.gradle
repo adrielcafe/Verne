@@ -104,6 +104,7 @@ dependencies {
     // Util
     implementation appDependencies.koinViewModel
     implementation appDependencies.eiffel
+    implementation appDependencies.mmkv
     implementation appDependencies.timberKt
 }
 

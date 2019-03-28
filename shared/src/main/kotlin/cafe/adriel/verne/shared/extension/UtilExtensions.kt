@@ -2,7 +2,7 @@ package cafe.adriel.verne.shared.extension
 
 var isDebug = false
 
-inline fun runIfDebug(body: () -> Unit) {
+inline fun debug(body: () -> Unit) {
     if (isDebug) body()
 }
 

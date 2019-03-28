@@ -48,6 +48,7 @@ dependencies {
 
     // Util
     implementation appDependencies.koinCore
+    implementation appDependencies.mmkv
     implementation appDependencies.timberKt
 
     // Test

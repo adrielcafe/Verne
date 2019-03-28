@@ -30,8 +30,10 @@ inline fun <reified T : Activity> Context.intentFor(vararg extras: Pair<String, 
         }
     }
 
+// TODO move to SettingsRepository
 fun Context.isDarkMode() =
     PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.APP_DARK_MODE, false)
 
+// TODO move to SettingsRepository
 fun Context.isFullscreen() =
     PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.APP_FULLSCREEN, false)

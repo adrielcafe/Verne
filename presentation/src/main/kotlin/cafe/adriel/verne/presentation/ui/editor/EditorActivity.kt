@@ -13,6 +13,7 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import androidx.core.app.NavUtils
 import androidx.core.view.forEachIndexed
+import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
@@ -35,6 +36,7 @@ import cafe.adriel.verne.presentation.extension.showAnimated
 import cafe.adriel.verne.presentation.extension.showKeyboard
 import cafe.adriel.verne.presentation.ui.BaseActivity
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragment
+import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragmentListener
 import cafe.adriel.verne.presentation.util.AnalyticsUtil
 import cafe.adriel.verne.presentation.util.AndroidBug5497Workaround
 import cafe.adriel.verne.presentation.util.StatefulLayoutController
@@ -50,7 +52,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.EnhancedMovementMethod
 import org.wordpress.aztec.IHistoryListener
 
-class EditorActivity : BaseActivity<EditorViewState>() {
+class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragmentListener {
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
@@ -201,6 +203,16 @@ class EditorActivity : BaseActivity<EditorViewState>() {
             true
         }
         else -> super.onOptionsItemSelected(item)
+    }
+
+    override fun onAttachFragment(fragment: Fragment) {
+        when (fragment) {
+            is TypographyDialogFragment -> fragment.listener = this
+        }
+    }
+
+    override fun onSettingsChanged() {
+        viewModel.onSettingsChanged()
     }
 
     override fun onStateUpdated(state: EditorViewState) {
@@ -381,7 +393,7 @@ class EditorActivity : BaseActivity<EditorViewState>() {
     private fun showStatisticsDialog() {
         vEditor.text?.toString()?.let { text ->
             launch {
-                val message = viewModel.getTextStatistics(text)
+                val message = viewModel.getStatisticsText(text)
                 MaterialDialog(this@EditorActivity).show {
                     title(R.string.statistics)
                     message(text = message.fromHtml(), html = true)

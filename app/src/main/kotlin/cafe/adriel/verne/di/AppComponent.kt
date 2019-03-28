@@ -5,6 +5,7 @@ import android.preference.PreferenceManager
 import cafe.adriel.verne.App
 import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.shared.di.Component
+import com.tencent.mmkv.MMKV
 import org.koin.dsl.module
 
 class AppComponent(private val appContext: Context) : Component {
@@ -13,6 +14,7 @@ class AppComponent(private val appContext: Context) : Component {
 
     private val appModule = module {
         single { PreferenceManager.getDefaultSharedPreferences(appContext) }
+        single { MMKV.defaultMMKV() }
         single { BaseDir(baseDirPath) }
     }
 

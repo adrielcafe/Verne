@@ -1,10 +1,12 @@
 package cafe.adriel.verne.presentation.ui.editor
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import cafe.adriel.verne.domain.repository.ExplorerRepository
 import cafe.adriel.verne.domain.model.ExplorerItem
+import cafe.adriel.verne.domain.repository.ExplorerRepository
+import cafe.adriel.verne.interactor.preference.FontFamilyPreferenceInteractor
+import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
+import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.charCount
 import cafe.adriel.verne.presentation.extension.formatSeconds
@@ -21,8 +23,13 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.Calendar
 
-class EditorViewModel(private val appContext: Context, private val explorerRepository: ExplorerRepository, private val preferences: SharedPreferences) :
-    CoroutineScopedStateViewModel<EditorViewState>(), SharedPreferences.OnSharedPreferenceChangeListener {
+class EditorViewModel(
+    private val appContext: Context,
+    private val explorerRepository: ExplorerRepository,
+    private val fontFamily: FontFamilyPreferenceInteractor,
+    private val fontSize: FontSizePreferenceInteractor,
+    private val marginSize: MarginSizePreferenceInteractor
+) : CoroutineScopedStateViewModel<EditorViewState>() {
 
     override val state = MutableLiveData<EditorViewState>()
 
@@ -36,17 +43,12 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
         }
 
     init {
-        preferences.registerOnSharedPreferenceChangeListener(this)
-        initState { EditorViewState(false, getSettings()) }
+        initState { EditorViewState() }
+        onSettingsChanged()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        preferences.unregisterOnSharedPreferenceChangeListener(this)
-    }
-
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        if (key in arrayOf(TypographySettings.TYPOGRAPHY_FONT_FAMILY, TypographySettings.TYPOGRAPHY_FONT_SIZE, TypographySettings.TYPOGRAPHY_MARGIN_SIZE)) {
+    fun onSettingsChanged() {
+        launch {
             updateState { it.copy(settings = getSettings()) }
         }
     }
@@ -88,7 +90,7 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
         }
     }
 
-    suspend fun getTextStatistics(text: String): String {
+    suspend fun getStatisticsText(text: String): String {
         val paragraphCount = text.paragraphCount()
         val wordCount = text.wordCount()
         val charCountWithWhitespace = text.length
@@ -113,15 +115,6 @@ class EditorViewModel(private val appContext: Context, private val explorerRepos
         """.trimIndent().replace("\n", "<br>")
     }
 
-    private fun getSettings(): TypographySettings {
-        val fontFamilyValue = preferences.getString(TypographySettings.TYPOGRAPHY_FONT_FAMILY, TypographySettings.DEFAULT_FONT_FAMILY)
-        val fontFamily = try {
-            FontFamily.valueOf(fontFamilyValue!!)
-        } catch (e: java.lang.Exception) {
-            FontFamily.valueOf(TypographySettings.DEFAULT_FONT_FAMILY)
-        }
-        val fontSize = preferences.getInt(TypographySettings.TYPOGRAPHY_FONT_SIZE, TypographySettings.DEFAULT_FONT_SIZE)
-        val marginSize = preferences.getInt(TypographySettings.TYPOGRAPHY_MARGIN_SIZE, TypographySettings.DEFAULT_MARGIN_SIZE)
-        return TypographySettings(fontFamily, fontSize, marginSize)
-    }
+    private suspend fun getSettings() =
+        TypographySettings(FontFamily.valueOf(fontFamily.get()), fontSize.get(), marginSize.get())
 }

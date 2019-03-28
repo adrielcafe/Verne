@@ -11,8 +11,8 @@ import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.isDarkMode
 import cafe.adriel.verne.presentation.extension.minSdk
 import cafe.adriel.verne.presentation.util.AnalyticsUtil
+import cafe.adriel.verne.shared.extension.debug
 import cafe.adriel.verne.shared.extension.isDebug
-import cafe.adriel.verne.shared.extension.runIfDebug
 import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
 import com.instabug.bug.invocation.Option
@@ -21,6 +21,7 @@ import com.instabug.library.InstabugColorTheme
 import com.instabug.library.invocation.InstabugInvocationEvent
 import com.instabug.library.ui.onboarding.WelcomeMessage
 import com.squareup.leakcanary.LeakCanary
+import com.tencent.mmkv.MMKV
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -39,7 +40,7 @@ class App : Application() {
         if (LeakCanary.isInAnalyzerProcess(this)) return
         LeakCanary.install(this)
 
-        runIfDebug {
+        debug {
             Timber.plant(Timber.DebugTree())
 
             StrictMode.setThreadPolicy(
@@ -62,6 +63,7 @@ class App : Application() {
             )
         }
 
+        MMKV.initialize(this)
         AnalyticsUtil.init(this)
 
         initModules()

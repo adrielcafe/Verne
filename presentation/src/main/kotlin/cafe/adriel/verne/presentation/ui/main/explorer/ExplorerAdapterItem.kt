@@ -8,12 +8,10 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.shared.extension.filesCount
 import cafe.adriel.verne.shared.extension.formatMedium
+import cafe.adriel.verne.shared.extension.launchMain
 import com.mikepenz.fastadapter.commons.utils.FastAdapterUIUtils
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.item_explorer.view.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import java.util.Date
 
 class ExplorerAdapterItem(val item: ExplorerItem, private val searchResult: Boolean = false) :
@@ -34,7 +32,7 @@ class ExplorerAdapterItem(val item: ExplorerItem, private val searchResult: Bool
             when (item) {
                 is ExplorerItem.Folder -> {
                     vItemDetails.text = context.resources.getQuantityString(R.plurals.files, 0, 0)
-                    GlobalScope.launch(Dispatchers.Main) {
+                    launchMain {
                         val filesCount = item.file.filesCount()
                         vItemDetails.text = context.resources.getQuantityString(R.plurals.files, filesCount, filesCount)
                     }

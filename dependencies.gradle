@@ -46,6 +46,7 @@ ext {
         // Util
         koin: '2.0.0-rc-1',
         eiffel: '4.1.0',
+        mmkv: '1.0.18',
         timberKt: '1.5.1',
         keyboardListener: '1.0.0',
         prettyTime: '4.0.2.Final',
@@ -116,6 +117,7 @@ ext {
         koinCore: "org.koin:koin-core:${versions.koin}",
         koinViewModel: "org.koin:koin-androidx-viewmodel:${versions.koin}",
         eiffel: "com.github.etiennelenhart:eiffel:${versions.eiffel}",
+        mmkv: "com.tencent:mmkv:${versions.mmkv}",
         timberKt: "com.github.ajalt:timberkt:${versions.timberKt}",
         keyboardListener: "com.github.ravindu1024:android-keyboardlistener:${versions.keyboardListener}",
         prettyTime: "org.ocpsoft.prettytime:prettytime:${versions.prettyTime}",
