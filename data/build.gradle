@@ -4,8 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 
-apply from: '../dependencies.gradle'
-
 android {
     compileSdkVersion 28
 
@@ -43,16 +41,16 @@ dependencies {
     implementation project(':shared')
 
     // Kotlin
-    implementation appDependencies.kotlin
-    implementation appDependencies.coroutines
+    implementation AppLib.kotlin
+    implementation AppLib.coroutines
 
     // Util
-    implementation appDependencies.koinCore
-    implementation appDependencies.mmkv
-    implementation appDependencies.timberKt
+    implementation AppLib.koinCore
+    implementation AppLib.mmkv
+    implementation AppLib.timberKt
 
     // Test
-    testImplementation testDependencies.junit
-    androidTestImplementation testDependencies.espresso
-    androidTestImplementation testDependencies.runner
+    testImplementation TestLib.junit
+    androidTestImplementation TestLib.espresso
+    androidTestImplementation TestLib.runner
 }

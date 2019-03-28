@@ -6,9 +6,6 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
 apply plugin: 'com.github.ben-manes.versions'
 
-apply from: '../version.gradle'
-apply from: '../dependencies.gradle'
-
 def props = new Properties()
 project.file("app.properties").withInputStream { props.load(it) }
 
@@ -20,8 +17,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
 
-        versionCode appVersionCode
-        versionName appVersionName
+        versionCode AppVersion.versionCode
+        versionName AppVersion.versionName
 
         resConfigs 'en', 'pt'
         buildConfigField 'String', 'INSTABUG_KEY', props['key.instabug']
@@ -85,27 +82,27 @@ dependencies {
     implementation project(':shared')
 
     // Kotlin
-    implementation appDependencies.kotlin
-    implementation appDependencies.coroutines
-    implementation appDependencies.androidCoroutineScopesAppCompat
-    implementation appDependencies.androidCoroutineScopesViewModel
+    implementation AppLib.kotlin
+    implementation AppLib.coroutines
+    implementation AppLib.androidCoroutineScopesAppCompat
+    implementation AppLib.androidCoroutineScopesViewModel
 
     // Firebase
-    implementation appDependencies.firebaseCore
-    implementation appDependencies.firebasePerf
+    implementation AppLib.firebaseCore
+    implementation AppLib.firebasePerf
 
     // Quality
-    implementation appDependencies.instabug
-    implementation appDependencies.crashlytics
-    releaseImplementation appDependencies.leakCanaryNoOp
-    debugImplementation appDependencies.leakCanaryAndroid
-    debugImplementation appDependencies.leakCanarySupportFragment
+    implementation AppLib.instabug
+    implementation AppLib.crashlytics
+    releaseImplementation AppLib.leakCanaryNoOp
+    debugImplementation AppLib.leakCanaryAndroid
+    debugImplementation AppLib.leakCanarySupportFragment
 
     // Util
-    implementation appDependencies.koinViewModel
-    implementation appDependencies.eiffel
-    implementation appDependencies.mmkv
-    implementation appDependencies.timberKt
+    implementation AppLib.koinViewModel
+    implementation AppLib.eiffel
+    implementation AppLib.mmkv
+    implementation AppLib.timberKt
 }
 
 apply plugin: 'com.google.gms.google-services'

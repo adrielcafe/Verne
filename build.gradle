@@ -1,17 +1,18 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 buildscript {
-    apply from: 'dependencies.gradle'
     repositories {
         google()
         jcenter()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath projectDependencies.androidGradle
-        classpath projectDependencies.googleServices
-        classpath projectDependencies.firebasePlugin
-        classpath projectDependencies.kotlinPlugin
-        classpath projectDependencies.fabric
-        classpath projectDependencies.gradleVersions
+        classpath ProjectLib.androidGradle
+        classpath ProjectLib.googleServices
+        classpath ProjectLib.firebasePlugin
+        classpath ProjectLib.kotlinPlugin
+        classpath ProjectLib.fabric
+        classpath ProjectLib.gradleVersions
     }
 }
 
@@ -25,7 +26,7 @@ allprojects {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+tasks.withType(KotlinCompile).all {
     kotlinOptions {
         freeCompilerArgs = ["-XXLanguage:+InlineClasses"]
     }

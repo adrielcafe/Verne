@@ -4,9 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 
-apply from: '../version.gradle'
-apply from: '../dependencies.gradle'
-
 android {
     compileSdkVersion 28
 
@@ -14,8 +11,8 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
 
-        versionCode appVersionCode
-        versionName appVersionName
+        versionCode AppVersion.versionCode
+        versionName AppVersion.versionName
 
         buildConfigField 'String', 'PROVIDER_AUTHORITY', '"cafe.adriel.verne.provider"'
         buildConfigField 'String', 'CONTACT_EMAIL', '"contact@verne.app"'
@@ -56,59 +53,59 @@ dependencies {
     implementation project(':shared')
 
     // Kotlin
-    implementation appDependencies.kotlin
-    implementation appDependencies.coroutines
-    implementation appDependencies.androidCoroutineScopesAppCompat
-    implementation appDependencies.androidCoroutineScopesViewModel
+    implementation AppLib.kotlin
+    implementation AppLib.coroutines
+    implementation AppLib.androidCoroutineScopesAppCompat
+    implementation AppLib.androidCoroutineScopesViewModel
 
     // Android
-    implementation appDependencies.material
-    implementation appDependencies.appCompat
-    implementation appDependencies.preference
-    implementation appDependencies.constraintLayout
-    implementation appDependencies.lifecycle
-    implementation appDependencies.browser
+    implementation AppLib.material
+    implementation AppLib.appCompat
+    implementation AppLib.preference
+    implementation AppLib.constraintLayout
+    implementation AppLib.lifecycle
+    implementation AppLib.browser
 
     // Android KTX
-    implementation appDependencies.coreKtx
-    implementation appDependencies.preferenceKtx
-    implementation appDependencies.fragmentKtx
+    implementation AppLib.coreKtx
+    implementation AppLib.preferenceKtx
+    implementation AppLib.fragmentKtx
 
     // Firebase
-    implementation appDependencies.firebaseCore
+    implementation AppLib.firebaseCore
 
     // Quality
-    implementation appDependencies.instabug
+    implementation AppLib.instabug
 
     // View
-    implementation appDependencies.krumbsView
-    implementation appDependencies.fastAdapter
-    implementation appDependencies.fastAdapterCommons
-    implementation appDependencies.fastAdapterExtensions
-    implementation appDependencies.fabOptions
-    implementation appDependencies.simpleSearchView
-    implementation appDependencies.numberSlidingPicker
-    implementation appDependencies.statefulLayout
+    implementation AppLib.krumbsView
+    implementation AppLib.fastAdapter
+    implementation AppLib.fastAdapterCommons
+    implementation AppLib.fastAdapterExtensions
+    implementation AppLib.fabOptions
+    implementation AppLib.simpleSearchView
+    implementation AppLib.numberSlidingPicker
+    implementation AppLib.statefulLayout
 
     // Util
-    implementation appDependencies.koinViewModel
-    implementation appDependencies.eiffel
-    implementation appDependencies.timberKt
-    implementation appDependencies.keyboardListener
-    implementation appDependencies.prettyTime
-    implementation appDependencies.pdfGenerator
-    implementation appDependencies.assent
+    implementation AppLib.koinViewModel
+    implementation AppLib.eiffel
+    implementation AppLib.timberKt
+    implementation AppLib.keyboardListener
+    implementation AppLib.prettyTime
+    implementation AppLib.pdfGenerator
+    implementation AppLib.assent
 
     // Forks
     // https://github.com/adrielcafe/AztecEditor-Android
-    implementation appDependencies.aztecEditor
+    implementation AppLib.aztecEditor
     // https://github.com/adrielcafe/material-dialogs
-    implementation appDependencies.materialDialogsCore
-    implementation appDependencies.materialDialogsInput
-    implementation appDependencies.materialDialogsFiles
+    implementation AppLib.materialDialogsCore
+    implementation AppLib.materialDialogsInput
+    implementation AppLib.materialDialogsFiles
 
     // Test
-    testImplementation testDependencies.junit
-    androidTestImplementation testDependencies.espresso
-    androidTestImplementation testDependencies.runner
+    testImplementation TestLib.junit
+    androidTestImplementation TestLib.espresso
+    androidTestImplementation TestLib.runner
 }
