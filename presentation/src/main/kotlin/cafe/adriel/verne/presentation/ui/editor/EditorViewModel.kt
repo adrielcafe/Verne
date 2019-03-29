@@ -16,7 +16,7 @@ import cafe.adriel.verne.presentation.extension.paragraphCount
 import cafe.adriel.verne.presentation.extension.readTimeInSeconds
 import cafe.adriel.verne.presentation.extension.wordCount
 import cafe.adriel.verne.presentation.model.FontFamily
-import cafe.adriel.verne.presentation.model.TypographySettings
+import cafe.adriel.verne.presentation.model.TypographyPreferences
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import cafe.adriel.verne.shared.extension.formatShort
 import cafe.adriel.verne.shared.extension.withIo
@@ -38,21 +38,16 @@ class EditorViewModel(
 
     lateinit var item: ExplorerItem.File
     var editMode = false
-        set(value) {
-            field = value
-            launch {
-                updateState { it.copy(editMode = editMode) }
-            }
-        }
+        private set
 
     init {
         initState { EditorViewState() }
-        onSettingsChanged()
+        onPreferencesChanged()
     }
 
-    fun onSettingsChanged() {
+    fun onPreferencesChanged() {
         launch {
-            updateState { it.copy(settings = getSettings()) }
+            updateState { it.copy(preferences = getPreferences()) }
         }
     }
 
@@ -60,6 +55,7 @@ class EditorViewModel(
 
     fun toggleEditMode() {
         editMode = !editMode
+        updateState { it.copy(editMode = editMode) }
     }
 
     fun createEmptyFileItem(name: String? = null): ExplorerItem.File {
@@ -83,10 +79,8 @@ class EditorViewModel(
     suspend fun getHtmlText() = withIo {
         try {
             itemTextInteractor.get(item)
-                .also { if (it.isBlank()) editMode = true }
         } catch (e: Exception) {
             e.printStackTrace()
-            editMode = true
             ""
         }
     }
@@ -116,8 +110,8 @@ class EditorViewModel(
         """.trimIndent().replace("\n", "<br>")
     }
 
-    private suspend fun getSettings() =
-        TypographySettings(FontFamily.valueOf(fontFamily.get()), fontSize.get(), marginSize.get())
+    private suspend fun getPreferences() =
+        TypographyPreferences(FontFamily.valueOf(fontFamily.get()), fontSize.get(), marginSize.get())
 
     private fun getDefaultFileName() =
         Calendar.getInstance()

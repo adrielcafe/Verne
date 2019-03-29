@@ -10,10 +10,4 @@ sealed class ExplorerItem(open val path: String) {
     val title by lazy { file.nameWithoutExtension }
     val isDeleted by lazy { file.isHidden }
     val isEmpty by lazy { file.length() == 0L }
-
-    // TODO move to other place
-//    val pathAfterBaseDir by lazy {
-//        val path = file.parent.substringAfter(App.BASE_DIR_NAME, "/")
-//        if (path.isBlank()) "/" else path
-//    }
 }

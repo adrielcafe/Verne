@@ -8,12 +8,10 @@ import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.preference.PreferenceManager
-import cafe.adriel.verne.presentation.ui.main.settings.SettingsFragment
+import cafe.adriel.verne.presentation.ui.main.preferences.PreferencesFragment
 import cafe.adriel.verne.shared.extension.tagOf
 import org.koin.ext.getFullName
 import java.io.Serializable
-
-fun Activity.isFullScreen() = window.attributes.flags and WindowManager.LayoutParams.FLAG_FULLSCREEN != 0
 
 inline fun <reified T : Fragment> FragmentManager.getFragment() = findFragmentByTag(tagOf<T>()) as T?
 
@@ -30,10 +28,12 @@ inline fun <reified T : Activity> Context.intentFor(vararg extras: Pair<String, 
         }
     }
 
-// TODO move to SettingsRepository
+// TODO move to PreferencesRepository
 fun Context.isDarkMode() =
-    PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.APP_DARK_MODE, false)
+    PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        .getBoolean(PreferencesFragment.APP_DARK_MODE, false)
 
-// TODO move to SettingsRepository
+// TODO move to PreferencesRepository
 fun Context.isFullscreen() =
-    PreferenceManager.getDefaultSharedPreferences(this).getBoolean(SettingsFragment.APP_FULLSCREEN, false)
+    PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        .getBoolean(PreferencesFragment.APP_FULLSCREEN, false)

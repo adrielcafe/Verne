@@ -34,12 +34,14 @@ import cafe.adriel.verne.presentation.extension.setAnimatedState
 import cafe.adriel.verne.presentation.extension.setMargins
 import cafe.adriel.verne.presentation.extension.showAnimated
 import cafe.adriel.verne.presentation.extension.showKeyboard
+import cafe.adriel.verne.presentation.helper.AnalyticsHelper
+import cafe.adriel.verne.presentation.helper.CustomTabsHelper
+import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
+import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.ui.BaseActivity
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragment
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragmentListener
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
-import cafe.adriel.verne.presentation.util.AndroidBug5497Workaround
-import cafe.adriel.verne.presentation.util.StatefulLayoutController
+import cafe.adriel.verne.presentation.util.StateAware
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
 import com.rw.keyboardlistener.KeyboardUtils
@@ -48,11 +50,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.EnhancedMovementMethod
 import org.wordpress.aztec.IHistoryListener
 
-class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragmentListener {
+class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDialogFragmentListener {
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
@@ -70,19 +73,20 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
         fun start(context: Context, item: ExplorerItem) {
             val intent = context.intentFor<EditorActivity>(EXTRA_FILE_PATH to item.path)
             context.startActivity(intent)
-            AnalyticsUtil.logOpenFile()
         }
     }
 
     override val viewModel by viewModel<EditorViewModel>()
+    private val analyticsHelper by inject<AnalyticsHelper>()
+    private val customTabsHelper by inject<CustomTabsHelper>()
+    private val fullscreenKeyboardHelper by inject<FullscreenKeyboardHelper>()
+    private val statefulLayoutHelper by inject<StatefulLayoutHelper>()
 
     private val actionNewFile by lazy { "$packageName.action.NEW_FILE" }
 
     private lateinit var menu: Menu
     private var externalText: CharSequence? = null
     private var keyboardVisible = false
-    private val bug5497Workaround by lazy { AndroidBug5497Workaround(this) }
-    private val stateLayoutCtrl by lazy { StatefulLayoutController.createController(this) }
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
 
     private val saveDrawable by lazy {
@@ -108,7 +112,10 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
             viewModel.item = getItemFromIntent(intent)
         }
 
-        vStateLayout.setStateController(stateLayoutCtrl)
+        statefulLayoutHelper.init(this)
+        fullscreenKeyboardHelper.init(this)
+
+        vStateLayout.setStateController(statefulLayoutHelper.controller)
         vEditMode.setOnClickListener { viewModel.toggleEditMode() }
         vScroll.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP && !vEditor.hasFocus() && viewModel.editMode) {
@@ -134,7 +141,8 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        stateLayoutCtrl.setAnimatedState(vStateLayout, StatefulLayoutController.STATE_PROGRESS)
+        viewModel.observeState(this, ::onStateUpdated)
+        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
         launch { loadText() }
     }
 
@@ -148,12 +156,12 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
 
     override fun onResume() {
         super.onResume()
-        bug5497Workaround.addListener()
+        fullscreenKeyboardHelper.addListener()
         viewModel.requestStateUpdate()
     }
 
     override fun onPause() {
-        bug5497Workaround.removeListener()
+        fullscreenKeyboardHelper.removeListener()
         launch { saveText(true) }
         super.onPause()
     }
@@ -211,8 +219,8 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
         }
     }
 
-    override fun onSettingsChanged() {
-        viewModel.onSettingsChanged()
+    override fun onPreferencesChanged() {
+        viewModel.onPreferencesChanged()
     }
 
     override fun onStateUpdated(state: EditorViewState) {
@@ -223,7 +231,7 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
             setUndoMenuItemEnabled(vEditor.history.undoValid())
             setRedoMenuItemEnabled(vEditor.history.redoValid())
 
-            with(settings) {
+            with(preferences) {
                 font(fontFamily.resId) {
                     vTitle.typeface = it
                     vEditor.typeface = it
@@ -253,7 +261,7 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
         })
         vEditor.setOnUrlClickListener(object : EnhancedMovementMethod.OnUrlClickListener {
             override fun onClick(widget: View, url: String) {
-                Uri.parse(url).openInChromeTab(this@EditorActivity)
+                Uri.parse(url).openInChromeTab(this@EditorActivity, customTabsHelper.packageNameToUse)
             }
         })
 
@@ -285,15 +293,16 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
 
     private fun getItemFromIntent(intent: Intent): ExplorerItem.File = when {
         intent.hasExtra(EXTRA_FILE_PATH) -> {
+            analyticsHelper.logOpenFile()
             val filePath = intent.getStringExtra(EXTRA_FILE_PATH)
             ExplorerItem.File(filePath)
         }
         intent.action == actionNewFile -> {
-            AnalyticsUtil.logNewFile(AnalyticsUtil.NEW_FILE_SOURCE_SHORTCUT)
+            analyticsHelper.logNewFile(AnalyticsHelper.NEW_FILE_SOURCE_SHORTCUT)
             viewModel.createEmptyFileItem()
         }
         intent.action == Intent.ACTION_SEND -> {
-            AnalyticsUtil.logNewFile(AnalyticsUtil.NEW_FILE_SOURCE_EXTERNAL)
+            analyticsHelper.logNewFile(AnalyticsHelper.NEW_FILE_SOURCE_EXTERNAL)
             val title = when {
                 intent.hasExtra(Intent.EXTRA_SUBJECT) -> intent.getStringExtra(Intent.EXTRA_SUBJECT)
                 intent.hasExtra(Intent.EXTRA_TITLE) -> intent.getStringExtra(Intent.EXTRA_TITLE)
@@ -332,7 +341,7 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
             val text = viewModel.getHtmlText()
             vEditor.fromHtml(text)
         }
-        stateLayoutCtrl.setAnimatedState(vStateLayout, StatefulLayoutController.STATE_CONTENT)
+        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_CONTENT)
     }
 
     private suspend fun saveText(silent: Boolean = false) {
@@ -399,7 +408,7 @@ class EditorActivity : BaseActivity<EditorViewState>(), TypographyDialogFragment
                     message(text = message.fromHtml(), html = true)
                     positiveButton(android.R.string.ok)
                 }
-                AnalyticsUtil.logShowStatistics()
+                analyticsHelper.logShowStatistics()
             }
         }
     }

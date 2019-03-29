@@ -8,7 +8,7 @@ import cafe.adriel.verne.domain.repository.ExplorerRepository
 class SelectItemsExplorerInteractor(private val baseDir: BaseDir, private val explorerRepository: ExplorerRepository) {
 
     suspend operator fun invoke(item: ExplorerItem.Folder? = null): List<ExplorerItem> {
-        val dir = item?.file ?: baseDir.file
+        val dir = item?.file ?: baseDir.item.file
         return explorerRepository.select(dir)
             .map { it.asExplorerItem() }
             .toList()

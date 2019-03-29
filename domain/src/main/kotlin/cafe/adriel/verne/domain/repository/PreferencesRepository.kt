@@ -1,6 +1,6 @@
 package cafe.adriel.verne.domain.repository
 
-interface SettingsRepository {
+interface PreferencesRepository {
     companion object {
         const val DEFAULT_FONT_FAMILY = "ALICE"
         const val DEFAULT_FONT_SIZE = 18
@@ -9,14 +9,14 @@ interface SettingsRepository {
 
     suspend fun getFontFamily(): String
 
-    suspend fun setFontFamily(newValue: String): Boolean
+    suspend fun setFontFamily(newValue: String)
 
     suspend fun getFontSize(): Int
 
-    suspend fun setFontSize(newValue: Int): Boolean
+    suspend fun setFontSize(newValue: Int)
 
     suspend fun getMarginSize(): Int
 
-    suspend fun setMarginSize(newValue: Int): Boolean
+    suspend fun setMarginSize(newValue: Int)
 
 }

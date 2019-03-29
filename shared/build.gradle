@@ -9,11 +9,13 @@ sourceSets {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // Kotlin
-    implementation AppLib.kotlin
-    implementation AppLib.coroutines
+    implementation AppLib.KOTLIN
+    implementation AppLib.COROUTINES
 
     // Util
-    implementation AppLib.koinCore
-    implementation AppLib.timberKt
+    implementation AppLib.KOIN_CORE
+    implementation AppLib.TIMBER_KT
 }

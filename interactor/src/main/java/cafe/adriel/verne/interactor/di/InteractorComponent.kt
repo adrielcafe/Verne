@@ -29,5 +29,5 @@ class InteractorComponent : Component {
         single { MarginSizePreferenceInteractor(get()) }
     }
 
-    override fun getModules() = listOf(repositoryModule, preferenceModule)
+    override fun getModules() = repositoryModule + preferenceModule
 }

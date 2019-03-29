@@ -2,13 +2,13 @@ package cafe.adriel.verne.presentation.ui.main
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import cafe.adriel.verne.presentation.BuildConfig
+import cafe.adriel.verne.shared.model.AppConfig
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import com.uttampanchasara.pdfgenerator.CreatePdf
 
-class MainViewModel : CoroutineScopedStateViewModel<MainViewState>() {
+class MainViewModel(appConfig: AppConfig) : CoroutineScopedStateViewModel<MainViewState>() {
 
-    val appVersion = "v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE})"
+    val appVersion = "v${appConfig.versionName} (Build ${appConfig.versionCode})"
 
     override val state = MutableLiveData<MainViewState>()
 

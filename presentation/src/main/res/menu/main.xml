@@ -10,8 +10,8 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/settings"
+        android:id="@+id/action_preferences"
+        android:title="@string/preferences"
         android:icon="@drawable/ic_settings"
         app:showAsAction="always"/>
 

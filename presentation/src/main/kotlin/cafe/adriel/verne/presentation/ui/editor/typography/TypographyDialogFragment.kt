@@ -15,8 +15,8 @@ import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
 import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.colorFromAttr
+import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.model.FontFamily
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
 import cafe.adriel.verne.shared.extension.launchMain
 import cafe.adriel.verne.shared.extension.tagOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -26,6 +26,7 @@ import org.koin.android.ext.android.inject
 
 class TypographyDialogFragment : BottomSheetDialogFragment() {
 
+    private val analyticsHelper by inject<AnalyticsHelper>()
     private val fontFamily by inject<FontFamilyPreferenceInteractor>()
     private val fontSize by inject<FontSizePreferenceInteractor>()
     private val marginSize by inject<MarginSizePreferenceInteractor>()
@@ -103,10 +104,10 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
             }
         }
 
-        loadSettings()
+        loadPreferences()
     }
 
-    private fun loadSettings() = launchMain {
+    private fun loadPreferences() = launchMain {
         val selectedFontFamilyPosition = FontFamily.sortedValues
             .indexOfFirst {
                 val selectedFontFamily = FontFamily.valueOf(fontFamily.get())
@@ -122,21 +123,21 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
         val fontName = selectedFontFamily.fontName
         fontFamily.set(fontName)
 
-        listener.onSettingsChanged()
-        AnalyticsUtil.logTypographyFontFamily(fontName)
+        listener.onPreferencesChanged()
+        analyticsHelper.logTypographyFontFamily(fontName)
     }
 
     private fun onFontSizeSelected(selectedFontSize: Int) = launchMain {
         fontSize.set(selectedFontSize)
 
-        listener.onSettingsChanged()
-        AnalyticsUtil.logTypographyFontSize(selectedFontSize)
+        listener.onPreferencesChanged()
+        analyticsHelper.logTypographyFontSize(selectedFontSize)
     }
 
     private fun onMarginSizeSelected(selectedMarginSize: Int) = launchMain {
         marginSize.set(selectedMarginSize)
 
-        listener.onSettingsChanged()
-        AnalyticsUtil.logTypographyMarginSize(selectedMarginSize)
+        listener.onPreferencesChanged()
+        analyticsHelper.logTypographyMarginSize(selectedMarginSize)
     }
 }

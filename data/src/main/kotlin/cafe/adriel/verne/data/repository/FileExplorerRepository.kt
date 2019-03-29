@@ -8,7 +8,7 @@ import java.io.File
 class FileExplorerRepository(private val baseDir: BaseDir) : ExplorerRepository {
 
     init {
-        baseDir.file.mkdirs()
+        baseDir.item.file.mkdirs()
     }
 
     private val searchFilter = { file: File, query: String, showDeleted: Boolean ->
@@ -24,7 +24,7 @@ class FileExplorerRepository(private val baseDir: BaseDir) : ExplorerRepository 
         if (query.isBlank()) {
             emptySequence()
         } else {
-            baseDir.file
+            baseDir.item.file
                 .walk()
                 .filter { searchFilter(it, query, showDeleted) }
         }

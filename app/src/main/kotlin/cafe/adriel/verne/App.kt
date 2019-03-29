@@ -10,9 +10,6 @@ import cafe.adriel.verne.presentation.di.PresentationComponent
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.isDarkMode
 import cafe.adriel.verne.presentation.extension.minSdk
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
-import cafe.adriel.verne.shared.extension.debug
-import cafe.adriel.verne.shared.extension.isDebug
 import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
 import com.instabug.bug.invocation.Option
@@ -21,7 +18,6 @@ import com.instabug.library.InstabugColorTheme
 import com.instabug.library.invocation.InstabugInvocationEvent
 import com.instabug.library.ui.onboarding.WelcomeMessage
 import com.squareup.leakcanary.LeakCanary
-import com.tencent.mmkv.MMKV
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -29,42 +25,15 @@ import org.koin.core.logger.Level
 
 class App : Application() {
 
-    companion object {
-        const val BASE_DIR_NAME = "${BuildConfig.APPLICATION_ID}.db"
-    }
-
     override fun onCreate() {
         super.onCreate()
-        isDebug = BuildConfig.DEBUG
-
         if (LeakCanary.isInAnalyzerProcess(this)) return
         LeakCanary.install(this)
 
-        debug {
+        if(!BuildConfig.RELEASE) {
             Timber.plant(Timber.DebugTree())
-
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .permitDiskReads()
-                    // FIXME Caused by NumberPicker > UIGestureRecognizerDelegate > JaCoCo
-                    .permitDiskWrites()
-                    .permitNetwork()
-                    .also {
-                        minSdk(Build.VERSION_CODES.M){
-                            // FIXME Caused by AztecText, fix and send a PR when possible
-                            it.permitResourceMismatches()
-                        }
-                    }
-                    .penaltyLog()
-                    .penaltyDropBox()
-                    .penaltyDeath()
-                    .build()
-            )
+            initStrictMode()
         }
-
-        MMKV.initialize(this)
-        AnalyticsUtil.init(this)
 
         initModules()
         initBugReporting()
@@ -97,4 +66,24 @@ class App : Application() {
         BugReporting.setOptions(Option.EMAIL_FIELD_OPTIONAL)
     }
 
+    private fun initStrictMode(){
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder()
+                .detectAll()
+                .permitDiskReads()
+                // FIXME Both caused by NumberPicker > UIGestureRecognizerDelegate > JaCoCo
+                .permitDiskWrites()
+                .permitNetwork()
+                .also {
+                    minSdk(Build.VERSION_CODES.M){
+                        // FIXME Caused by AztecText, fix and send a PR when possible
+                        it.permitResourceMismatches()
+                    }
+                }
+                .penaltyLog()
+                .penaltyDropBox()
+                .penaltyDeath()
+                .build()
+        )
+    }
 }

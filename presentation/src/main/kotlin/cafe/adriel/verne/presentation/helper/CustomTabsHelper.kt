@@ -1,4 +1,4 @@
-package cafe.adriel.verne.presentation.util
+package cafe.adriel.verne.presentation.helper
 
 import android.content.Context
 import android.content.Intent
@@ -7,19 +7,19 @@ import android.net.Uri
 import android.text.TextUtils
 
 // Based on https://github.com/saurabharora90/CustomTabs-Kotlin
-object CustomTabsHelper {
+class CustomTabsHelper(appContext: Context) {
 
-    private const val STABLE_PACKAGE = "com.android.chrome"
-    private const val BETA_PACKAGE = "com.chrome.beta"
-    private const val DEV_PACKAGE = "com.chrome.dev"
-    private const val LOCAL_PACKAGE = "com.google.android.apps.chrome"
-    private const val ACTION_CUSTOM_TABS_CONNECTION = "android.support.customtabs.action.CustomTabsService"
+    companion object {
+        private const val STABLE_PACKAGE = "com.android.chrome"
+        private const val BETA_PACKAGE = "com.chrome.beta"
+        private const val DEV_PACKAGE = "com.chrome.dev"
+        private const val LOCAL_PACKAGE = "com.google.android.apps.chrome"
+        private const val ACTION_CUSTOM_TABS_CONNECTION = "android.support.customtabs.action.CustomTabsService"
+    }
 
-    private var packageNameToUse: String? = null
+    val packageNameToUse by lazy { getPackageNameToUse(appContext) }
 
-    fun getPackageNameToUse(context: Context): String? {
-        if (packageNameToUse != null) return packageNameToUse
-
+    private fun getPackageNameToUse(context: Context): String? {
         val packageManager = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
         val defaultViewHandlerInfo = packageManager.resolveActivity(activityIntent, 0)
@@ -39,31 +39,26 @@ object CustomTabsHelper {
             }
         }
 
-        if (packagesSupportingCustomTabs.isEmpty()) {
-            packageNameToUse = null
-        } else if (packagesSupportingCustomTabs.size == 1) {
-            packageNameToUse = packagesSupportingCustomTabs[0]
+        return if (packagesSupportingCustomTabs.size == 1) {
+            packagesSupportingCustomTabs[0]
         } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName) &&
             !hasSpecializedHandlerIntents(
                 context,
                 activityIntent
             ) &&
             packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)) {
-            packageNameToUse = defaultViewHandlerPackageName
+            defaultViewHandlerPackageName
         } else if (packagesSupportingCustomTabs.contains(STABLE_PACKAGE)) {
-            packageNameToUse =
-                STABLE_PACKAGE
+            STABLE_PACKAGE
         } else if (packagesSupportingCustomTabs.contains(BETA_PACKAGE)) {
-            packageNameToUse =
-                BETA_PACKAGE
+            BETA_PACKAGE
         } else if (packagesSupportingCustomTabs.contains(DEV_PACKAGE)) {
-            packageNameToUse =
-                DEV_PACKAGE
+            DEV_PACKAGE
         } else if (packagesSupportingCustomTabs.contains(LOCAL_PACKAGE)) {
-            packageNameToUse =
-                LOCAL_PACKAGE
+            LOCAL_PACKAGE
+        } else {
+            null
         }
-        return packageNameToUse
     }
 
     private fun hasSpecializedHandlerIntents(context: Context, intent: Intent): Boolean {

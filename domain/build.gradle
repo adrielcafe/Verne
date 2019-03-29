@@ -9,6 +9,8 @@ sourceSets {
 }
 
 dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // Kotlin
-    implementation AppLib.kotlin
+    implementation AppLib.KOTLIN
 }

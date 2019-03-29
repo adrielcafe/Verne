@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedFragment
 import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
@@ -20,11 +21,11 @@ import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.setAnimatedState
 import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.extension.showAnimated
-import cafe.adriel.verne.presentation.ui.BaseFragment
+import cafe.adriel.verne.presentation.helper.AnalyticsHelper
+import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.ui.editor.EditorActivity
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
-import cafe.adriel.verne.presentation.util.StatefulLayoutController
+import cafe.adriel.verne.presentation.util.StateAware
 import cafe.adriel.verne.shared.extension.javaClass
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
@@ -41,22 +42,24 @@ import com.mikepenz.fastadapter_extensions.ActionModeHelper
 import kotlinx.android.synthetic.main.fragment_explorer.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.ActionItemClickedListener {
+class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
 
     companion object {
         private const val FILE_NAME_MAX_LENGTH = 50
     }
 
     override val viewModel by viewModel<ExplorerViewModel>()
+    private val analyticsHelper by inject<AnalyticsHelper>()
+    private val statefulLayoutHelper by inject<StatefulLayoutHelper>()
 
     private val adapter by lazy { FastItemAdapter<ExplorerAdapterItem>() }
     private val adapterSelectHelper by lazy { adapter.getExtension(javaClass<SelectExtension<ExplorerAdapterItem>>()) }
     private val adapterActionModeHelper by lazy { ActionModeHelper<ExplorerAdapterItem>(adapter, R.menu.main_action_mode, this) }
 
-    private val stateLayoutCtrl by lazy { StatefulLayoutController.createController(requireContext()) }
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
 
     lateinit var listener: ExplorerFragmentListener
@@ -67,6 +70,10 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        context?.apply {
+            statefulLayoutHelper.init(this)
+        }
 
         adapter.withSelectable(true)
             .withMultiSelect(true)
@@ -100,8 +107,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
             }
             .setHasStableIds(true)
 
-        vStateLayout.setStateController(stateLayoutCtrl)
-        stateLayoutCtrl.setAnimatedState(vStateLayout, StatefulLayoutController.STATE_PROGRESS)
+        vStateLayout.setStateController(statefulLayoutHelper.controller)
+        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
 
         with(vItems) {
             setHasFixedSize(true)
@@ -124,6 +131,8 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         if (savedInstanceState != null) {
             setSearchModeEnabled(viewModel.searchMode)
         }
+
+        viewModel.observeState(this, ::onStateUpdated)
     }
 
     override fun onStateUpdated(state: ExplorerViewState) {
@@ -163,13 +172,13 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
     private fun setItems(items: List<ExplorerItem>) {
         launch {
             val state = if (viewModel.searchMode && viewModel.isSearchQueryEmpty()) {
-                StatefulLayoutController.STATE_EMPTY
+                StatefulLayoutHelper.STATE_EMPTY
             } else if (items.isEmpty()) {
-                StatefulLayoutController.STATE_NOT_FOUND
+                StatefulLayoutHelper.STATE_NOT_FOUND
             } else {
-                StatefulLayoutController.STATE_CONTENT
+                StatefulLayoutHelper.STATE_CONTENT
             }
-            stateLayoutCtrl.setAnimatedState(vStateLayout, state)
+            statefulLayoutHelper.controller.setAnimatedState(vStateLayout, state)
         }
 
         val scrollY = vItems.scrollY
@@ -177,7 +186,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
             .asSequence()
             .sortedBy { it.title.toLowerCase() } // Secondary comparator
             .sortedBy { it is ExplorerItem.File } // Primary comparator
-            .map { ExplorerAdapterItem(it, viewModel.searchMode) }
+            .map { ExplorerAdapterItem(it, viewModel.getBaseDir(), viewModel.searchMode) }
             .toList()
         adapter.set(adapterItems)
         vItems.scrollTo(0, scrollY)
@@ -188,9 +197,9 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
             val newItem = viewModel.putItem(name, isFolder)
             openItem(newItem)
             if (isFolder) {
-                AnalyticsUtil.logNewFolder()
+                analyticsHelper.logNewFolder()
             } else {
-                AnalyticsUtil.logNewFile(AnalyticsUtil.NEW_FILE_SOURCE_INTERNAL)
+                analyticsHelper.logNewFile(AnalyticsHelper.NEW_FILE_SOURCE_INTERNAL)
             }
         }
     }
@@ -235,7 +244,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
                             // PDF file
                             3 -> viewModel.getPdfFile(item).share(this@apply)
                         }
-                        AnalyticsUtil.logShare()
+                        analyticsHelper.logShare()
                     }
                     dialog.dismiss()
                 }
@@ -334,7 +343,7 @@ class ExplorerFragment : BaseFragment<ExplorerViewState>(), ActionModeHelper.Act
         context?.apply {
             MaterialDialog(this).show {
                 folderChooser(
-                    viewModel.getBaseDir().file,
+                    viewModel.getBaseDir().item.file,
                     filter,
                     emptyTextRes = R.string.nothing_here,
                     initialFolderLabel = R.string.app_name,

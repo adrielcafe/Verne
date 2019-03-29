@@ -13,11 +13,12 @@ import cafe.adriel.krumbsview.model.Krumb
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.getFragment
+import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.ui.BaseActivity
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerFragment
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
-import cafe.adriel.verne.presentation.ui.main.settings.SettingsFragment
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
+import cafe.adriel.verne.presentation.ui.main.preferences.PreferencesFragment
+import cafe.adriel.verne.presentation.util.StateAware
 import cafe.adriel.verne.shared.extension.tagOf
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.ferfalk.simplesearchview.SimpleSearchViewListener
@@ -25,12 +26,14 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity<MainViewState>(),
+class MainActivity : BaseActivity(), StateAware<MainViewState>,
     ExplorerFragmentListener {
 
     override val viewModel by viewModel<MainViewModel>()
+    private val analyticsHelper by inject<AnalyticsHelper>()
 
     private var backPressedTwice = false
 
@@ -52,7 +55,7 @@ class MainActivity : BaseActivity<MainViewState>(),
                 }
                 override fun onQueryTextChange(newText: String?): Boolean {
                     getExplorerFragment()?.search(newText?.trim() ?: "")
-                    AnalyticsUtil.logTextSearch()
+                    analyticsHelper.logTextSearch()
                     return false
                 }
                 override fun onQueryTextCleared(): Boolean {
@@ -75,10 +78,15 @@ class MainActivity : BaseActivity<MainViewState>(),
             replace(R.id.vContent, getExplorerFragment() ?: ExplorerFragment(),
                 tagOf<ExplorerFragment>()
             )
-            replace(R.id.vSettings, getSettingsFragment() ?: SettingsFragment(),
-                tagOf<SettingsFragment>()
+            replace(R.id.vPreferences, getPreferencesFragment() ?: PreferencesFragment(),
+                tagOf<PreferencesFragment>()
             )
         }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        viewModel.observeState(this, ::onStateUpdated)
     }
 
     override fun onBackPressed() {
@@ -99,7 +107,7 @@ class MainActivity : BaseActivity<MainViewState>(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (vSearch.onActivityResult(requestCode, resultCode, data)) {
-            AnalyticsUtil.logVoiceSearch()
+            analyticsHelper.logVoiceSearch()
             return
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -125,7 +133,7 @@ class MainActivity : BaseActivity<MainViewState>(),
     }
 
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
-        R.id.action_settings -> {
+        R.id.action_preferences -> {
             vDrawer.openDrawer(GravityCompat.END)
             true
         }
@@ -138,7 +146,7 @@ class MainActivity : BaseActivity<MainViewState>(),
 
     override fun onPrintHtml(fileName: String, html: String) {
         viewModel.printHtml(this, fileName, html)
-        AnalyticsUtil.logPrint()
+        analyticsHelper.logPrint()
     }
 
     override fun onItemOpened(item: ExplorerItem) {
@@ -150,5 +158,5 @@ class MainActivity : BaseActivity<MainViewState>(),
 
     private fun getExplorerFragment() = supportFragmentManager.getFragment<ExplorerFragment>()
 
-    private fun getSettingsFragment() = supportFragmentManager.getFragment<SettingsFragment>()
+    private fun getPreferencesFragment() = supportFragmentManager.getFragment<PreferencesFragment>()
 }

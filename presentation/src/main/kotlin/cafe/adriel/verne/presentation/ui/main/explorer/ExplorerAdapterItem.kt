@@ -3,6 +3,8 @@ package cafe.adriel.verne.presentation.ui.main.explorer
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
+import cafe.adriel.verne.domain.extension.getPathAfterBaseDir
+import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
@@ -14,7 +16,7 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.item_explorer.view.*
 import java.util.Date
 
-class ExplorerAdapterItem(val item: ExplorerItem, private val searchResult: Boolean = false) :
+class ExplorerAdapterItem(val item: ExplorerItem, val baseDir : BaseDir, private val searchResult: Boolean = false) :
     AbstractItem<ExplorerAdapterItem, ExplorerAdapterItem.ViewHolder>() {
 
     override fun getLayoutRes() = R.layout.item_explorer
@@ -26,7 +28,8 @@ class ExplorerAdapterItem(val item: ExplorerItem, private val searchResult: Bool
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
         with(holder.itemView) {
-            val bgColor = FastAdapterUIUtils.getSelectableBackground(context, color(R.color.colorPrimaryAlpha), false)
+            val bgColor = FastAdapterUIUtils
+                .getSelectableBackground(context, color(R.color.colorPrimaryAlpha), false)
             ViewCompat.setBackground(this, bgColor)
             vItemName.text = item.title
             when (item) {
@@ -42,8 +45,7 @@ class ExplorerAdapterItem(val item: ExplorerItem, private val searchResult: Bool
                 is ExplorerItem.File -> {
                     vItemDetails.text = Date(item.file.lastModified()).formatMedium()
                     if (searchResult) {
-                        // TODO missing property
-//                        vItemPath.text = item.pathAfterBaseDir
+                        vItemPath.text = item.getPathAfterBaseDir(baseDir)
                         vItemPath.visibility = View.VISIBLE
                     }
 

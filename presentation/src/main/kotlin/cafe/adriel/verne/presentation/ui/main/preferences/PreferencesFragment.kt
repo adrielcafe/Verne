@@ -1,4 +1,4 @@
-package cafe.adriel.verne.presentation.ui.main.settings
+package cafe.adriel.verne.presentation.ui.main.preferences
 
 import android.content.Intent
 import android.net.Uri
@@ -19,12 +19,14 @@ import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.openInChromeTab
 import cafe.adriel.verne.presentation.extension.openInExternalBrowser
 import cafe.adriel.verne.presentation.extension.share
-import cafe.adriel.verne.presentation.util.AnalyticsUtil
+import cafe.adriel.verne.presentation.helper.AnalyticsHelper
+import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.shared.extension.launchMain
 import com.instabug.bug.BugReporting
 import kotlinx.coroutines.delay
+import org.koin.android.ext.android.inject
 
-class SettingsFragment :
+class PreferencesFragment :
     PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
@@ -37,6 +39,9 @@ class SettingsFragment :
         const val ABOUT_RATE_REVIEW = "aboutRateReview"
         const val ABOUT_PRIVACY_POLICY = "aboutPrivacyPolicy"
     }
+
+    private val analyticsHelper by inject<AnalyticsHelper>()
+    private val customTabsHelper by inject<CustomTabsHelper>()
 
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
 
@@ -64,15 +69,15 @@ class SettingsFragment :
     }
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
-        launchMain {
-            when (preference?.key) {
-                APP_DARK_MODE -> if (newValue is Boolean) {
-                    AnalyticsUtil.logSwitchDarkMode(newValue)
-                }
-                APP_FULLSCREEN -> if (newValue is Boolean) {
-                    AnalyticsUtil.logSwitchFullScreen(newValue)
-                }
+        when (preference?.key) {
+            APP_DARK_MODE -> if (newValue is Boolean) {
+                analyticsHelper.logSwitchDarkMode(newValue)
             }
+            APP_FULLSCREEN -> if (newValue is Boolean) {
+                analyticsHelper.logSwitchFullScreen(newValue)
+            }
+        }
+        launchMain {
             delay(actionDelayMs)
             activity?.recreate()
         }
@@ -123,12 +128,12 @@ class SettingsFragment :
         try {
             Uri.parse(BuildConfig.MARKET_URL).openInExternalBrowser(this)
         } catch (e: Exception) {
-            Uri.parse(BuildConfig.PLAY_STORE_URL).openInChromeTab(this)
+            Uri.parse(BuildConfig.PLAY_STORE_URL).openInChromeTab(this, customTabsHelper.packageNameToUse)
         }
     }
 
     private fun showPrivacyPolicy() = context?.apply {
-        Uri.parse(BuildConfig.PRIVACY_POLICY_URL).openInChromeTab(this)
+        Uri.parse(BuildConfig.PRIVACY_POLICY_URL).openInChromeTab(this, customTabsHelper.packageNameToUse)
     }
 
     private fun updatePreferenceIcon(preference: Preference) {

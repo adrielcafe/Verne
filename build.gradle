@@ -7,12 +7,12 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath ProjectLib.androidGradle
-        classpath ProjectLib.googleServices
-        classpath ProjectLib.firebasePlugin
-        classpath ProjectLib.kotlinPlugin
-        classpath ProjectLib.fabric
-        classpath ProjectLib.gradleVersions
+        classpath ProjectLib.ANDROID_GRADLE
+        classpath ProjectLib.GOOGLE_SERVICES
+        classpath ProjectLib.FIREBASE
+        classpath ProjectLib.KOTLIN
+        classpath ProjectLib.FABRIC
+        classpath ProjectLib.GRADLE_VERSIONS
     }
 }
 
