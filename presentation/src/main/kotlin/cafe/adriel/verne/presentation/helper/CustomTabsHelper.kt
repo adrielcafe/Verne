@@ -71,8 +71,9 @@ class CustomTabsHelper(appContext: Context) {
                 if (info.activityInfo != null &&
                     info.filter?.countDataAuthorities() != 0 &&
                     info.filter?.countDataPaths() != 0
-                )
+                ) {
                     return true
+                }
             }
         } catch (e: RuntimeException) {
             e.printStackTrace()

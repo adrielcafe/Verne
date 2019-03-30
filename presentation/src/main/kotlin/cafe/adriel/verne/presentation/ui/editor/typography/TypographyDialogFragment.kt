@@ -59,8 +59,8 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
 
     private fun initFontFamily() {
         with(vFontFamily) {
-            context?.let {
-                adapter = FontFamilyAdapter(it)
+            context?.apply {
+                adapter = FontFamilyAdapter(this)
             }
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

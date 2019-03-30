@@ -10,15 +10,13 @@ const val SIXTY_SECONDS = 60
 private val prettyTime by lazy { PrettyTime() }
 
 fun Int.formatSeconds(context: Context): String = when {
-    this < SIXTY_SECONDS -> {
+    this < SIXTY_SECONDS ->
         context.resources.getQuantityString(R.plurals.seconds, this, this)
-    }
-    this == SIXTY_SECONDS -> {
+    this == SIXTY_SECONDS ->
         context.resources.getQuantityString(R.plurals.minutes, 1, 1)
-    }
     else -> {
-        val date = Calendar.getInstance().apply {
-            add(Calendar.SECOND, this@formatSeconds)
+        val date = Calendar.getInstance().also {
+            it.add(Calendar.SECOND, this@formatSeconds)
         }
         prettyTime.formatDuration(date)
     }

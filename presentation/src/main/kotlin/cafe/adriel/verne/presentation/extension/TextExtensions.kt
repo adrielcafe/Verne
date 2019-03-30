@@ -38,7 +38,7 @@ suspend fun String.charCount() = withContext(Dispatchers.Default) {
 
 suspend fun String.readTimeInSeconds() = withContext(Dispatchers.Default) {
     val wordCount = this@readTimeInSeconds.wordCount()
-    val seconds = (wordCount / WORDS_PER_MINUTE) * SIXTY_SECONDS
+    val seconds = wordCount / WORDS_PER_MINUTE * SIXTY_SECONDS
     seconds.roundToInt()
 }
 

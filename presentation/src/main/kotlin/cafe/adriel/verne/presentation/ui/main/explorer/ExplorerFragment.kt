@@ -95,10 +95,10 @@ class ExplorerFragment :
         with(vExplorerFab) {
             findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList =
                 ColorStateList.valueOf(Color.WHITE)
-            setOnClickListener {
+            setOnClickListener { view ->
                 launch {
                     delay(actionDelayMs)
-                    when (it.id) {
+                    when (view.id) {
                         R.id.action_new_folder -> showNewItemDialog(true)
                         R.id.action_new_file -> showNewItemDialog(false)
                     }
@@ -323,6 +323,7 @@ class ExplorerFragment :
                 ) { _, value ->
                     createItem(value.toString(), isFolder)
                 }
+                // TODO check if works on API <= 22
                 getInputLayout().boxBackgroundColor = colorFromAttr(android.R.attr.colorBackgroundFloating)
             }
         }
@@ -343,6 +344,7 @@ class ExplorerFragment :
                         viewModel.renameItem(item, name.toString())
                     }
                 }
+                // TODO check if works on API <= 22
                 getInputLayout().boxBackgroundColor = colorFromAttr(android.R.attr.colorBackgroundFloating)
             }
         }

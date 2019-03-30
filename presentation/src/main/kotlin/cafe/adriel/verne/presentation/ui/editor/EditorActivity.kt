@@ -276,9 +276,8 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
 
     private fun setupEditorToolbar(){
         vEditorToolbar.setEditor(vEditor, null)
-        vEditorToolbar.findViewById<View>(R.id.format_bar_horizontal_divider).apply {
-            setBackgroundColor(color(R.color.colorPrimaryDark))
-        }
+        vEditorToolbar.findViewById<View>(R.id.format_bar_horizontal_divider)
+            .setBackgroundColor(color(R.color.colorPrimaryDark))
         vEditorToolbar.findViewById<HorizontalScrollView>(R.id.format_bar_button_scroll).apply {
             setBackgroundColor(color(R.color.colorPrimaryDark))
             isHorizontalScrollBarEnabled = false
