@@ -8,5 +8,4 @@ class MarginSizePreferenceInteractor(private val preferencesRepository: Preferen
     override suspend fun get() = preferencesRepository.getMarginSize()
 
     override suspend fun set(newValue: Int) = preferencesRepository.setMarginSize(newValue)
-
 }

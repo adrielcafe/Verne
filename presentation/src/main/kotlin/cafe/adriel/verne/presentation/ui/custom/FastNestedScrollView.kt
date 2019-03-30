@@ -11,12 +11,13 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
 import com.mixiaoxiao.fastscroll.FastScrollDelegate
 
-class FastNestedScrollView(context: Context, attrs: AttributeSet) : NestedScrollView(context, attrs), FastScrollDelegate.FastScrollable {
+class FastNestedScrollView(context: Context, attrs: AttributeSet) :
+    NestedScrollView(context, attrs), FastScrollDelegate.FastScrollable {
 
     private val delegate: FastScrollDelegate by lazy {
         FastScrollDelegate.Builder(this)
-            .thumbNormalColor(color(R.color.colorPrimary))
-            .thumbPressedColor(color(R.color.colorPrimaryDark))
+            .thumbNormalColor(context.color(R.color.colorPrimary))
+            .thumbPressedColor(context.color(R.color.colorPrimaryDark))
             .build()
     }
 

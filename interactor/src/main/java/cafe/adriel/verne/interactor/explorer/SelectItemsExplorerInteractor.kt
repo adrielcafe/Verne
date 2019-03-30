@@ -5,7 +5,10 @@ import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.domain.repository.ExplorerRepository
 
-class SelectItemsExplorerInteractor(private val baseDir: BaseDir, private val explorerRepository: ExplorerRepository) {
+class SelectItemsExplorerInteractor(
+    private val baseDir: BaseDir,
+    private val explorerRepository: ExplorerRepository
+) {
 
     suspend operator fun invoke(item: ExplorerItem.Folder? = null): List<ExplorerItem> {
         val dir = item?.file ?: baseDir.item.file
@@ -13,5 +16,4 @@ class SelectItemsExplorerInteractor(private val baseDir: BaseDir, private val ex
             .map { it.asExplorerItem() }
             .toList()
     }
-
 }

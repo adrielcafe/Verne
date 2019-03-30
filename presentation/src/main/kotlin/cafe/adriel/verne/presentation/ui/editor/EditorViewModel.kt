@@ -29,9 +29,9 @@ class EditorViewModel(
     private val baseDir: BaseDir,
     private val renameItemInteractor: RenameItemExplorerInteractor,
     private val itemTextInteractor: ItemTextExplorerInteractor,
-    private val fontFamily: FontFamilyPreferenceInteractor,
-    private val fontSize: FontSizePreferenceInteractor,
-    private val marginSize: MarginSizePreferenceInteractor
+    private val fontFamilyInteractor: FontFamilyPreferenceInteractor,
+    private val fontSizeInteractor: FontSizePreferenceInteractor,
+    private val marginSizeInteractor: MarginSizePreferenceInteractor
 ) : CoroutineScopedStateViewModel<EditorViewState>() {
 
     override val state = MutableLiveData<EditorViewState>()
@@ -92,26 +92,32 @@ class EditorViewModel(
         val charCountWithoutWhitespace = text.charCount()
         val readTime = text.readTimeInSeconds().formatSeconds(appContext)
 
-        return """
-            <b>${appContext.getString(R.string.paragraphs)}</b>
+        return appContext.run {
+            """
+            <b>${getString(R.string.paragraphs)}</b>
             $paragraphCount
 
-            <b>${appContext.getString(R.string.words)}</b>
+            <b>${getString(R.string.words)}</b>
             $wordCount
 
-            <b>${appContext.getString(R.string.chars)} (${appContext.getString(R.string.without_space).decapitalize()})</b>
+            <b>${getString(R.string.chars)} (${getString(R.string.without_space).decapitalize()})</b>
             $charCountWithoutWhitespace
 
-            <b>${appContext.getString(R.string.chars)} (${appContext.getString(R.string.with_space).decapitalize()})</b>
+            <b>${getString(R.string.chars)} (${getString(R.string.with_space).decapitalize()})</b>
             $charCountWithWhitespace
 
-            <b>${appContext.getString(R.string.read_time)}</b>
+            <b>${getString(R.string.read_time)}</b>
             $readTime
         """.trimIndent().replace("\n", "<br>")
+        }
     }
 
     private suspend fun getPreferences() =
-        TypographyPreferences(FontFamily.valueOf(fontFamily.get()), fontSize.get(), marginSize.get())
+        TypographyPreferences(
+            FontFamily.valueOf(fontFamilyInteractor.get()),
+            fontSizeInteractor.get(),
+            marginSizeInteractor.get()
+        )
 
     private fun getDefaultFileName() =
         Calendar.getInstance()

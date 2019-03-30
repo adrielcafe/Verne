@@ -18,5 +18,4 @@ interface PreferencesRepository {
     suspend fun getMarginSize(): Int
 
     suspend fun setMarginSize(newValue: Int)
-
 }

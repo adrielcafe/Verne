@@ -24,9 +24,9 @@ class FontFamilyAdapter(context: Context) :
             if (typefaces.contains(position)) {
                 fontNameView.typeface = typefaces[position]
             } else {
-                context.font(item.resId) {
-                    typefaces.put(position, it)
-                    fontNameView.typeface = it
+                context.font(item.resId) { typeface ->
+                    typefaces.put(position, typeface)
+                    fontNameView.typeface = typeface
                 }
             }
         }

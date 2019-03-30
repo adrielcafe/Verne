@@ -3,10 +3,11 @@ package cafe.adriel.verne.presentation.ui.main.explorer.listener
 import android.os.FileObserver
 import java.io.File
 
-class ExplorerItemChangeListener(dir: File, fireOnInit: Boolean, val listener: () -> Unit) :
-    FileObserver(dir.path,
-        EVENTS
-    ) {
+class ExplorerItemChangeListener(
+    dir: File,
+    fireOnInit: Boolean,
+    val listener: () -> Unit
+) : FileObserver(dir.path, EVENTS) {
 
     companion object {
         private const val EVENTS =

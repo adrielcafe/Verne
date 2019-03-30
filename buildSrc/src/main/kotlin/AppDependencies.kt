@@ -2,9 +2,8 @@ object LibVersion {
     // Project
     internal const val ANDROID_GRADLE = "3.4.0-rc02"
     internal const val GOOGLE_SERVICES = "4.2.0"
-    internal const val FIREBASE = "1.1.5"
-    internal const val FABRIC = "1.27.1"
-    internal const val GRADLE_VERSIONS = "0.20.0"
+    internal const val FIREBASE = "1.2.0"
+    internal const val FABRIC = "1.28.1"
 
     // Kotlin
     internal const val KOTLIN = "1.3.21"
@@ -66,15 +65,16 @@ object ProjectLib {
     const val FIREBASE = "com.google.firebase:firebase-plugins:${LibVersion.FIREBASE}"
     const val KOTLIN = "org.jetbrains.kotlin:kotlin-gradle-plugin:${LibVersion.KOTLIN}"
     const val FABRIC = "io.fabric.tools:gradle:${LibVersion.FABRIC}"
-    const val GRADLE_VERSIONS = "com.github.ben-manes:gradle-versions-plugin:${LibVersion.GRADLE_VERSIONS}"
 }
 
 object AppLib {
     // Kotlin
     const val KOTLIN = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${LibVersion.KOTLIN}"
     const val COROUTINES = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${LibVersion.COROUTINES}"
-    const val COROUTINES_SCOPES_APP_COMPAT = "com.github.adrielcafe.androidcoroutinescopes:appcompat:${LibVersion.COROUTINES_SCOPES}"
-    const val COROUTINES_SCOPES_VIEW_MODEL = "com.github.adrielcafe.androidcoroutinescopes:viewmodel:${LibVersion.COROUTINES_SCOPES}"
+    const val COROUTINES_SCOPES_APP_COMPAT =
+        "com.github.adrielcafe.androidcoroutinescopes:appcompat:${LibVersion.COROUTINES_SCOPES}"
+    const val COROUTINES_SCOPES_VIEW_MODEL =
+        "com.github.adrielcafe.androidcoroutinescopes:viewmodel:${LibVersion.COROUTINES_SCOPES}"
 
     // Android
     const val MATERIAL = "com.google.android.material:material:${LibVersion.MATERIAL}"

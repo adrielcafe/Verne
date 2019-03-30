@@ -60,6 +60,11 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
 
+        // TODO move to resources folder
+        private const val TITLE_ADDITIONAL_FONT_SIZE = 4f
+        private const val LOADING_DRAWABLE_CENTER_RADIUS = 20f
+        private const val LOADING_DRAWABLE_STROKE_WIDTH = 5f
+
         private val TOOLBAR_BUTTONS = setOf(
             R.id.format_bar_button_heading,
             R.id.format_bar_button_list,
@@ -68,7 +73,8 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
             R.id.format_bar_button_strikethrough,
             R.id.format_bar_button_bold,
             R.id.format_bar_button_italic,
-            R.id.format_bar_button_link)
+            R.id.format_bar_button_link
+        )
 
         fun start(context: Context, item: ExplorerItem) {
             val intent = context.intentFor<EditorActivity>(EXTRA_FILE_PATH to item.path)
@@ -95,8 +101,8 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
     private val loadingDrawable by lazy {
         CircularProgressDrawable(this).apply {
             setColorSchemeColors(colorFromAttr(android.R.attr.actionMenuTextColor))
-            centerRadius = 20f
-            strokeWidth = 5f
+            centerRadius = LOADING_DRAWABLE_CENTER_RADIUS
+            strokeWidth = LOADING_DRAWABLE_STROKE_WIDTH
             start()
         }
     }
@@ -137,6 +143,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
         KeyboardUtils.addKeyboardToggleListener(this) { keyboardVisible = it }
 
         setupEditor()
+        setupEditorToolbar()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -232,14 +239,14 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
             setRedoMenuItemEnabled(vEditor.history.redoValid())
 
             with(preferences) {
-                font(fontFamily.resId) {
-                    vTitle.typeface = it
-                    vEditor.typeface = it
+                font(fontFamily.resId) { typeface ->
+                    vTitle.typeface = typeface
+                    vEditor.typeface = typeface
                 }
 
                 val padding = marginSize.dpToPx()
 
-                vTitle.textSize = fontSize + 4f
+                vTitle.textSize = fontSize + TITLE_ADDITIONAL_FONT_SIZE
                 vTitle.setPaddingRelative(padding, 0, padding, 0)
 
                 vEditor.textSize = fontSize.toFloat()
@@ -255,6 +262,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
             override fun onUndoEnabled() {
                 setUndoMenuItemEnabled(vEditor.history.undoValid())
             }
+
             override fun onRedoEnabled() {
                 setRedoMenuItemEnabled(vEditor.history.redoValid())
             }
@@ -264,7 +272,9 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
                 Uri.parse(url).openInChromeTab(this@EditorActivity, customTabsHelper.packageNameToUse)
             }
         })
+    }
 
+    private fun setupEditorToolbar(){
         vEditorToolbar.setEditor(vEditor, null)
         vEditorToolbar.findViewById<View>(R.id.format_bar_horizontal_divider).apply {
             setBackgroundColor(color(R.color.colorPrimaryDark))
@@ -308,24 +318,26 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
                 intent.hasExtra(Intent.EXTRA_TITLE) -> intent.getStringExtra(Intent.EXTRA_TITLE)
                 else -> null
             }
-            externalText = when {
-                intent.hasExtra(Intent.EXTRA_HTML_TEXT) -> intent.getCharSequenceExtra(Intent.EXTRA_HTML_TEXT)
-                intent.hasExtra(Intent.EXTRA_TEXT) -> intent.getCharSequenceExtra(Intent.EXTRA_TEXT)
-                intent.hasExtra(Intent.EXTRA_STREAM) -> {
-                    val uri = intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)
-                    if(uri?.path?.endsWith(".html") == true) {
-                        uri.readText(this)
-                    } else {
-                        Snackbar.make(vRoot, R.string.unsupported_file_format, Snackbar.LENGTH_SHORT).show()
-                        null
-                    }
-                }
-                intent.data != null -> intent.data?.readText(this)
-                else -> null
-            }
+            externalText = getExternalTextFromIntent(intent)
             viewModel.createEmptyFileItem(title)
         }
         else -> viewModel.createEmptyFileItem()
+    }
+
+    private fun getExternalTextFromIntent(intent: Intent) = when {
+        intent.hasExtra(Intent.EXTRA_HTML_TEXT) -> intent.getCharSequenceExtra(Intent.EXTRA_HTML_TEXT)
+        intent.hasExtra(Intent.EXTRA_TEXT) -> intent.getCharSequenceExtra(Intent.EXTRA_TEXT)
+        intent.hasExtra(Intent.EXTRA_STREAM) -> {
+            val uri = intent.getParcelableExtra<Uri?>(Intent.EXTRA_STREAM)
+            if (uri?.path?.endsWith(".html") == true) {
+                uri.readText(this)
+            } else {
+                Snackbar.make(vRoot, R.string.unsupported_file_format, Snackbar.LENGTH_SHORT).show()
+                null
+            }
+        }
+        intent.data != null -> intent.data?.readText(this)
+        else -> null
     }
 
     private suspend fun loadText() {

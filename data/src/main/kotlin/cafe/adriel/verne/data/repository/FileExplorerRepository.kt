@@ -57,7 +57,7 @@ class FileExplorerRepository(private val baseDir: BaseDir) : ExplorerRepository 
     }
 
     override suspend fun getText(file: File) = withIo {
-        if(file.isFile && file.exists()){
+        if (file.isFile && file.exists()) {
             file.readText()
         } else {
             ""

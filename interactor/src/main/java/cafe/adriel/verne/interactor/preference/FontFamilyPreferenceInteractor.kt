@@ -8,5 +8,4 @@ class FontFamilyPreferenceInteractor(private val preferencesRepository: Preferen
     override suspend fun get() = preferencesRepository.getFontFamily().toUpperCase()
 
     override suspend fun set(newValue: String) = preferencesRepository.setFontFamily(newValue.toUpperCase())
-
 }

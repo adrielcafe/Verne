@@ -17,5 +17,4 @@ class CreateItemExplorerInteractor(private val explorerRepository: ExplorerRepos
         explorerRepository.create(item.file, isFolder)
         return item
     }
-
 }

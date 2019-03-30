@@ -27,9 +27,9 @@ import org.koin.android.ext.android.inject
 class TypographyDialogFragment : BottomSheetDialogFragment() {
 
     private val analyticsHelper by inject<AnalyticsHelper>()
-    private val fontFamily by inject<FontFamilyPreferenceInteractor>()
-    private val fontSize by inject<FontSizePreferenceInteractor>()
-    private val marginSize by inject<MarginSizePreferenceInteractor>()
+    private val fontFamilyInteractor by inject<FontFamilyPreferenceInteractor>()
+    private val fontSizeInteractor by inject<FontSizePreferenceInteractor>()
+    private val marginSizeInteractor by inject<MarginSizePreferenceInteractor>()
 
     lateinit var listener: TypographyDialogFragmentListener
 
@@ -39,37 +39,53 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         return inflater.inflate(R.layout.fragment_typography, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initFontFamily()
+        initFontSize()
+        initMarginSize()
+
+        loadPreferences()
+    }
+
+    private fun initFontFamily() {
         with(vFontFamily) {
             context?.let {
                 adapter = FontFamilyAdapter(it)
             }
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     onFontFamilySelected(FontFamily.sortedValues[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
+    }
 
+    private fun initFontSize() {
         with(vFontSize) {
-            forEach {
-                when (it) {
-                    is EditText -> it.isFocusable = false
-                    is ImageButton -> {
-                        it.setImageResource(R.drawable.ic_keyboard_arrow_up)
-                        it.tintDrawable(colorFromAttr(android.R.attr.colorControlNormal))
-                    }
-                }
-            }
+            setupNumberPicker(this)
             numberPickerChangeListener = object : NumberPicker.OnNumberPickerChangeListener {
-                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean) {
+                override fun onProgressChanged(
+                    numberPicker: NumberPicker,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     onFontSizeSelected(progress)
                 }
 
@@ -80,19 +96,17 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
 
+    private fun initMarginSize() {
         with(vMarginSize) {
-            forEach {
-                when (it) {
-                    is EditText -> it.isFocusable = false
-                    is ImageButton -> {
-                        it.setImageResource(R.drawable.ic_keyboard_arrow_up)
-                        it.tintDrawable(colorFromAttr(android.R.attr.colorControlNormal))
-                    }
-                }
-            }
+            setupNumberPicker(this)
             numberPickerChangeListener = object : NumberPicker.OnNumberPickerChangeListener {
-                override fun onProgressChanged(numberPicker: NumberPicker, progress: Int, fromUser: Boolean) {
+                override fun onProgressChanged(
+                    numberPicker: NumberPicker,
+                    progress: Int,
+                    fromUser: Boolean
+                ) {
                     onMarginSizeSelected(progress)
                 }
 
@@ -103,39 +117,49 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
 
-        loadPreferences()
+    private fun setupNumberPicker(numberPickerView: NumberPicker) {
+        numberPickerView.forEach { childView ->
+            when (childView) {
+                is EditText -> childView.isFocusable = false
+                is ImageButton -> {
+                    childView.setImageResource(R.drawable.ic_keyboard_arrow_up)
+                    childView.tintDrawable(colorFromAttr(android.R.attr.colorControlNormal))
+                }
+            }
+        }
     }
 
     private fun loadPreferences() = launchMain {
         val selectedFontFamilyPosition = FontFamily.sortedValues
-            .indexOfFirst {
-                val selectedFontFamily = FontFamily.valueOf(fontFamily.get())
-                it ==  selectedFontFamily
+            .indexOfFirst { fontFamily ->
+                val selectedFontFamily = FontFamily.valueOf(fontFamilyInteractor.get())
+                fontFamily == selectedFontFamily
             }
 
         vFontFamily.setSelection(selectedFontFamilyPosition)
-        vFontSize.progress = fontSize.get()
-        vMarginSize.progress = marginSize.get()
+        vFontSize.progress = fontSizeInteractor.get()
+        vMarginSize.progress = marginSizeInteractor.get()
     }
 
     private fun onFontFamilySelected(selectedFontFamily: FontFamily) = launchMain {
         val fontName = selectedFontFamily.fontName
-        fontFamily.set(fontName)
+        fontFamilyInteractor.set(fontName)
 
         listener.onPreferencesChanged()
         analyticsHelper.logTypographyFontFamily(fontName)
     }
 
     private fun onFontSizeSelected(selectedFontSize: Int) = launchMain {
-        fontSize.set(selectedFontSize)
+        fontSizeInteractor.set(selectedFontSize)
 
         listener.onPreferencesChanged()
         analyticsHelper.logTypographyFontSize(selectedFontSize)
     }
 
     private fun onMarginSizeSelected(selectedMarginSize: Int) = launchMain {
-        marginSize.set(selectedMarginSize)
+        marginSizeInteractor.set(selectedMarginSize)
 
         listener.onPreferencesChanged()
         analyticsHelper.logTypographyMarginSize(selectedMarginSize)

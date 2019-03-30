@@ -19,7 +19,7 @@ class FullscreenKeyboardHelper {
     private var usableHeightPrevious = 0
     private var isFullscreen = false
 
-    fun init(activity: Activity){
+    fun init(activity: Activity) {
         contentContainer = activity.findViewById(android.R.id.content)
         isFullscreen = activity.isFullscreen()
     }
@@ -39,7 +39,12 @@ class FullscreenKeyboardHelper {
         val usableHeightNow = contentAreaOfWindowBounds.height()
         if (isFullscreen && usableHeightNow != usableHeightPrevious) {
             rootViewLayout.height = usableHeightNow
-            rootView.layout(contentAreaOfWindowBounds.left, contentAreaOfWindowBounds.top, contentAreaOfWindowBounds.right, contentAreaOfWindowBounds.bottom)
+            rootView.layout(
+                contentAreaOfWindowBounds.left,
+                contentAreaOfWindowBounds.top,
+                contentAreaOfWindowBounds.right,
+                contentAreaOfWindowBounds.bottom
+            )
             rootView.requestLayout()
             usableHeightPrevious = usableHeightNow
         }

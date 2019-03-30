@@ -8,5 +8,4 @@ class MoveItemExplorerInteractor(private val explorerRepository: ExplorerReposit
 
     suspend operator fun invoke(from: ExplorerItem, to: ExplorerItem.Folder) =
         explorerRepository.move(from.file, to.file).asExplorerItem()
-
 }

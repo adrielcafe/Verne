@@ -46,7 +46,8 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
+class ExplorerFragment :
+    CoroutineScopedFragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
 
     companion object {
         private const val FILE_NAME_MAX_LENGTH = 50
@@ -58,13 +59,19 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
 
     private val adapter by lazy { FastItemAdapter<ExplorerAdapterItem>() }
     private val adapterSelectHelper by lazy { adapter.getExtension(javaClass<SelectExtension<ExplorerAdapterItem>>()) }
-    private val adapterActionModeHelper by lazy { ActionModeHelper<ExplorerAdapterItem>(adapter, R.menu.main_action_mode, this) }
+    private val adapterActionModeHelper by lazy {
+        ActionModeHelper<ExplorerAdapterItem>(adapter, R.menu.main_action_mode, this)
+    }
 
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
 
     lateinit var listener: ExplorerFragmentListener
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_explorer, container, false)
     }
 
@@ -75,37 +82,7 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
             statefulLayoutHelper.init(this)
         }
 
-        adapter.withSelectable(true)
-            .withMultiSelect(true)
-            .withSelectOnLongClick(true)
-            .withOnPreLongClickListener { _, _, _, position ->
-                val activity = requireActivity() as AppCompatActivity?
-                when {
-                    viewModel.searchMode -> false
-                    activity != null -> adapterActionModeHelper.onLongClick(activity, position) != null
-                    else -> false
-                }
-            }
-            .withOnPreClickListener { _, _, item, _ ->
-                when {
-                    viewModel.searchMode -> false
-                    else -> adapterActionModeHelper.onClick(item) ?: false
-                }
-            }
-            .withOnClickListener { _, _, item, _ ->
-                if (adapterActionModeHelper.isActive) {
-                    true
-                } else {
-                    openItem(item.item)
-                    false
-                }
-            }
-            .withSelectionListener { _, _ ->
-                adapterActionModeHelper.actionMode?.let {
-                    updateActionModeMenu(it)
-                }
-            }
-            .setHasStableIds(true)
+        initAdapter()
 
         vStateLayout.setStateController(statefulLayoutHelper.controller)
         statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
@@ -116,7 +93,8 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
             itemAnimator = null
         }
         with(vExplorerFab) {
-            findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList = ColorStateList.valueOf(Color.WHITE)
+            findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList =
+                ColorStateList.valueOf(Color.WHITE)
             setOnClickListener {
                 launch {
                     delay(actionDelayMs)
@@ -167,6 +145,40 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
         }
         mode.finish()
         return true
+    }
+
+    private fun initAdapter() {
+        adapter.withSelectable(true)
+            .withMultiSelect(true)
+            .withSelectOnLongClick(true)
+            .withOnPreLongClickListener { _, _, _, position ->
+                val activity = requireActivity() as AppCompatActivity?
+                when {
+                    viewModel.searchMode -> false
+                    activity != null -> adapterActionModeHelper.onLongClick(activity, position) != null
+                    else -> false
+                }
+            }
+            .withOnPreClickListener { _, _, item, _ ->
+                when {
+                    viewModel.searchMode -> false
+                    else -> adapterActionModeHelper.onClick(item) ?: false
+                }
+            }
+            .withOnClickListener { _, _, item, _ ->
+                if (adapterActionModeHelper.isActive) {
+                    true
+                } else {
+                    openItem(item.item)
+                    false
+                }
+            }
+            .withSelectionListener { _, _ ->
+                adapterActionModeHelper.actionMode?.let {
+                    updateActionModeMenu(it)
+                }
+            }
+            .setHasStableIds(true)
     }
 
     private fun setItems(items: List<ExplorerItem>) {
@@ -223,7 +235,7 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
     }
 
     private fun shareItem(item: ExplorerItem.File) {
-        if(item.isEmpty){
+        if (item.isEmpty) {
             Snackbar.make(vStateLayout, R.string.file_empty, Snackbar.LENGTH_SHORT).show()
             return
         }
@@ -272,7 +284,7 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
     private fun moveItems(items: List<ExplorerItem>, folder: File) {
         launch {
             val item = folder.asExplorerItem()
-            if(item is ExplorerItem.Folder) {
+            if (item is ExplorerItem.Folder) {
                 items.forEach { viewModel.moveItem(it, item) }
             }
         }
@@ -347,7 +359,8 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
                     filter,
                     emptyTextRes = R.string.nothing_here,
                     initialFolderLabel = R.string.app_name,
-                    initialFolderAsRoot = true) { _, file ->
+                    initialFolderAsRoot = true
+                ) { _, file ->
                     moveItems(items, file)
                 }
             }
@@ -356,7 +369,7 @@ class ExplorerFragment : CoroutineScopedFragment(), StateAware<ExplorerViewState
 
     private fun updateActionModeMenu(actionMode: ActionMode) {
         val selectedItems = adapterSelectHelper?.selectedItems
-        val hasFolderItem = selectedItems?.firstOrNull { it.item is ExplorerItem.Folder } != null
+        val hasFolderItem = selectedItems?.any { it.item is ExplorerItem.Folder } ?: false
         val isSingleItem = selectedItems?.size == 1
         val isSingleFileItem = isSingleItem && !hasFolderItem
         with(actionMode) {

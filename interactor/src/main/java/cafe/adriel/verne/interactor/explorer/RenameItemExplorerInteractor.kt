@@ -14,5 +14,4 @@ class RenameItemExplorerInteractor(private val explorerRepository: ExplorerRepos
         }
         return explorerRepository.rename(item.file, newFileName).asExplorerItem()
     }
-
 }

@@ -30,7 +30,7 @@ class App : Application() {
         if (LeakCanary.isInAnalyzerProcess(this)) return
         LeakCanary.install(this)
 
-        if(!BuildConfig.RELEASE) {
+        if (!BuildConfig.RELEASE) {
             Timber.plant(Timber.DebugTree())
             initStrictMode()
         }
@@ -42,9 +42,9 @@ class App : Application() {
     private fun initModules() {
         val modules =
             AppComponent(applicationContext).getModules() +
-            PresentationComponent(applicationContext).getModules() +
-            InteractorComponent().getModules() +
-            DataComponent().getModules()
+                    PresentationComponent(applicationContext).getModules() +
+                    InteractorComponent().getModules() +
+                    DataComponent().getModules()
         startKoin {
             androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
             androidContext(applicationContext)
@@ -66,7 +66,7 @@ class App : Application() {
         BugReporting.setOptions(Option.EMAIL_FIELD_OPTIONAL)
     }
 
-    private fun initStrictMode(){
+    private fun initStrictMode() {
         StrictMode.setThreadPolicy(
             StrictMode.ThreadPolicy.Builder()
                 .detectAll()
@@ -75,10 +75,8 @@ class App : Application() {
                 .permitDiskWrites()
                 .permitNetwork()
                 .also {
-                    minSdk(Build.VERSION_CODES.M){
-                        // FIXME Caused by AztecText, fix and send a PR when possible
-                        it.permitResourceMismatches()
-                    }
+                    // FIXME Caused by AztecText, fix and send a PR when possible
+                    minSdk(Build.VERSION_CODES.M) { it.permitResourceMismatches() }
                 }
                 .penaltyLog()
                 .penaltyDropBox()

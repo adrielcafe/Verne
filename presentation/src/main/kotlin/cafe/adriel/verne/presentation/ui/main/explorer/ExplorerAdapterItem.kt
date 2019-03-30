@@ -16,8 +16,11 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.item_explorer.view.*
 import java.util.Date
 
-class ExplorerAdapterItem(val item: ExplorerItem, val baseDir : BaseDir, private val searchResult: Boolean = false) :
-    AbstractItem<ExplorerAdapterItem, ExplorerAdapterItem.ViewHolder>() {
+class ExplorerAdapterItem(
+    val item: ExplorerItem,
+    private val baseDir: BaseDir,
+    private val searchResult: Boolean = false
+) : AbstractItem<ExplorerAdapterItem, ExplorerAdapterItem.ViewHolder>() {
 
     override fun getLayoutRes() = R.layout.item_explorer
 
@@ -29,7 +32,7 @@ class ExplorerAdapterItem(val item: ExplorerItem, val baseDir : BaseDir, private
         super.bindView(holder, payloads)
         with(holder.itemView) {
             val bgColor = FastAdapterUIUtils
-                .getSelectableBackground(context, color(R.color.colorPrimaryAlpha), false)
+                .getSelectableBackground(context, context.color(R.color.colorPrimaryAlpha), false)
             ViewCompat.setBackground(this, bgColor)
             vItemName.text = item.title
             when (item) {

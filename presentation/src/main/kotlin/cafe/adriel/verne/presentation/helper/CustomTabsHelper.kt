@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.text.TextUtils
 
 // Based on https://github.com/saurabharora90/CustomTabs-Kotlin
 class CustomTabsHelper(appContext: Context) {
@@ -22,59 +21,58 @@ class CustomTabsHelper(appContext: Context) {
     private fun getPackageNameToUse(context: Context): String? {
         val packageManager = context.packageManager
         val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.example.com"))
+        val packagesSupportingCustomTabs = getPackagesSupportingCustomTabs(activityIntent, packageManager)
         val defaultViewHandlerInfo = packageManager.resolveActivity(activityIntent, 0)
-        var defaultViewHandlerPackageName: String? = null
-        if (defaultViewHandlerInfo != null) {
-            defaultViewHandlerPackageName = defaultViewHandlerInfo.activityInfo.packageName
-        }
+        val defaultViewHandlerPackageName = defaultViewHandlerInfo?.activityInfo?.packageName
 
-        val resolvedActivityList = packageManager.queryIntentActivities(activityIntent, 0)
-        val packagesSupportingCustomTabs = ArrayList<String>()
-        for (info in resolvedActivityList) {
+        return findBestPackageName(
+            packagesSupportingCustomTabs,
+            defaultViewHandlerPackageName,
+            hasSpecializedHandlerIntents(context, activityIntent)
+        )
+    }
+
+    private fun getPackagesSupportingCustomTabs(intent: Intent, packageManager: PackageManager): List<String> {
+        val resolvedActivityList = packageManager.queryIntentActivities(intent, 0)
+        val packages = mutableListOf<String>()
+        resolvedActivityList?.forEach { info ->
             val serviceIntent = Intent()
             serviceIntent.action = ACTION_CUSTOM_TABS_CONNECTION
             serviceIntent.setPackage(info.activityInfo.packageName)
             if (packageManager.resolveService(serviceIntent, 0) != null) {
-                packagesSupportingCustomTabs.add(info.activityInfo.packageName)
+                packages.add(info.activityInfo.packageName)
             }
         }
-
-        return if (packagesSupportingCustomTabs.size == 1) {
-            packagesSupportingCustomTabs[0]
-        } else if (!TextUtils.isEmpty(defaultViewHandlerPackageName) &&
-            !hasSpecializedHandlerIntents(
-                context,
-                activityIntent
-            ) &&
-            packagesSupportingCustomTabs.contains(defaultViewHandlerPackageName)) {
-            defaultViewHandlerPackageName
-        } else if (packagesSupportingCustomTabs.contains(STABLE_PACKAGE)) {
-            STABLE_PACKAGE
-        } else if (packagesSupportingCustomTabs.contains(BETA_PACKAGE)) {
-            BETA_PACKAGE
-        } else if (packagesSupportingCustomTabs.contains(DEV_PACKAGE)) {
-            DEV_PACKAGE
-        } else if (packagesSupportingCustomTabs.contains(LOCAL_PACKAGE)) {
-            LOCAL_PACKAGE
-        } else {
-            null
-        }
+        return packages
     }
+
+    private fun findBestPackageName(
+        packages: List<String>,
+        defaultPackage: String?,
+        hasSpecializedIntent: Boolean
+    ) =
+        when {
+            packages.size == 1 -> packages[0]
+            !defaultPackage.isNullOrBlank() &&
+                    !hasSpecializedIntent &&
+                    packages.contains(defaultPackage) -> defaultPackage
+            packages.contains(STABLE_PACKAGE) -> STABLE_PACKAGE
+            packages.contains(BETA_PACKAGE) -> BETA_PACKAGE
+            packages.contains(DEV_PACKAGE) -> DEV_PACKAGE
+            packages.contains(LOCAL_PACKAGE) -> LOCAL_PACKAGE
+            else -> null
+        }
 
     private fun hasSpecializedHandlerIntents(context: Context, intent: Intent): Boolean {
         try {
-            val pm = context.packageManager
-            val handlers = pm.queryIntentActivities(
-                intent,
-                PackageManager.GET_RESOLVED_FILTER)
-            if (handlers == null || handlers.size == 0) {
-                return false
-            }
-            for (resolveInfo in handlers) {
-                val filter = resolveInfo.filter ?: continue
-                if (filter.countDataAuthorities() == 0 || filter.countDataPaths() == 0) continue
-                if (resolveInfo.activityInfo == null) continue
-                return true
+            val handlers = context.packageManager
+                .queryIntentActivities(intent, PackageManager.GET_RESOLVED_FILTER)
+            handlers?.forEach { info ->
+                if (info.activityInfo != null &&
+                    info.filter?.countDataAuthorities() != 0 &&
+                    info.filter?.countDataPaths() != 0
+                )
+                    return true
             }
         } catch (e: RuntimeException) {
             e.printStackTrace()

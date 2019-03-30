@@ -9,11 +9,9 @@ class ItemTextExplorerInteractor(private val explorerRepository: ExplorerReposit
         explorerRepository.getText(item.file)
 
     suspend fun set(item: ExplorerItem.File, newText: String) {
-        if (!item.file.exists()){
+        if (!item.file.exists()) {
             explorerRepository.create(item.file, false)
         }
         explorerRepository.setText(item.file, newText)
     }
-
-
 }

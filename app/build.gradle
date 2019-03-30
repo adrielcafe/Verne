@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
-apply plugin: 'com.github.ben-manes.versions'
 
 def props = new Properties()
 project.file("app.properties").withInputStream { props.load(it) }

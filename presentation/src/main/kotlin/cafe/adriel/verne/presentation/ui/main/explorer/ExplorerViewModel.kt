@@ -136,7 +136,7 @@ class ExplorerViewModel(
 
     suspend fun getPlainText(item: ExplorerItem.File) = try {
         val html = getHtmlText(item)
-        if(html != null) {
+        if (html != null) {
             HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
         } else {
             null
@@ -163,6 +163,7 @@ class ExplorerViewModel(
                         override fun onSuccess(filePath: String) {
                             it.resume(File(filePath))
                         }
+
                         override fun onFailure(errorMsg: String) {
                             updateState { it.copy(exception = RuntimeException(errorMsg)) }
                         }
@@ -171,5 +172,4 @@ class ExplorerViewModel(
             }
         }
     }
-
 }

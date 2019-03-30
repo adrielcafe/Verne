@@ -8,5 +8,4 @@ class FontSizePreferenceInteractor(private val preferencesRepository: Preference
     override suspend fun get() = preferencesRepository.getFontSize()
 
     override suspend fun set(newValue: Int) = preferencesRepository.setFontSize(newValue)
-
 }

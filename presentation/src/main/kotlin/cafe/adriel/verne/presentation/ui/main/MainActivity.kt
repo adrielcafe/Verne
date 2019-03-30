@@ -18,7 +18,6 @@ import cafe.adriel.verne.presentation.ui.BaseActivity
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerFragment
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
 import cafe.adriel.verne.presentation.ui.main.preferences.PreferencesFragment
-import cafe.adriel.verne.presentation.util.StateAware
 import cafe.adriel.verne.shared.extension.tagOf
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.ferfalk.simplesearchview.SimpleSearchViewListener
@@ -29,10 +28,13 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity(), StateAware<MainViewState>,
-    ExplorerFragmentListener {
+class MainActivity : BaseActivity(), ExplorerFragmentListener {
 
-    override val viewModel by viewModel<MainViewModel>()
+    companion object {
+        private const val BACK_PRESSED_DELAY = 2000L
+    }
+
+    private val viewModel by viewModel<MainViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
 
     private var backPressedTwice = false
@@ -53,11 +55,13 @@ class MainActivity : BaseActivity(), StateAware<MainViewState>,
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return true
                 }
+
                 override fun onQueryTextChange(newText: String?): Boolean {
                     getExplorerFragment()?.search(newText?.trim() ?: "")
                     analyticsHelper.logTextSearch()
                     return false
                 }
+
                 override fun onQueryTextCleared(): Boolean {
                     return false
                 }
@@ -66,6 +70,7 @@ class MainActivity : BaseActivity(), StateAware<MainViewState>,
                 override fun onSearchViewShown() {
                     getExplorerFragment()?.setSearchModeEnabled(true)
                 }
+
                 override fun onSearchViewClosed() {
                     getExplorerFragment()?.setSearchModeEnabled(false)
                 }
@@ -75,18 +80,15 @@ class MainActivity : BaseActivity(), StateAware<MainViewState>,
         vAppVersion.text = viewModel.appVersion
 
         supportFragmentManager.commit {
-            replace(R.id.vContent, getExplorerFragment() ?: ExplorerFragment(),
+            replace(
+                R.id.vContent, getExplorerFragment() ?: ExplorerFragment(),
                 tagOf<ExplorerFragment>()
             )
-            replace(R.id.vPreferences, getPreferencesFragment() ?: PreferencesFragment(),
+            replace(
+                R.id.vPreferences, getPreferencesFragment() ?: PreferencesFragment(),
                 tagOf<PreferencesFragment>()
             )
         }
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-        viewModel.observeState(this, ::onStateUpdated)
     }
 
     override fun onBackPressed() {
@@ -99,7 +101,7 @@ class MainActivity : BaseActivity(), StateAware<MainViewState>,
             else -> launch {
                 backPressedTwice = true
                 Snackbar.make(vRoot, R.string.press_back_exit, Snackbar.LENGTH_SHORT).show()
-                delay(2000)
+                delay(BACK_PRESSED_DELAY)
                 backPressedTwice = false
             }
         }
@@ -138,10 +140,6 @@ class MainActivity : BaseActivity(), StateAware<MainViewState>,
             true
         }
         else -> false
-    }
-
-    override fun onStateUpdated(state: MainViewState) {
-        // TODO
     }
 
     override fun onPrintHtml(fileName: String, html: String) {

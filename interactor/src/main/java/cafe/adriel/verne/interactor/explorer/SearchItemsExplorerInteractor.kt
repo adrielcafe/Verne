@@ -9,5 +9,4 @@ class SearchItemsExplorerInteractor(private val explorerRepository: ExplorerRepo
         explorerRepository.search(query)
             .map { it.asExplorerItem() }
             .toList()
-
 }

@@ -15,6 +15,7 @@ abstract class BaseActivity : CoroutineScopedActivity() {
 
         val darkMode = if (isDarkMode()) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(darkMode)
+
         if (isFullscreen()) {
             window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
         } else {

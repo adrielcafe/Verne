@@ -109,20 +109,28 @@ class PreferencesFragment :
     }
 
     private fun sendEmail() {
-        try {
-            val email = Uri.parse("mailto:${BuildConfig.CONTACT_EMAIL}")
-            val subject = "${context?.getString(R.string.app_name)} for Android | v${BuildConfig.VERSION_NAME} (Build ${BuildConfig.VERSION_CODE}), SDK ${Build.VERSION.SDK_INT}"
-            Intent(Intent.ACTION_SENDTO, email).run {
-                putExtra(Intent.EXTRA_SUBJECT, subject)
-                context?.startActivity(this)
+        context?.apply {
+            try {
+                val appName = getString(R.string.app_name)
+                val versionName = BuildConfig.VERSION_NAME
+                val versionCode = BuildConfig.VERSION_CODE
+                val sdkInt = Build.VERSION.SDK_INT
+
+                val email = Uri.parse("mailto:${BuildConfig.CONTACT_EMAIL}")
+                val subject = "$appName for Android | v$versionName (Build $versionCode), SDK $sdkInt"
+                Intent(Intent.ACTION_SENDTO, email).run {
+                    putExtra(Intent.EXTRA_SUBJECT, subject)
+                    startActivity(this)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this, "Oops! No Email app found :/", Toast.LENGTH_LONG).show()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Oops! No Email app found :/", Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun shareApp() = "${getString(R.string.you_should_try)}\n${BuildConfig.PLAY_STORE_URL}".share(requireActivity())
+    private fun shareApp() =
+        "${getString(R.string.you_should_try)}\n${BuildConfig.PLAY_STORE_URL}".share(requireActivity())
 
     private fun rateApp() = context?.apply {
         try {
@@ -139,9 +147,9 @@ class PreferencesFragment :
     private fun updatePreferenceIcon(preference: Preference) {
         preference.isIconSpaceReserved = false
         if (preference is PreferenceGroup) {
-            preference.forEach {
-                it.icon?.setTint(colorFromAttr(android.R.attr.actionMenuTextColor))
-                updatePreferenceIcon(it)
+            preference.forEach { childPreference ->
+                childPreference.icon?.setTint(colorFromAttr(android.R.attr.actionMenuTextColor))
+                updatePreferenceIcon(childPreference)
             }
         }
     }

@@ -35,12 +35,21 @@ fun View.hideAnimated() {
     }
 }
 
-fun ViewGroup.setMargins(@Px start: Int = 0, @Px top: Int = 0, @Px right: Int = 0, @Px bottom: Int = 0) {
+fun ViewGroup.setMargins(
+    @Px start: Int = 0,
+    @Px top: Int = 0,
+    @Px right: Int = 0,
+    @Px bottom: Int = 0
+) {
     when (layoutParams) {
-        is FrameLayout.LayoutParams -> (layoutParams as FrameLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is LinearLayout.LayoutParams -> (layoutParams as LinearLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is RelativeLayout.LayoutParams -> (layoutParams as RelativeLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is ConstraintLayout.LayoutParams -> (layoutParams as ConstraintLayout.LayoutParams).setMargins(start, top, right, bottom)
+        is FrameLayout.LayoutParams ->
+            (layoutParams as FrameLayout.LayoutParams).setMargins(start, top, right, bottom)
+        is LinearLayout.LayoutParams ->
+            (layoutParams as LinearLayout.LayoutParams).setMargins(start, top, right, bottom)
+        is RelativeLayout.LayoutParams ->
+            (layoutParams as RelativeLayout.LayoutParams).setMargins(start, top, right, bottom)
+        is ConstraintLayout.LayoutParams ->
+            (layoutParams as ConstraintLayout.LayoutParams).setMargins(start, top, right, bottom)
         else -> throw IllegalArgumentException("${layoutParams.javaClass} not implemented")
     }
     requestLayout()
