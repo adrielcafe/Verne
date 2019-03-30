@@ -1,13 +1,15 @@
 package cafe.adriel.verne.presentation.helper
 
-import android.app.Activity
 import android.graphics.Rect
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import cafe.adriel.verne.presentation.extension.isFullscreen
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 
 // Based on https://stackoverflow.com/a/42261118/1055354
-class FullscreenKeyboardHelper {
+class FullscreenKeyboardHelper : LifecycleObserver {
     private lateinit var contentContainer: ViewGroup
 
     private val rootView by lazy { contentContainer.getChildAt(0) }
@@ -19,19 +21,25 @@ class FullscreenKeyboardHelper {
     private var usableHeightPrevious = 0
     private var isFullscreen = false
 
-    fun init(activity: Activity) {
+    fun init(activity: AppCompatActivity, fullscreen: Boolean) {
         contentContainer = activity.findViewById(android.R.id.content)
-        isFullscreen = activity.isFullscreen()
+        isFullscreen = fullscreen
+
+        activity.lifecycle.addObserver(this)
     }
 
-    fun addListener() {
-        if (viewTreeObserver.isAlive)
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    private fun addListener() {
+        if (viewTreeObserver.isAlive) {
             viewTreeObserver.addOnGlobalLayoutListener(listener)
+        }
     }
 
-    fun removeListener() {
-        if (viewTreeObserver.isAlive)
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    private fun removeListener() {
+        if (viewTreeObserver.isAlive) {
             viewTreeObserver.removeOnGlobalLayoutListener(listener)
+        }
     }
 
     private fun possiblyResizeChildOfContent() {

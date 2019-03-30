@@ -13,13 +13,7 @@ class AppComponent(private val appContext: Context) : Component {
     private val baseDirPath = "${appContext.filesDir}/${BuildConfig.BASE_DIR_NAME}"
 
     private val appModule = module {
-        single {
-            AppConfig(
-                BuildConfig.VERSION_CODE,
-                BuildConfig.VERSION_NAME,
-                !BuildConfig.RELEASE
-            )
-        }
+        single { AppConfig(BuildConfig.VERSION_CODE, BuildConfig.VERSION_NAME, !BuildConfig.RELEASE) }
         single { BaseDir(baseDirPath) }
         single { PreferenceManager.getDefaultSharedPreferences(appContext) }
     }

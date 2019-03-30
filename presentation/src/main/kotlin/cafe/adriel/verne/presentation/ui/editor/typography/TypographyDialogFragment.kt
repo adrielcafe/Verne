@@ -10,12 +10,10 @@ import android.widget.ImageButton
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
 import cafe.adriel.krumbsview.util.tintDrawable
-import cafe.adriel.verne.interactor.preference.FontFamilyPreferenceInteractor
-import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
-import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.colorFromAttr
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
+import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.shared.extension.launchMain
 import cafe.adriel.verne.shared.extension.tagOf
@@ -26,10 +24,8 @@ import org.koin.android.ext.android.inject
 
 class TypographyDialogFragment : BottomSheetDialogFragment() {
 
+    private val preferencesHelper by inject<PreferencesHelper>()
     private val analyticsHelper by inject<AnalyticsHelper>()
-    private val fontFamilyInteractor by inject<FontFamilyPreferenceInteractor>()
-    private val fontSizeInteractor by inject<FontSizePreferenceInteractor>()
-    private val marginSizeInteractor by inject<MarginSizePreferenceInteractor>()
 
     lateinit var listener: TypographyDialogFragmentListener
 
@@ -134,32 +130,31 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
     private fun loadPreferences() = launchMain {
         val selectedFontFamilyPosition = FontFamily.sortedValues
             .indexOfFirst { fontFamily ->
-                val selectedFontFamily = FontFamily.valueOf(fontFamilyInteractor.get())
+                val selectedFontFamily = FontFamily.valueOf(preferencesHelper.getFontFamily())
                 fontFamily == selectedFontFamily
             }
 
         vFontFamily.setSelection(selectedFontFamilyPosition)
-        vFontSize.progress = fontSizeInteractor.get()
-        vMarginSize.progress = marginSizeInteractor.get()
+        vFontSize.progress = preferencesHelper.getFontSize()
+        vMarginSize.progress = preferencesHelper.getMarginSize()
     }
 
     private fun onFontFamilySelected(selectedFontFamily: FontFamily) = launchMain {
-        val fontName = selectedFontFamily.fontName
-        fontFamilyInteractor.set(fontName)
+        preferencesHelper.setFontFamily(selectedFontFamily.name)
 
         listener.onPreferencesChanged()
-        analyticsHelper.logTypographyFontFamily(fontName)
+        analyticsHelper.logTypographyFontFamily(selectedFontFamily.name)
     }
 
     private fun onFontSizeSelected(selectedFontSize: Int) = launchMain {
-        fontSizeInteractor.set(selectedFontSize)
+        preferencesHelper.setFontSize(selectedFontSize)
 
         listener.onPreferencesChanged()
         analyticsHelper.logTypographyFontSize(selectedFontSize)
     }
 
     private fun onMarginSizeSelected(selectedMarginSize: Int) = launchMain {
-        marginSizeInteractor.set(selectedMarginSize)
+        preferencesHelper.setMarginSize(selectedMarginSize)
 
         listener.onPreferencesChanged()
         analyticsHelper.logTypographyMarginSize(selectedMarginSize)

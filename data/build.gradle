@@ -1,35 +1,10 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin'
 
-android {
-    compileSdkVersion AppConfig.COMPILE_SDK_VERSION
-    defaultConfig {
-        minSdkVersion AppConfig.MIN_SDK_VERSION
-        targetSdkVersion AppConfig.TARGET_SDK_VERSION
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin/'
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    dexOptions {
-        preDexLibraries true
-        maxProcessCount 8
-    }
-    androidExtensions {
-        experimental true
-        defaultCacheImplementation "SPARSE_ARRAY"
-    }
-}
-
-kapt {
-    useBuildCache true
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin/'
 }
 
 dependencies {
@@ -42,15 +17,7 @@ dependencies {
     implementation AppLib.KOTLIN
     implementation AppLib.COROUTINES
 
-    // Android KTX
-    implementation AppLib.CORE_KTX
-
     // Util
     implementation AppLib.KOIN_CORE
     implementation AppLib.TIMBER_KT
-
-    // Test
-    testImplementation TestLib.JUNIT
-    androidTestImplementation TestLib.ESPRESSO
-    androidTestImplementation TestLib.RUNNER
 }

@@ -8,8 +8,8 @@ import cafe.adriel.verne.di.AppComponent
 import cafe.adriel.verne.interactor.di.InteractorComponent
 import cafe.adriel.verne.presentation.di.PresentationComponent
 import cafe.adriel.verne.presentation.extension.color
-import cafe.adriel.verne.presentation.extension.isDarkMode
 import cafe.adriel.verne.presentation.extension.minSdk
+import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
 import com.instabug.bug.invocation.Option
@@ -18,6 +18,7 @@ import com.instabug.library.InstabugColorTheme
 import com.instabug.library.invocation.InstabugInvocationEvent
 import com.instabug.library.ui.onboarding.WelcomeMessage
 import com.squareup.leakcanary.LeakCanary
+import org.koin.android.ext.android.get
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -53,10 +54,12 @@ class App : Application() {
     }
 
     private fun initBugReporting() {
-        val theme = if (isDarkMode())
+        val preferencesHelper = get<PreferencesHelper>()
+        val theme = if (preferencesHelper.isDarkMode()) {
             InstabugColorTheme.InstabugColorThemeDark
-        else
+        } else {
             InstabugColorTheme.InstabugColorThemeLight
+        }
         Instabug.Builder(this, BuildConfig.INSTABUG_KEY)
             .setInvocationEvents(InstabugInvocationEvent.NONE)
             .build()
@@ -67,21 +70,32 @@ class App : Application() {
     }
 
     private fun initStrictMode() {
-        StrictMode.setThreadPolicy(
-            StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .permitDiskReads()
-                // FIXME Both caused by NumberPicker > UIGestureRecognizerDelegate > JaCoCo
-                .permitDiskWrites()
-                .permitNetwork()
-                .also {
-                    // FIXME Caused by AztecText, fix and send a PR when possible
-                    minSdk(Build.VERSION_CODES.M) { it.permitResourceMismatches() }
-                }
-                .penaltyLog()
-                .penaltyDropBox()
-                .penaltyDeath()
-                .build()
-        )
+        val threadPolicy = StrictMode.ThreadPolicy
+            .Builder()
+            .detectAll()
+            .permitDiskReads()
+            .permitDiskWrites() // Caused by Instabug
+            .permitNetwork() // Caused by NumberPicker
+            .also {
+                // Caused by AztecText
+                minSdk(Build.VERSION_CODES.M) { it.permitResourceMismatches() }
+            }
+            .penaltyLog()
+            .penaltyDropBox()
+            .penaltyDeath()
+            .build()
+        val vmPolicy = StrictMode.VmPolicy
+            .Builder()
+            .detectFileUriExposure()
+            .also {
+                minSdk(Build.VERSION_CODES.M) { it.detectCleartextNetwork() }
+                minSdk(Build.VERSION_CODES.O) { it.detectContentUriWithoutPermission() }
+            }
+            .penaltyLog()
+            .penaltyDropBox()
+            .penaltyDeath()
+            .build()
+        StrictMode.setThreadPolicy(threadPolicy)
+        StrictMode.setVmPolicy(vmPolicy)
     }
 }

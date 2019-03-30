@@ -6,15 +6,13 @@ import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.interactor.explorer.ItemTextExplorerInteractor
 import cafe.adriel.verne.interactor.explorer.RenameItemExplorerInteractor
-import cafe.adriel.verne.interactor.preference.FontFamilyPreferenceInteractor
-import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
-import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.charCount
 import cafe.adriel.verne.presentation.extension.formatSeconds
 import cafe.adriel.verne.presentation.extension.paragraphCount
 import cafe.adriel.verne.presentation.extension.readTimeInSeconds
 import cafe.adriel.verne.presentation.extension.wordCount
+import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographyPreferences
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
@@ -27,11 +25,9 @@ import java.util.Calendar
 class EditorViewModel(
     private val appContext: Context,
     private val baseDir: BaseDir,
+    private val preferencesHelper: PreferencesHelper,
     private val renameItemInteractor: RenameItemExplorerInteractor,
-    private val itemTextInteractor: ItemTextExplorerInteractor,
-    private val fontFamilyInteractor: FontFamilyPreferenceInteractor,
-    private val fontSizeInteractor: FontSizePreferenceInteractor,
-    private val marginSizeInteractor: MarginSizePreferenceInteractor
+    private val itemTextInteractor: ItemTextExplorerInteractor
 ) : CoroutineScopedStateViewModel<EditorViewState>() {
 
     override val state = MutableLiveData<EditorViewState>()
@@ -112,11 +108,11 @@ class EditorViewModel(
         }
     }
 
-    private suspend fun getPreferences() =
+    private fun getPreferences() =
         TypographyPreferences(
-            FontFamily.valueOf(fontFamilyInteractor.get()),
-            fontSizeInteractor.get(),
-            marginSizeInteractor.get()
+            FontFamily.valueOf(preferencesHelper.getFontFamily()),
+            preferencesHelper.getFontSize(),
+            preferencesHelper.getMarginSize()
         )
 
     private fun getDefaultFileName() =

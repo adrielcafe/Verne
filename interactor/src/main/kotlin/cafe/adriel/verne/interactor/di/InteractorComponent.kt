@@ -6,15 +6,12 @@ import cafe.adriel.verne.interactor.explorer.MoveItemExplorerInteractor
 import cafe.adriel.verne.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.interactor.explorer.SearchItemsExplorerInteractor
 import cafe.adriel.verne.interactor.explorer.SelectItemsExplorerInteractor
-import cafe.adriel.verne.interactor.preference.FontFamilyPreferenceInteractor
-import cafe.adriel.verne.interactor.preference.FontSizePreferenceInteractor
-import cafe.adriel.verne.interactor.preference.MarginSizePreferenceInteractor
 import cafe.adriel.verne.shared.di.Component
 import org.koin.dsl.module
 
 class InteractorComponent : Component {
 
-    private val repositoryModule = module {
+    private val explorerModule = module {
         single { SearchItemsExplorerInteractor(get()) }
         single { SelectItemsExplorerInteractor(get(), get()) }
         single { CreateItemExplorerInteractor(get()) }
@@ -23,11 +20,5 @@ class InteractorComponent : Component {
         single { ItemTextExplorerInteractor(get()) }
     }
 
-    private val preferenceModule = module {
-        single { FontFamilyPreferenceInteractor(get()) }
-        single { FontSizePreferenceInteractor(get()) }
-        single { MarginSizePreferenceInteractor(get()) }
-    }
-
-    override fun getModules() = repositoryModule + preferenceModule
+    override fun getModules() = listOf(explorerModule)
 }

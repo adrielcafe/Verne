@@ -119,7 +119,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
         }
 
         statefulLayoutHelper.init(this)
-        fullscreenKeyboardHelper.init(this)
+        fullscreenKeyboardHelper.init(this, preferencesHelper.isFullscreen())
 
         vStateLayout.setStateController(statefulLayoutHelper.controller)
         vEditMode.setOnClickListener { viewModel.toggleEditMode() }
@@ -163,12 +163,10 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
 
     override fun onResume() {
         super.onResume()
-        fullscreenKeyboardHelper.addListener()
         viewModel.requestStateUpdate()
     }
 
     override fun onPause() {
-        fullscreenKeyboardHelper.removeListener()
         launch { saveText(true) }
         super.onPause()
     }
