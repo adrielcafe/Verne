@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import cafe.adriel.verne.shared.extension.tagOf
+import com.google.android.material.snackbar.Snackbar
 import org.koin.ext.getFullName
 import java.io.Serializable
 
@@ -24,3 +26,7 @@ inline fun <reified T : Activity> Context.intentFor(vararg extras: Pair<String, 
             }
         }
     }
+
+fun Activity.showSnackBar(message: String) =
+    Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
+fun Activity.showSnackBar(@StringRes resId: Int) = showSnackBar(getString(resId))

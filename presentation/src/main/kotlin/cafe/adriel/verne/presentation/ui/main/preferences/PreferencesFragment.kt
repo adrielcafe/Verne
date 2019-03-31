@@ -5,7 +5,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
@@ -19,8 +18,11 @@ import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.openInChromeTab
 import cafe.adriel.verne.presentation.extension.openInExternalBrowser
 import cafe.adriel.verne.presentation.extension.share
+import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
+import cafe.adriel.verne.presentation.helper.PreferencesHelper.Companion.PREF_DARK_MODE
+import cafe.adriel.verne.presentation.helper.PreferencesHelper.Companion.PREF_FULLSCREEN
 import cafe.adriel.verne.shared.extension.launchMain
 import com.instabug.bug.BugReporting
 import kotlinx.coroutines.delay
@@ -30,9 +32,6 @@ class PreferencesFragment :
     PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
-        const val APP_DARK_MODE = "appDarkMode"
-        const val APP_FULLSCREEN = "appFullscreen"
-
         const val ABOUT_CONTACT_US = "aboutContactUs"
         const val ABOUT_REPORT_BUG = "aboutReportBug"
         const val ABOUT_SHARE = "aboutShare"
@@ -48,8 +47,8 @@ class PreferencesFragment :
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        findPreference<Preference>(APP_DARK_MODE)?.onPreferenceChangeListener = this
-        findPreference<Preference>(APP_FULLSCREEN)?.onPreferenceChangeListener = this
+        findPreference<Preference>(PREF_DARK_MODE)?.onPreferenceChangeListener = this
+        findPreference<Preference>(PREF_FULLSCREEN)?.onPreferenceChangeListener = this
 
         findPreference<Preference>(ABOUT_CONTACT_US)?.onPreferenceClickListener = this
         findPreference<Preference>(ABOUT_REPORT_BUG)?.onPreferenceClickListener = this
@@ -70,10 +69,10 @@ class PreferencesFragment :
 
     override fun onPreferenceChange(preference: Preference?, newValue: Any?): Boolean {
         when (preference?.key) {
-            APP_DARK_MODE -> if (newValue is Boolean) {
+            PREF_DARK_MODE -> if (newValue is Boolean) {
                 analyticsHelper.logSwitchDarkMode(newValue)
             }
-            APP_FULLSCREEN -> if (newValue is Boolean) {
+            PREF_FULLSCREEN -> if (newValue is Boolean) {
                 analyticsHelper.logSwitchFullScreen(newValue)
             }
         }
@@ -109,7 +108,7 @@ class PreferencesFragment :
     }
 
     private fun sendEmail() {
-        context?.apply {
+        activity?.apply {
             try {
                 val appName = getString(R.string.app_name)
                 val versionName = BuildConfig.VERSION_NAME
@@ -124,7 +123,7 @@ class PreferencesFragment :
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this, "Oops! No Email app found :/", Toast.LENGTH_LONG).show()
+                showSnackBar("Oops! No Email app found :/")
             }
         }
     }
@@ -132,7 +131,7 @@ class PreferencesFragment :
     private fun shareApp() =
         "${getString(R.string.you_should_try)}\n${BuildConfig.PLAY_STORE_URL}".share(requireActivity())
 
-    private fun rateApp() = context?.apply {
+    private fun rateApp() = activity?.apply {
         try {
             Uri.parse(BuildConfig.MARKET_URL).openInExternalBrowser(this)
         } catch (e: Exception) {
@@ -140,7 +139,7 @@ class PreferencesFragment :
         }
     }
 
-    private fun showPrivacyPolicy() = context?.apply {
+    private fun showPrivacyPolicy() = activity?.apply {
         Uri.parse(BuildConfig.PRIVACY_POLICY_URL).openInChromeTab(this, customTabsHelper.packageNameToUse)
     }
 

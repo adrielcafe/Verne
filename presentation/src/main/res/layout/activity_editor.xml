@@ -114,6 +114,7 @@
         app:layout_anchorGravity="bottom|end"
         app:layout_anchor="@id/vStateLayout"
         app:backgroundTint="@color/colorAccent"
-        app:tint="@android:color/white"/>
+        app:tint="@android:color/white"
+        style="@style/Widget.MaterialComponents.FloatingActionButton"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

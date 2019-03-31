@@ -37,7 +37,7 @@ class MainActivity : BaseActivity(), ExplorerFragmentListener {
     private val viewModel by viewModel<MainViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
 
-    private var backPressedTwice = false
+    private var backPressedRecently = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,12 +97,12 @@ class MainActivity : BaseActivity(), ExplorerFragmentListener {
             vDrawer.isDrawerOpen(GravityCompat.END) -> vDrawer.closeDrawer(GravityCompat.END)
             vSearch.isSearchOpen -> vSearch.closeSearch()
             backToPreviousFolder -> vBreadcrumbs.removeLastItem()
-            backPressedTwice -> super.onBackPressed()
+            backPressedRecently -> super.onBackPressed()
             else -> launch {
-                backPressedTwice = true
+                backPressedRecently = true
                 Snackbar.make(vRoot, R.string.press_back_exit, Snackbar.LENGTH_SHORT).show()
                 delay(BACK_PRESSED_DELAY)
-                backPressedTwice = false
+                backPressedRecently = false
             }
         }
     }
@@ -125,8 +125,9 @@ class MainActivity : BaseActivity(), ExplorerFragmentListener {
         menuInflater.inflate(R.menu.main, menu)
         val searchMenuItem = menu.findItem(R.id.action_search)
         vSearch.post {
+            val menuItemSize = resources.getDimensionPixelSize(R.dimen.design_navigation_icon_size)
             with(vSearch) {
-                val menuItemSize = resources.getDimensionPixelSize(R.dimen.design_navigation_icon_size)
+                // Fix animation start position
                 revealAnimationCenter.x -= menuItemSize * menu.size
                 setMenuItem(searchMenuItem)
             }

@@ -15,7 +15,6 @@ import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
-import cafe.adriel.verne.presentation.extension.colorFromAttr
 import cafe.adriel.verne.presentation.extension.hideAnimated
 import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.setAnimatedState
@@ -31,7 +30,7 @@ import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.files.folderChooser
-import com.afollestad.materialdialogs.input.getInputLayout
+import com.afollestad.materialdialogs.input.getInputField
 import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItems
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -122,22 +121,22 @@ class ExplorerFragment :
 
     override fun onClick(mode: ActionMode, menuItem: MenuItem): Boolean {
         val selectedItems = adapterSelectHelper?.selectedItems?.map { it.item }
-        selectedItems?.also {
+        selectedItems?.also { items ->
             when (menuItem.itemId) {
                 R.id.action_print -> {
-                    val item = it.firstOrNull()
+                    val item = items.firstOrNull()
                     if (item is ExplorerItem.File) {
                         printItem(item)
                     }
                 }
                 R.id.action_share -> {
-                    val item = it.firstOrNull()
+                    val item = items.firstOrNull()
                     if (item is ExplorerItem.File) {
                         shareItem(item)
                     }
                 }
                 R.id.action_move -> showMoveItemsDialog(selectedItems)
-                R.id.action_rename -> it.firstOrNull()?.let { item ->
+                R.id.action_rename -> items.firstOrNull()?.let { item ->
                     showRenameItemDialog(item)
                 }
                 R.id.action_delete -> deleteItems(selectedItems)
@@ -323,8 +322,7 @@ class ExplorerFragment :
                 ) { _, value ->
                     createItem(value.toString(), isFolder)
                 }
-                // TODO check if works on API <= 22
-                getInputLayout().boxBackgroundColor = colorFromAttr(android.R.attr.colorBackgroundFloating)
+                getInputField().setBackgroundColor(Color.TRANSPARENT)
             }
         }
     }
@@ -344,8 +342,7 @@ class ExplorerFragment :
                         viewModel.renameItem(item, name.toString())
                     }
                 }
-                // TODO check if works on API <= 22
-                getInputLayout().boxBackgroundColor = colorFromAttr(android.R.attr.colorBackgroundFloating)
+                getInputField().setBackgroundColor(Color.TRANSPARENT)
             }
         }
     }

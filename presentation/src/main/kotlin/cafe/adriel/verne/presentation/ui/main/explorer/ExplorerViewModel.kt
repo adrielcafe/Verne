@@ -153,7 +153,7 @@ class ExplorerViewModel(
         null
     }
 
-    suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCoroutine {
+    suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCoroutine { continuation ->
         launch {
             getHtmlText(item)?.let { text ->
                 CreatePdf(appContext)
@@ -161,7 +161,7 @@ class ExplorerViewModel(
                     .setContent(text)
                     .setCallbackListener(object : CreatePdf.PdfCallbackListener {
                         override fun onSuccess(filePath: String) {
-                            it.resume(File(filePath))
+                            continuation.resume(File(filePath))
                         }
 
                         override fun onFailure(errorMsg: String) {

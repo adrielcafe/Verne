@@ -6,11 +6,11 @@ import androidx.core.content.edit
 class PreferencesHelper(private val preferences: SharedPreferences) {
 
     companion object {
-        private const val PREF_DARK_MODE = "appDarkMode"
-        private const val PREF_FULLSCREEN = "appFullscreen"
-        private const val PREF_FONT_FAMILY = "editorFontFamily"
-        private const val PREF_FONT_SIZE = "editorFontSize"
-        private const val PREF_MARGIN_SIZE = "editorMarginSize"
+        const val PREF_DARK_MODE = "appDarkMode"
+        const val PREF_FULLSCREEN = "appFullscreen"
+        const val PREF_FONT_FAMILY = "editorFontFamily"
+        const val PREF_FONT_SIZE = "editorFontSize"
+        const val PREF_MARGIN_SIZE = "editorMarginSize"
 
         const val DEFAULT_DARK_MODE = false
         const val DEFAULT_FULLSCREEN = false

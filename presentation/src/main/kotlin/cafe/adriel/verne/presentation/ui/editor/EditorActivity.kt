@@ -26,6 +26,7 @@ import cafe.adriel.verne.presentation.extension.fromHtml
 import cafe.adriel.verne.presentation.extension.hasSpans
 import cafe.adriel.verne.presentation.extension.hideAnimated
 import cafe.adriel.verne.presentation.extension.hideKeyboard
+import cafe.adriel.verne.presentation.extension.int
 import cafe.adriel.verne.presentation.extension.intentFor
 import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.openInChromeTab
@@ -59,11 +60,6 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
-
-        // TODO move to resources folder
-        private const val TITLE_ADDITIONAL_FONT_SIZE = 4f
-        private const val LOADING_DRAWABLE_CENTER_RADIUS = 20f
-        private const val LOADING_DRAWABLE_STROKE_WIDTH = 5f
 
         private val TOOLBAR_BUTTONS = setOf(
             R.id.format_bar_button_heading,
@@ -101,8 +97,8 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
     private val loadingDrawable by lazy {
         CircularProgressDrawable(this).apply {
             setColorSchemeColors(colorFromAttr(android.R.attr.actionMenuTextColor))
-            centerRadius = LOADING_DRAWABLE_CENTER_RADIUS
-            strokeWidth = LOADING_DRAWABLE_STROKE_WIDTH
+            centerRadius = int(R.integer.loading_drawable_center_radius).toFloat()
+            strokeWidth = int(R.integer.loading_drawable_stroke_width).toFloat()
             start()
         }
     }
@@ -244,7 +240,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
 
                 val padding = marginSize.dpToPx()
 
-                vTitle.textSize = fontSize + TITLE_ADDITIONAL_FONT_SIZE
+                vTitle.textSize = fontSize + int(R.integer.title_additional_font_size).toFloat()
                 vTitle.setPaddingRelative(padding, 0, padding, 0)
 
                 vEditor.textSize = fontSize.toFloat()
@@ -272,7 +268,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
         })
     }
 
-    private fun setupEditorToolbar(){
+    private fun setupEditorToolbar() {
         vEditorToolbar.setEditor(vEditor, null)
         vEditorToolbar.findViewById<View>(R.id.format_bar_horizontal_divider)
             .setBackgroundColor(color(R.color.colorPrimaryDark))

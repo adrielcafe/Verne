@@ -10,7 +10,7 @@ import org.koin.android.ext.android.inject
 
 abstract class BaseActivity : CoroutineScopedActivity() {
 
-    val preferencesHelper by inject<PreferencesHelper>()
+    protected val preferencesHelper by inject<PreferencesHelper>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="action_delay">300</integer>
+    <integer name="title_additional_font_size">4</integer>
+    <integer name="loading_drawable_center_radius">20</integer>
+    <integer name="loading_drawable_stroke_width">5</integer>
 </resources>
