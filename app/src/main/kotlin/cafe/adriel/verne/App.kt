@@ -5,7 +5,7 @@ import android.os.Build
 import android.os.StrictMode
 import cafe.adriel.verne.data.di.DataComponent
 import cafe.adriel.verne.di.AppComponent
-import cafe.adriel.verne.interactor.di.InteractorComponent
+import cafe.adriel.verne.domain.di.DomainComponent
 import cafe.adriel.verne.presentation.di.PresentationComponent
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.minSdk
@@ -44,7 +44,7 @@ class App : Application() {
         val modules =
             AppComponent(applicationContext).getModules() +
                     PresentationComponent(applicationContext).getModules() +
-                    InteractorComponent().getModules() +
+                    DomainComponent().getModules() +
                     DataComponent().getModules()
         startKoin {
             androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)

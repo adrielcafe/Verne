@@ -67,7 +67,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':presentation')
-    implementation project(':interactor')
     implementation project(':domain')
     implementation project(':data')
     implementation project(':shared')

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
-import cafe.adriel.verne.interactor.explorer.ItemTextExplorerInteractor
-import cafe.adriel.verne.interactor.explorer.RenameItemExplorerInteractor
+import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
+import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.charCount
 import cafe.adriel.verne.presentation.extension.formatSeconds

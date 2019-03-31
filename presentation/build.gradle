@@ -41,7 +41,6 @@ kapt {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':interactor')
     implementation project(':domain')
     implementation project(':shared')
 

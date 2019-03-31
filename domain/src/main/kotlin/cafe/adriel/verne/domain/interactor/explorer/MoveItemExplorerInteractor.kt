@@ -1,4 +1,4 @@
-package cafe.adriel.verne.interactor.explorer
+package cafe.adriel.verne.domain.interactor.explorer
 
 import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.ExplorerItem
