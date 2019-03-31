@@ -4,17 +4,21 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
         <item name="android:windowAnimationStyle">@style/WindowAnimation</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+
         <item name="actionOverflowButtonStyle">@style/Action.OverflowButton</item>
         <item name="actionModeStyle">@style/ActionMode</item>
         <item name="actionModeCloseButtonStyle">@style/ActionMode.CloseButton</item>
         <item name="actionModeBackground">@color/colorPrimary</item>
         <item name="actionModeSplitBackground">@color/colorPrimaryDark</item>
         <item name="windowActionModeOverlay">true</item>
+
         <item name="md_corner_radius">8dp</item>
+        <item name="md_color_button_text">@color/colorAccent</item>
     </style>
 
     <style name="AppTheme.Launcher">

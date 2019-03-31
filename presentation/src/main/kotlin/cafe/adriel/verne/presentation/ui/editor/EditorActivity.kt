@@ -220,7 +220,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
         }
     }
 
-    override fun onPreferencesChanged() {
+    override fun onPreferenceChanged() {
         viewModel.onPreferencesChanged()
     }
 

@@ -31,9 +31,9 @@ class ExplorerAdapterItem(
     override fun bindView(holder: ViewHolder, payloads: MutableList<Any>) {
         super.bindView(holder, payloads)
         with(holder.itemView) {
-            val bgColor = FastAdapterUIUtils
+            val bgDrawable = FastAdapterUIUtils
                 .getSelectableBackground(context, context.color(R.color.colorPrimaryAlpha), false)
-            ViewCompat.setBackground(this, bgColor)
+            ViewCompat.setBackground(this, bgDrawable)
             vItemName.text = item.title
             when (item) {
                 is ExplorerItem.Folder -> {

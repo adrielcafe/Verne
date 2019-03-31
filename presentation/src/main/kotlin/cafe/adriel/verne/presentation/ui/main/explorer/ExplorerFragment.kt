@@ -243,17 +243,13 @@ class ExplorerFragment :
             MaterialDialog(this).show {
                 title(R.string.share_as)
                 negativeButton(R.string.cancel)
-                listItems(R.array.share_item_options) { dialog, index, _ ->
+                listItems(R.array.share_item_options) { dialog, _, text ->
                     launch {
-                        when (index) {
-                            // Text
-                            0 -> viewModel.getPlainText(item)?.share(this@apply)
-                            // HTML text
-                            1 -> viewModel.getHtmlText(item)?.share(this@apply, true)
-                            // HTML file
-                            2 -> item.file.share(this@apply)
-                            // PDF file
-                            3 -> viewModel.getPdfFile(item).share(this@apply)
+                        when (text) {
+                            getString(R.string.text) -> viewModel.getPlainText(item)?.share(this@apply)
+                            getString(R.string.html_text) -> viewModel.getHtmlText(item)?.share(this@apply, true)
+                            getString(R.string.html_file) -> item.file.share(this@apply)
+                            getString(R.string.pdf_file) -> viewModel.getPdfFile(item).share(this@apply)
                         }
                         analyticsHelper.logShare()
                     }

@@ -35,13 +35,8 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.fragment_typography, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
+        inflater.inflate(R.layout.fragment_typography, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -141,22 +136,19 @@ class TypographyDialogFragment : BottomSheetDialogFragment() {
 
     private fun onFontFamilySelected(selectedFontFamily: FontFamily) = launchMain {
         preferencesHelper.setFontFamily(selectedFontFamily.name)
-
-        listener.onPreferencesChanged()
+        listener.onPreferenceChanged()
         analyticsHelper.logTypographyFontFamily(selectedFontFamily.name)
     }
 
     private fun onFontSizeSelected(selectedFontSize: Int) = launchMain {
         preferencesHelper.setFontSize(selectedFontSize)
-
-        listener.onPreferencesChanged()
+        listener.onPreferenceChanged()
         analyticsHelper.logTypographyFontSize(selectedFontSize)
     }
 
     private fun onMarginSizeSelected(selectedMarginSize: Int) = launchMain {
         preferencesHelper.setMarginSize(selectedMarginSize)
-
-        listener.onPreferencesChanged()
+        listener.onPreferenceChanged()
         analyticsHelper.logTypographyMarginSize(selectedMarginSize)
     }
 }
