@@ -21,8 +21,6 @@ import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
-import cafe.adriel.verne.presentation.helper.PreferencesHelper.Companion.PREF_DARK_MODE
-import cafe.adriel.verne.presentation.helper.PreferencesHelper.Companion.PREF_FULLSCREEN
 import cafe.adriel.verne.shared.extension.launchMain
 import com.instabug.bug.BugReporting
 import kotlinx.coroutines.delay
@@ -32,6 +30,9 @@ class PreferencesFragment :
     PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
+        const val PREF_DARK_MODE = "appDarkMode"
+        const val PREF_FULLSCREEN = "appFullscreen"
+
         const val ABOUT_CONTACT_US = "aboutContactUs"
         const val ABOUT_REPORT_BUG = "aboutReportBug"
         const val ABOUT_SHARE = "aboutShare"

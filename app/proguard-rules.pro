@@ -1,6 +1,8 @@
 # Verne
 -keepclasseswithmembers class cafe.adriel.verne.presentation.model.** { *; }
 -keepclasseswithmembers class cafe.adriel.verne.domain.model.** { *; }
+-keepclasseswithmembers class cafe.adriel.verne.data.model.** { *; }
+-keepclasseswithmembers class cafe.adriel.verne.shared.model.** { *; }
 
 # Kotlin
 -dontwarn kotlin.**

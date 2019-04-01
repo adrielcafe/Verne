@@ -11,7 +11,7 @@ import androidx.annotation.IntegerRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
-import com.github.ajalt.timberkt.e
+import timber.log.Timber
 
 fun Context.color(@ColorRes resId: Int) = ResourcesCompat.getColor(resources, resId, theme)
 fun Fragment.color(@ColorRes resId: Int) = context?.color(resId) ?: Color.TRANSPARENT
@@ -38,7 +38,7 @@ fun Context.font(@FontRes resId: Int, callback: (typeface: Typeface) -> Unit) =
         }
 
         override fun onFontRetrievalFailed(reason: Int) {
-            e { "Font retrieval failed: $reason" }
+            Timber.e("Font retrieval failed: $reason")
         }
     }, null)
 

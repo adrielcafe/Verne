@@ -40,8 +40,8 @@ import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.ui.BaseActivity
-import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragment
-import cafe.adriel.verne.presentation.ui.editor.typography.TypographyDialogFragmentListener
+import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragment
+import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragmentListener
 import cafe.adriel.verne.presentation.util.StateAware
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.android.material.snackbar.Snackbar
@@ -56,7 +56,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.EnhancedMovementMethod
 import org.wordpress.aztec.IHistoryListener
 
-class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDialogFragmentListener {
+class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
@@ -216,12 +216,12 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
 
     override fun onAttachFragment(fragment: Fragment) {
         when (fragment) {
-            is TypographyDialogFragment -> fragment.listener = this
+            is TypographyFragment -> fragment.listener = this
         }
     }
 
-    override fun onPreferenceChanged() {
-        viewModel.onPreferencesChanged()
+    override fun onSettingsChanged() {
+        viewModel.onSettingsChanged()
     }
 
     override fun onStateUpdated(state: EditorViewState) {
@@ -232,7 +232,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
             setUndoMenuItemEnabled(vEditor.history.undoValid())
             setRedoMenuItemEnabled(vEditor.history.redoValid())
 
-            with(preferences) {
+            with(settings) {
                 font(fontFamily.resId) { typeface ->
                     vTitle.typeface = typeface
                     vEditor.typeface = typeface
@@ -401,7 +401,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyDi
     }
 
     private fun showTypographyDialog() {
-        TypographyDialogFragment.show(supportFragmentManager)
+        TypographyFragment.show(supportFragmentManager)
     }
 
     private fun showStatisticsDialog() {

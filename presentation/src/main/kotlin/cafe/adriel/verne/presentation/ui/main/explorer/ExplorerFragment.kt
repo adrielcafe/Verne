@@ -218,7 +218,7 @@ class ExplorerFragment :
     private fun openItem(item: ExplorerItem) {
         listener.onItemOpened(item)
         when (item) {
-            is ExplorerItem.Folder -> viewModel.currentDir = item
+            is ExplorerItem.Folder -> viewModel.currentDir = item.file
             is ExplorerItem.File -> context?.apply {
                 EditorActivity.start(this, item)
             }
@@ -350,7 +350,7 @@ class ExplorerFragment :
         context?.apply {
             MaterialDialog(this).show {
                 folderChooser(
-                    viewModel.getBaseDir().item.file,
+                    viewModel.getBaseDir(),
                     filter,
                     emptyTextRes = R.string.nothing_here,
                     initialFolderLabel = R.string.app_name,

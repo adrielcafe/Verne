@@ -12,6 +12,7 @@ buildscript {
         classpath ProjectLib.FIREBASE
         classpath ProjectLib.KOTLIN
         classpath ProjectLib.FABRIC
+        classpath ProjectLib.PROTOBUF
     }
 }
 

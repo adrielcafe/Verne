@@ -4,7 +4,6 @@ import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import cafe.adriel.verne.domain.extension.getPathAfterBaseDir
-import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
@@ -14,11 +13,12 @@ import cafe.adriel.verne.shared.extension.launchMain
 import com.mikepenz.fastadapter.commons.utils.FastAdapterUIUtils
 import com.mikepenz.fastadapter.items.AbstractItem
 import kotlinx.android.synthetic.main.item_explorer.view.*
+import java.io.File
 import java.util.Date
 
 class ExplorerAdapterItem(
     val item: ExplorerItem,
-    private val baseDir: BaseDir,
+    private val explorerRootFolder: File,
     private val searchResult: Boolean = false
 ) : AbstractItem<ExplorerAdapterItem, ExplorerAdapterItem.ViewHolder>() {
 
@@ -48,7 +48,7 @@ class ExplorerAdapterItem(
                 is ExplorerItem.File -> {
                     vItemDetails.text = Date(item.file.lastModified()).formatMedium()
                     if (searchResult) {
-                        vItemPath.text = item.getPathAfterBaseDir(baseDir)
+                        vItemPath.text = item.getPathAfterBaseDir(explorerRootFolder)
                         vItemPath.visibility = View.VISIBLE
                     }
 

@@ -1,14 +1,14 @@
 package cafe.adriel.verne.data.repository
 
-import cafe.adriel.verne.domain.model.BaseDir
 import cafe.adriel.verne.domain.repository.ExplorerRepository
 import cafe.adriel.verne.shared.extension.withIo
+import cafe.adriel.verne.shared.model.AppConfig
 import java.io.File
 
-class FileExplorerRepository(private val baseDir: BaseDir) : ExplorerRepository {
+class FileExplorerRepository(private val appConfig: AppConfig) : ExplorerRepository {
 
     init {
-        baseDir.item.file.mkdirs()
+        appConfig.explorerRootFolder.mkdirs()
     }
 
     private val searchFilter = { file: File, query: String, showDeleted: Boolean ->
@@ -24,7 +24,7 @@ class FileExplorerRepository(private val baseDir: BaseDir) : ExplorerRepository 
         if (query.isBlank()) {
             emptySequence()
         } else {
-            baseDir.item.file
+            appConfig.explorerRootFolder
                 .walk()
                 .filter { searchFilter(it, query, showDeleted) }
         }

@@ -7,7 +7,8 @@ object AppConfig {
 
     const val VERSION_NAME = "1.0.0"
 
-    const val BASE_DIR_NAME = "$APPLICATION_ID.db"
+    const val EXPLORER_ROOT_FOLDER_NAME = "$APPLICATION_ID.db"
+    const val SETTINGS_FILE_NAME = "$APPLICATION_ID.settings"
     const val PROVIDER_AUTHORITY = "$APPLICATION_ID.provider"
 
     const val CONTACT_EMAIL = "contact@verne.app"

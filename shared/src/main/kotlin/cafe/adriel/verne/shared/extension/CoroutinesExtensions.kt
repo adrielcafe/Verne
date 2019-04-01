@@ -6,6 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+// TODO Add coroutines scope in all classes that uses this extension
 fun launchMain(body: suspend CoroutineScope.() -> Unit) {
     GlobalScope.launch(Dispatchers.Main) {
         body()

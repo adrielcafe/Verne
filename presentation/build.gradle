@@ -82,7 +82,7 @@ dependencies {
     // Util
     implementation AppLib.KOIN_VIEW_MODEL
     implementation AppLib.EIFFEL
-    implementation AppLib.TIMBER_KT
+    implementation AppLib.TIMBER
     implementation AppLib.KEYBOARD_LISTENER
     implementation AppLib.PRETTY_TIME
     implementation AppLib.PDF_GENERATOR

@@ -10,7 +10,6 @@ import cafe.adriel.verne.presentation.di.PresentationComponent
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.minSdk
 import cafe.adriel.verne.presentation.helper.PreferencesHelper
-import com.github.ajalt.timberkt.Timber
 import com.instabug.bug.BugReporting
 import com.instabug.bug.invocation.Option
 import com.instabug.library.Instabug
@@ -23,6 +22,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import timber.log.Timber
 
 class App : Application() {
 
@@ -75,7 +75,6 @@ class App : Application() {
             .detectAll()
             .permitDiskReads()
             .permitDiskWrites() // Caused by Instabug
-            .permitNetwork() // Caused by NumberPicker
             .also {
                 // Caused by AztecText
                 minSdk(Build.VERSION_CODES.M) { it.permitResourceMismatches() }

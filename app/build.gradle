@@ -20,7 +20,8 @@ android {
         versionName AppConfig.VERSION_NAME
 
         resConfigs 'en', 'pt'
-        buildConfigField 'String', 'BASE_DIR_NAME', "\"${AppConfig.BASE_DIR_NAME}\""
+        buildConfigField 'String', 'EXPLORER_ROOT_FOLDER_NAME', "\"${AppConfig.EXPLORER_ROOT_FOLDER_NAME}\""
+        buildConfigField 'String', 'SETTINGS_FILE_NAME', "\"${AppConfig.SETTINGS_FILE_NAME}\""
         buildConfigField 'String', 'INSTABUG_KEY', props['key.instabug']
     }
     buildTypes {
@@ -90,7 +91,7 @@ dependencies {
 
     // Util
     implementation AppLib.KOIN_VIEW_MODEL
-    implementation AppLib.TIMBER_KT
+    implementation AppLib.TIMBER
 }
 
 apply plugin: 'com.google.gms.google-services'

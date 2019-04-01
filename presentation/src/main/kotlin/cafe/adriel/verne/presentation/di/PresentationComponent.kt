@@ -13,12 +13,12 @@ import cafe.adriel.verne.shared.di.Component
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-class PresentationComponent(private val appContext: Context) : Component {
+class PresentationComponent(appContext: Context) : Component {
 
     private val viewModelModule = module {
         viewModel { MainViewModel(get()) }
         viewModel { ExplorerViewModel(appContext, get(), get(), get(), get(), get(), get(), get()) }
-        viewModel { EditorViewModel(appContext, get(), get(), get(), get()) }
+        viewModel { EditorViewModel(appContext, get(), get(), get(), get(), get(), get()) }
     }
 
     private val helperModule = module {

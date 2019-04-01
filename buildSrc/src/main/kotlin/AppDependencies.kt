@@ -4,6 +4,7 @@ object LibVersion {
     internal const val GOOGLE_SERVICES = "4.2.0"
     internal const val FIREBASE = "1.2.0"
     internal const val FABRIC = "1.28.1"
+    internal const val PROTOBUF = "0.8.8"
 
     // Kotlin
     internal const val KOTLIN = "1.3.21"
@@ -27,6 +28,11 @@ object LibVersion {
     internal const val FIREBASE_CORE = "16.0.8"
     internal const val FIREBASE_PERF = "16.2.4"
 
+    // Protobuf
+    internal const val PROTOBUF_LITE = "3.0.1"
+    internal const val PROTOC = "3.7.1"
+    internal const val PROTOC_LITE = "3.0.0"
+
     // Quality
     internal const val INSTABUG = "8.2.0"
     internal const val CRASHLYTICS = "2.9.9"
@@ -37,13 +43,12 @@ object LibVersion {
     internal const val FAST_ADAPTER = "3.3.1"
     internal const val FAB_OPTIONS = "1.2.0"
     internal const val SIMPLE_SEARCH_VIEW = "0.1.3"
-    internal const val NUMBER_SLIDING_PICKER = "1.0.2"
     internal const val STATEFUL_LAYOUT = "2.0.8"
 
     // Util
     internal const val KOIN = "2.0.0-rc-1"
     internal const val EIFFEL = "4.1.0"
-    internal const val TIMBER_KT = "1.5.1"
+    internal const val TIMBER = "4.7.1"
     internal const val KEYBOARD_LISTENER = "1.0.0"
     internal const val PRETTY_TIME = "4.0.2.Final"
     internal const val PDF_GENERATOR = "1.2"
@@ -52,6 +57,7 @@ object LibVersion {
     // Forks
     internal const val AZTEC_EDITOR = "develop-SNAPSHOT"
     internal const val MATERIAL_DIALOGS = "master-SNAPSHOT"
+    internal const val NUMBER_SLIDING_PICKER = "develop-SNAPSHOT"
 
     // Test
     internal const val JUNIT = "4.12"
@@ -65,6 +71,7 @@ object ProjectLib {
     const val FIREBASE = "com.google.firebase:firebase-plugins:${LibVersion.FIREBASE}"
     const val KOTLIN = "org.jetbrains.kotlin:kotlin-gradle-plugin:${LibVersion.KOTLIN}"
     const val FABRIC = "io.fabric.tools:gradle:${LibVersion.FABRIC}"
+    const val PROTOBUF = "com.google.protobuf:protobuf-gradle-plugin:${LibVersion.PROTOBUF}"
 }
 
 object AppLib {
@@ -93,6 +100,11 @@ object AppLib {
     const val FIREBASE_CORE = "com.google.firebase:firebase-core:${LibVersion.FIREBASE_CORE}"
     const val FIREBASE_PERF = "com.google.firebase:firebase-perf:${LibVersion.FIREBASE_PERF}"
 
+    // Protobuf
+    const val PROTOBUF_LITE = "com.google.protobuf:protobuf-lite:${LibVersion.PROTOBUF_LITE}"
+    const val PROTOC = "com.google.protobuf:protoc:${LibVersion.PROTOC}"
+    const val PROTOC_LITE = "com.google.protobuf:protoc-gen-javalite:${LibVersion.PROTOC_LITE}"
+
     // Quality
     const val INSTABUG = "com.instabug.library:instabug:${LibVersion.INSTABUG}"
     const val CRASHLYTICS = "com.crashlytics.sdk.android:crashlytics:${LibVersion.CRASHLYTICS}"
@@ -107,14 +119,13 @@ object AppLib {
     const val FAST_ADAPTER_EXTENSIONS = "com.mikepenz:fastadapter-extensions:${LibVersion.FAST_ADAPTER}"
     const val FAB_OPTIONS = "com.github.joaquimley:faboptions:${LibVersion.FAB_OPTIONS}"
     const val SIMPLE_SEARCH_VIEW = "com.github.Ferfalk:SimpleSearchView:${LibVersion.SIMPLE_SEARCH_VIEW}"
-    const val NUMBER_SLIDING_PICKER = "com.github.sephiroth74:NumberSlidingPicker:${LibVersion.NUMBER_SLIDING_PICKER}"
     const val STATEFUL_LAYOUT = "cz.kinst.jakub:android-stateful-layout-base:${LibVersion.STATEFUL_LAYOUT}"
 
     // Util
     const val KOIN_CORE = "org.koin:koin-core:${LibVersion.KOIN}"
     const val KOIN_VIEW_MODEL = "org.koin:koin-androidx-viewmodel:${LibVersion.KOIN}"
     const val EIFFEL = "com.github.etiennelenhart:eiffel:${LibVersion.EIFFEL}"
-    const val TIMBER_KT = "com.github.ajalt:timberkt:${LibVersion.TIMBER_KT}"
+    const val TIMBER = "com.jakewharton.timber:timber:${LibVersion.TIMBER}"
     const val KEYBOARD_LISTENER = "com.github.ravindu1024:android-keyboardlistener:${LibVersion.KEYBOARD_LISTENER}"
     const val PRETTY_TIME = "org.ocpsoft.prettytime:prettytime:${LibVersion.PRETTY_TIME}"
     const val PDF_GENERATOR = "com.uttampanchasara.pdfgenerator:pdfgenerator:${LibVersion.PDF_GENERATOR}"
@@ -127,6 +138,8 @@ object AppLib {
     const val MATERIAL_DIALOGS_CORE = "com.github.adrielcafe.material-dialogs:core:${LibVersion.MATERIAL_DIALOGS}"
     const val MATERIAL_DIALOGS_INPUT = "com.github.adrielcafe.material-dialogs:input:${LibVersion.MATERIAL_DIALOGS}"
     const val MATERIAL_DIALOGS_FILES = "com.github.adrielcafe.material-dialogs:files:${LibVersion.MATERIAL_DIALOGS}"
+    // https://github.com/adrielcafe/NumberSlidingPicker
+    const val NUMBER_SLIDING_PICKER = "com.github.adrielcafe:NumberSlidingPicker:${LibVersion.NUMBER_SLIDING_PICKER}"
 }
 
 object TestLib {

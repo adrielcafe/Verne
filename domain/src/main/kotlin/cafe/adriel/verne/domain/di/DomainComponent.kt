@@ -6,12 +6,19 @@ import cafe.adriel.verne.domain.interactor.explorer.MoveItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SearchItemsExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SelectItemsExplorerInteractor
+import cafe.adriel.verne.domain.interactor.settings.FontFamilySettingsInteractor
+import cafe.adriel.verne.domain.interactor.settings.FontSizeSettingsInteractor
+import cafe.adriel.verne.domain.interactor.settings.MarginSizeSettingsInteractor
 import cafe.adriel.verne.shared.di.Component
 import org.koin.dsl.module
 
 class DomainComponent : Component {
 
     private val interactorModule = module {
+        single { FontFamilySettingsInteractor(get()) }
+        single { FontSizeSettingsInteractor(get()) }
+        single { MarginSizeSettingsInteractor(get()) }
+
         single { SearchItemsExplorerInteractor(get()) }
         single { SelectItemsExplorerInteractor(get(), get()) }
         single { CreateItemExplorerInteractor(get()) }

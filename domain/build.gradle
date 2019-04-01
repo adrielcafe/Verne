@@ -18,5 +18,4 @@ dependencies {
 
     // Util
     implementation AppLib.KOIN_CORE
-    implementation AppLib.TIMBER_KT
 }

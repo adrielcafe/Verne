@@ -2,30 +2,34 @@ package cafe.adriel.verne.presentation.ui.editor
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import cafe.adriel.verne.domain.model.BaseDir
-import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
+import cafe.adriel.verne.domain.interactor.settings.FontFamilySettingsInteractor
+import cafe.adriel.verne.domain.interactor.settings.FontSizeSettingsInteractor
+import cafe.adriel.verne.domain.interactor.settings.MarginSizeSettingsInteractor
+import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.charCount
 import cafe.adriel.verne.presentation.extension.formatSeconds
 import cafe.adriel.verne.presentation.extension.paragraphCount
 import cafe.adriel.verne.presentation.extension.readTimeInSeconds
 import cafe.adriel.verne.presentation.extension.wordCount
-import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.model.FontFamily
-import cafe.adriel.verne.presentation.model.TypographyPreferences
+import cafe.adriel.verne.presentation.model.TypographySettings
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import cafe.adriel.verne.shared.extension.formatShort
 import cafe.adriel.verne.shared.extension.withIo
+import cafe.adriel.verne.shared.model.AppConfig
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Calendar
 
 class EditorViewModel(
     private val appContext: Context,
-    private val baseDir: BaseDir,
-    private val preferencesHelper: PreferencesHelper,
+    private val appConfig: AppConfig,
+    private val fontFamilyInteractor: FontFamilySettingsInteractor,
+    private val fontSizeInteractor: FontSizeSettingsInteractor,
+    private val marginSizeInteractor: MarginSizeSettingsInteractor,
     private val renameItemInteractor: RenameItemExplorerInteractor,
     private val itemTextInteractor: ItemTextExplorerInteractor
 ) : CoroutineScopedStateViewModel<EditorViewState>() {
@@ -38,12 +42,12 @@ class EditorViewModel(
 
     init {
         initState { EditorViewState() }
-        onPreferencesChanged()
+        onSettingsChanged()
     }
 
-    fun onPreferencesChanged() {
+    fun onSettingsChanged() {
         launch {
-            updateState { it.copy(preferences = getPreferences()) }
+            updateState { it.copy(settings = getSettings()) }
         }
     }
 
@@ -56,7 +60,7 @@ class EditorViewModel(
 
     fun createEmptyFileItem(name: String? = null): ExplorerItem.File {
         val fileName = name ?: getDefaultFileName()
-        val file = File(baseDir.path, fileName)
+        val file = File(appConfig.explorerRootFolder.path, fileName)
         return ExplorerItem.File(file.path)
     }
 
@@ -108,11 +112,11 @@ class EditorViewModel(
         }
     }
 
-    private fun getPreferences() =
-        TypographyPreferences(
-            FontFamily.valueOf(preferencesHelper.getFontFamily()),
-            preferencesHelper.getFontSize(),
-            preferencesHelper.getMarginSize()
+    private suspend fun getSettings() =
+        TypographySettings(
+            FontFamily.valueOf(fontFamilyInteractor.get()),
+            fontSizeInteractor.get(),
+            marginSizeInteractor.get()
         )
 
     private fun getDefaultFileName() =

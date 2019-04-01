@@ -4,16 +4,16 @@ import android.content.Context
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
 import cafe.adriel.verne.domain.extension.asExplorerItem
-import cafe.adriel.verne.domain.model.BaseDir
-import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.domain.interactor.explorer.CreateItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.MoveItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SearchItemsExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SelectItemsExplorerInteractor
+import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerItemChangeListener
 import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
+import cafe.adriel.verne.shared.model.AppConfig
 import com.uttampanchasara.pdfgenerator.CreatePdf
 import kotlinx.coroutines.launch
 import java.io.File
@@ -22,7 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 
 class ExplorerViewModel(
     private val appContext: Context,
-    private val baseDir: BaseDir,
+    private val appConfig: AppConfig,
     private val searchItemsInteractor: SearchItemsExplorerInteractor,
     private val selectItemsInteractor: SelectItemsExplorerInteractor,
     private val createItemInteractor: CreateItemExplorerInteractor,
@@ -41,7 +41,7 @@ class ExplorerViewModel(
             field = value
             onSearchModeChange(searchMode)
         }
-    var currentDir: ExplorerItem.Folder = baseDir.item
+    var currentDir: File = appConfig.explorerRootFolder
         set(value) {
             field = value
             onCurrentDirChange(currentDir)
@@ -55,15 +55,15 @@ class ExplorerViewModel(
     fun goToParentDir() = if (isBaseDir()) {
         false
     } else {
-        currentDir = ExplorerItem.Folder(currentDir.file.parent)
+        currentDir = currentDir.parentFile
         true
     }
 
-    fun getBaseDir() = baseDir
+    fun getBaseDir() = appConfig.explorerRootFolder
 
     fun isSearchQueryEmpty() = searchQuery.isBlank()
 
-    private fun isBaseDir() = currentDir == baseDir.item
+    private fun isBaseDir() = currentDir == appConfig.explorerRootFolder
 
     private fun refreshCurrentDir() {
         onCurrentDirChange(currentDir)
@@ -81,11 +81,11 @@ class ExplorerViewModel(
         }
     }
 
-    private fun onCurrentDirChange(dir: ExplorerItem.Folder) {
+    private fun onCurrentDirChange(dir: File) {
         if (::listener.isInitialized) {
             listener.stopWatching()
         }
-        listener = ExplorerItemChangeListener(dir.file, true) {
+        listener = ExplorerItemChangeListener(dir, true) {
             launch {
                 selectItems(dir)
             }
@@ -93,10 +93,13 @@ class ExplorerViewModel(
         listener.startWatching()
     }
 
-    private suspend fun selectItems(folder: ExplorerItem.Folder) {
+    private suspend fun selectItems(folder: File) {
         // Check if is base dir or current dir, otherwise ignore
-        if (currentDir == folder || currentDir == baseDir.item) {
-            updateState { it.copy(items = selectItemsInteractor(folder)) }
+        if (currentDir == folder || currentDir == appConfig.explorerRootFolder) {
+            val item = folder.asExplorerItem()
+            if (item is ExplorerItem.Folder) {
+                updateState { it.copy(items = selectItemsInteractor(item)) }
+            }
         }
     }
 
@@ -106,7 +109,12 @@ class ExplorerViewModel(
     }
 
     suspend fun putItem(name: String, isFolder: Boolean): ExplorerItem {
-        return createItemInteractor(currentDir, name, isFolder)
+        val dirItem = currentDir.asExplorerItem()
+        if (dirItem is ExplorerItem.Folder) {
+            return createItemInteractor(dirItem, name, isFolder)
+        } else {
+            throw IllegalStateException("${currentDir.path} is not a valid folder")
+        }
     }
 
     suspend fun moveItem(item: ExplorerItem, to: ExplorerItem.Folder) {
