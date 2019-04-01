@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
 // Based on https://stackoverflow.com/a/42261118/1055354
-class FullscreenKeyboardHelper : LifecycleObserver {
+class FullscreenKeyboardHelper(private val preferencesHelper: PreferencesHelper) : LifecycleObserver {
     private lateinit var contentContainer: ViewGroup
 
     private val rootView by lazy { contentContainer.getChildAt(0) }
@@ -19,12 +19,9 @@ class FullscreenKeyboardHelper : LifecycleObserver {
     private val listener = { possiblyResizeChildOfContent() }
     private val contentAreaOfWindowBounds = Rect()
     private var usableHeightPrevious = 0
-    private var isFullscreen = false
 
-    fun init(activity: AppCompatActivity, fullscreen: Boolean) {
+    fun init(activity: AppCompatActivity) {
         contentContainer = activity.findViewById(android.R.id.content)
-        isFullscreen = fullscreen
-
         activity.lifecycle.addObserver(this)
     }
 
@@ -45,7 +42,7 @@ class FullscreenKeyboardHelper : LifecycleObserver {
     private fun possiblyResizeChildOfContent() {
         contentContainer.getWindowVisibleDisplayFrame(contentAreaOfWindowBounds)
         val usableHeightNow = contentAreaOfWindowBounds.height()
-        if (isFullscreen && usableHeightNow != usableHeightPrevious) {
+        if (preferencesHelper.isFullscreen() && usableHeightNow != usableHeightPrevious) {
             rootViewLayout.height = usableHeightNow
             rootView.layout(
                 contentAreaOfWindowBounds.left,

@@ -6,6 +6,7 @@ import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
 import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
+import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.editor.EditorViewModel
 import cafe.adriel.verne.presentation.ui.main.MainViewModel
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerViewModel
@@ -23,9 +24,10 @@ class PresentationComponent(appContext: Context) : Component {
 
     private val helperModule = module {
         single { PreferencesHelper(get()) }
+        single { ThemeHelper(get()) }
         single { AnalyticsHelper(appContext, get()) }
         single { CustomTabsHelper(appContext) }
-        factory { FullscreenKeyboardHelper() }
+        factory { FullscreenKeyboardHelper(get()) }
         factory { StatefulLayoutHelper() }
     }
 

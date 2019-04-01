@@ -15,6 +15,7 @@ import androidx.core.app.NavUtils
 import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedActivity
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
@@ -39,7 +40,7 @@ import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
-import cafe.adriel.verne.presentation.ui.BaseActivity
+import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragment
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragmentListener
 import cafe.adriel.verne.presentation.util.StateAware
@@ -56,7 +57,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.EnhancedMovementMethod
 import org.wordpress.aztec.IHistoryListener
 
-class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
+class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
@@ -80,6 +81,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyFr
 
     override val viewModel by viewModel<EditorViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
+    private val themeHelper by inject<ThemeHelper>()
     private val customTabsHelper by inject<CustomTabsHelper>()
     private val fullscreenKeyboardHelper by inject<FullscreenKeyboardHelper>()
     private val statefulLayoutHelper by inject<StatefulLayoutHelper>()
@@ -104,7 +106,10 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyFr
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        themeHelper.init(this)
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_editor)
         setSupportActionBar(vToolbar)
         vToolbar.overflowIcon?.setTint(colorFromAttr(R.attr.actionMenuTextColor))
@@ -115,7 +120,7 @@ class EditorActivity : BaseActivity(), StateAware<EditorViewState>, TypographyFr
         }
 
         statefulLayoutHelper.init(this)
-        fullscreenKeyboardHelper.init(this, preferencesHelper.isFullscreen())
+        fullscreenKeyboardHelper.init(this)
 
         vStateLayout.setStateController(statefulLayoutHelper.controller)
         vEditMode.setOnClickListener { viewModel.toggleEditMode() }

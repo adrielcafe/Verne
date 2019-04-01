@@ -9,12 +9,13 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedActivity
 import cafe.adriel.krumbsview.model.Krumb
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.getFragment
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
-import cafe.adriel.verne.presentation.ui.BaseActivity
+import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerFragment
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
 import cafe.adriel.verne.presentation.ui.main.preferences.PreferencesFragment
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : BaseActivity(), ExplorerFragmentListener {
+class MainActivity : CoroutineScopedActivity(), ExplorerFragmentListener {
 
     companion object {
         private const val BACK_PRESSED_DELAY = 2000L
@@ -36,11 +37,15 @@ class MainActivity : BaseActivity(), ExplorerFragmentListener {
 
     private val viewModel by viewModel<MainViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
+    private val themeHelper by inject<ThemeHelper>()
 
     private var backPressedRecently = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        themeHelper.init(this)
+
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_main)
         setSupportActionBar(vToolbar)
 
