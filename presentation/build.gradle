@@ -4,16 +4,16 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion AppConfig.COMPILE_SDK_VERSION
+    compileSdkVersion Config.COMPILE_SDK_VERSION
     defaultConfig {
-        minSdkVersion AppConfig.MIN_SDK_VERSION
-        targetSdkVersion AppConfig.TARGET_SDK_VERSION
+        minSdkVersion Config.MIN_SDK_VERSION
+        targetSdkVersion Config.TARGET_SDK_VERSION
 
-        buildConfigField 'String', 'PROVIDER_AUTHORITY', "\"${AppConfig.PROVIDER_AUTHORITY}\""
-        buildConfigField 'String', 'CONTACT_EMAIL', "\"${AppConfig.CONTACT_EMAIL}\""
-        buildConfigField 'String', 'PRIVACY_POLICY_URL', "\"${AppConfig.PRIVACY_POLICY_URL}\""
-        buildConfigField 'String', 'PLAY_STORE_URL', "\"${AppConfig.PLAY_STORE_URL}\""
-        buildConfigField 'String', 'MARKET_URL', "\"${AppConfig.MARKET_URL}\""
+        buildConfigField 'String', 'PROVIDER_AUTHORITY', "\"${Config.PROVIDER_AUTHORITY}\""
+        buildConfigField 'String', 'CONTACT_EMAIL', "\"${Config.CONTACT_EMAIL}\""
+        buildConfigField 'String', 'PRIVACY_POLICY_URL', "\"${Config.PRIVACY_POLICY_URL}\""
+        buildConfigField 'String', 'PLAY_STORE_URL', "\"${Config.PLAY_STORE_URL}\""
+        buildConfigField 'String', 'MARKET_URL', "\"${Config.MARKET_URL}\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,56 +45,56 @@ dependencies {
     implementation project(':shared')
 
     // Kotlin
-    implementation AppLib.KOTLIN
-    implementation AppLib.COROUTINES
-    implementation AppLib.COROUTINES_SCOPES_APP_COMPAT
-    implementation AppLib.COROUTINES_SCOPES_VIEW_MODEL
+    implementation ModuleLib.KOTLIN
+    implementation ModuleLib.COROUTINES
+    implementation ModuleLib.COROUTINES_SCOPES_APP_COMPAT
+    implementation ModuleLib.COROUTINES_SCOPES_VIEW_MODEL
 
     // Android
-    implementation AppLib.MATERIAL
-    implementation AppLib.APP_COMPAT
-    implementation AppLib.PREFERENCE
-    implementation AppLib.CONSTRAINT_LAYOUT
-    implementation AppLib.LIFECYCLE
-    implementation AppLib.BROWSER
+    implementation ModuleLib.MATERIAL
+    implementation ModuleLib.APP_COMPAT
+    implementation ModuleLib.PREFERENCE
+    implementation ModuleLib.CONSTRAINT_LAYOUT
+    implementation ModuleLib.LIFECYCLE
+    implementation ModuleLib.BROWSER
 
     // Android KTX
-    implementation AppLib.CORE_KTX
-    implementation AppLib.PREFERENCE_KTX
-    implementation AppLib.FRAGMENT_KTX
+    implementation ModuleLib.CORE_KTX
+    implementation ModuleLib.PREFERENCE_KTX
+    implementation ModuleLib.FRAGMENT_KTX
 
     // Firebase
-    implementation AppLib.FIREBASE_CORE
+    implementation ModuleLib.FIREBASE_CORE
 
     // Quality
-    implementation AppLib.INSTABUG
+    implementation ModuleLib.INSTABUG
 
     // View
-    implementation AppLib.KRUMBS_VIEW
-    implementation AppLib.FAST_ADAPTER
-    implementation AppLib.FAST_ADAPTER_COMMONS
-    implementation AppLib.FAST_ADAPTER_EXTENSIONS
-    implementation AppLib.FAB_OPTIONS
-    implementation AppLib.SIMPLE_SEARCH_VIEW
-    implementation AppLib.NUMBER_SLIDING_PICKER
-    implementation AppLib.STATEFUL_LAYOUT
+    implementation ModuleLib.KRUMBS_VIEW
+    implementation ModuleLib.FAST_ADAPTER
+    implementation ModuleLib.FAST_ADAPTER_COMMONS
+    implementation ModuleLib.FAST_ADAPTER_EXTENSIONS
+    implementation ModuleLib.FAB_OPTIONS
+    implementation ModuleLib.SIMPLE_SEARCH_VIEW
+    implementation ModuleLib.NUMBER_SLIDING_PICKER
+    implementation ModuleLib.STATEFUL_LAYOUT
 
     // Util
-    implementation AppLib.KOIN_VIEW_MODEL
-    implementation AppLib.EIFFEL
-    implementation AppLib.TIMBER
-    implementation AppLib.KEYBOARD_LISTENER
-    implementation AppLib.PRETTY_TIME
-    implementation AppLib.PDF_GENERATOR
-    implementation AppLib.ASSENT
+    implementation ModuleLib.KOIN_VIEW_MODEL
+    implementation ModuleLib.EIFFEL
+    implementation ModuleLib.TIMBER
+    implementation ModuleLib.KEYBOARD_LISTENER
+    implementation ModuleLib.PRETTY_TIME
+    implementation ModuleLib.PDF_GENERATOR
+    implementation ModuleLib.ASSENT
 
     // Forks
     // https://github.com/adrielcafe/AztecEditor-Android
-    implementation AppLib.AZTEC_EDITOR
+    implementation ModuleLib.AZTEC_EDITOR
     // https://github.com/adrielcafe/material-dialogs
-    implementation AppLib.MATERIAL_DIALOGS_CORE
-    implementation AppLib.MATERIAL_DIALOGS_INPUT
-    implementation AppLib.MATERIAL_DIALOGS_FILES
+    implementation ModuleLib.MATERIAL_DIALOGS_CORE
+    implementation ModuleLib.MATERIAL_DIALOGS_INPUT
+    implementation ModuleLib.MATERIAL_DIALOGS_FILES
 
     // Test
     testImplementation TestLib.JUNIT

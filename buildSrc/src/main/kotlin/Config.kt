@@ -1,4 +1,4 @@
-object AppConfig {
+object Config {
     const val APPLICATION_ID = "cafe.adriel.verne"
 
     const val COMPILE_SDK_VERSION = 28

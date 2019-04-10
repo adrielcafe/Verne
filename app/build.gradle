@@ -9,19 +9,19 @@ def props = new Properties()
 project.file("app.properties").withInputStream { props.load(it) }
 
 android {
-    compileSdkVersion AppConfig.COMPILE_SDK_VERSION
+    compileSdkVersion Config.COMPILE_SDK_VERSION
     defaultConfig {
-        applicationId AppConfig.APPLICATION_ID
+        applicationId Config.APPLICATION_ID
 
-        minSdkVersion AppConfig.MIN_SDK_VERSION
-        targetSdkVersion AppConfig.TARGET_SDK_VERSION
+        minSdkVersion Config.MIN_SDK_VERSION
+        targetSdkVersion Config.TARGET_SDK_VERSION
 
         versionCode 1 // Set by CI
-        versionName AppConfig.VERSION_NAME
+        versionName Config.VERSION_NAME
 
         resConfigs 'en', 'pt'
-        buildConfigField 'String', 'EXPLORER_ROOT_FOLDER_NAME', "\"${AppConfig.EXPLORER_ROOT_FOLDER_NAME}\""
-        buildConfigField 'String', 'SETTINGS_FILE_NAME', "\"${AppConfig.SETTINGS_FILE_NAME}\""
+        buildConfigField 'String', 'EXPLORER_ROOT_FOLDER_NAME', "\"${Config.EXPLORER_ROOT_FOLDER_NAME}\""
+        buildConfigField 'String', 'SETTINGS_FILE_NAME', "\"${Config.SETTINGS_FILE_NAME}\""
         buildConfigField 'String', 'INSTABUG_KEY', props['key.instabug']
     }
     buildTypes {
@@ -73,25 +73,25 @@ dependencies {
     implementation project(':shared')
 
     // Kotlin
-    implementation AppLib.KOTLIN
-    implementation AppLib.COROUTINES
-    implementation AppLib.COROUTINES_SCOPES_APP_COMPAT
-    implementation AppLib.COROUTINES_SCOPES_VIEW_MODEL
+    implementation ModuleLib.KOTLIN
+    implementation ModuleLib.COROUTINES
+    implementation ModuleLib.COROUTINES_SCOPES_APP_COMPAT
+    implementation ModuleLib.COROUTINES_SCOPES_VIEW_MODEL
 
     // Firebase
-    implementation AppLib.FIREBASE_CORE
-    implementation AppLib.FIREBASE_PERF
+    implementation ModuleLib.FIREBASE_CORE
+    implementation ModuleLib.FIREBASE_PERF
 
     // Quality
-    implementation AppLib.INSTABUG
-    implementation AppLib.CRASHLYTICS
-    releaseImplementation AppLib.LEAK_CANARY_NO_OP
-    debugImplementation AppLib.LEAK_CANARY_ANDROID
-    debugImplementation AppLib.LEAK_CANARY_FRAGMENT
+    implementation ModuleLib.INSTABUG
+    implementation ModuleLib.CRASHLYTICS
+    releaseImplementation ModuleLib.LEAK_CANARY_NO_OP
+    debugImplementation ModuleLib.LEAK_CANARY_ANDROID
+    debugImplementation ModuleLib.LEAK_CANARY_FRAGMENT
 
     // Util
-    implementation AppLib.KOIN_VIEW_MODEL
-    implementation AppLib.TIMBER
+    implementation ModuleLib.KOIN_VIEW_MODEL
+    implementation ModuleLib.TIMBER
 }
 
 apply plugin: 'com.google.gms.google-services'

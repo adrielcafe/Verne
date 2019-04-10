@@ -13,12 +13,13 @@ test-pattern: # Configure exclusions for test sources
     - 'comments'
   exclude-rules:
     - 'NamingRules'
-    - 'MaxLineLength'
     - 'TooManyFunctions'
-    - 'ForEachOnRange'
     - 'FunctionMaxLength'
     - 'TooGenericExceptionCaught'
     - 'InstanceOfCheckForException'
+    - 'NoItParamInMultilineLambda'
+    - 'NoTrailingSpaces'
+    - 'MagicNumber'
 
 build:
   maxIssues: 10
@@ -76,8 +77,8 @@ complexity:
   ComplexMethod:
     active: true
     threshold: 10
-    ignoreSingleWhenExpression: false
-    ignoreSimpleWhenEntries: false
+    ignoreSingleWhenExpression: true
+    ignoreSimpleWhenEntries: true
   LabeledExpression:
     active: false
     ignoredLabels: ""
@@ -105,7 +106,7 @@ complexity:
     ignoreStringsRegex: '$^'
   TooManyFunctions:
     active: true
-    thresholdInFiles: 15
+    thresholdInFiles: 25
     thresholdInClasses: 15
     thresholdInInterfaces: 15
     thresholdInObjects: 15

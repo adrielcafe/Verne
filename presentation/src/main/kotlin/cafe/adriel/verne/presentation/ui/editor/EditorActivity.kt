@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.wordpress.aztec.EnhancedMovementMethod
+import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.IHistoryListener
 
 class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
@@ -174,7 +174,6 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
 
     override fun onDestroy() {
         KeyboardUtils.removeAllKeyboardToggleListeners()
-        vEditor.setOnUrlClickListener(null)
         super.onDestroy()
     }
 
@@ -266,8 +265,8 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
                 setRedoMenuItemEnabled(vEditor.history.redoValid())
             }
         })
-        vEditor.setOnUrlClickListener(object : EnhancedMovementMethod.OnUrlClickListener {
-            override fun onClick(widget: View, url: String) {
+        vEditor.setOnLinkTappedListener(object : AztecText.OnLinkTappedListener {
+            override fun onLinkTapped(widget: View, url: String) {
                 Uri.parse(url).openInChromeTab(this@EditorActivity, customTabsHelper.packageNameToUse)
             }
         })
@@ -392,7 +391,7 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
         vEditor.isCursorVisible = enabled
         vEditor.isFocusable = enabled
         vEditor.isFocusableInTouchMode = enabled
-        vEditor.setUrlClickable(!enabled)
+        vEditor.setLinkTapEnabled(!enabled)
 
         if (enabled) {
             supportActionBar?.setHomeAsUpIndicator(saveDrawable)

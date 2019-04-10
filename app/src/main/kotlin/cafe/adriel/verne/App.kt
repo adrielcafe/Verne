@@ -41,11 +41,10 @@ class App : Application() {
     }
 
     private fun initModules() {
-        val modules =
-            AppComponent(applicationContext).getModules() +
-                    PresentationComponent(applicationContext).getModules() +
-                    DomainComponent().getModules() +
-                    DataComponent().getModules()
+        val modules = AppComponent(applicationContext).getModules() +
+                PresentationComponent(applicationContext).getModules() +
+                DomainComponent().getModules() +
+                DataComponent().getModules()
         startKoin {
             androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
             androidContext(applicationContext)

@@ -11,9 +11,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Kotlin
-    implementation AppLib.KOTLIN
-    implementation AppLib.COROUTINES
+    implementation ModuleLib.KOTLIN
+    implementation ModuleLib.COROUTINES
 
     // Util
-    implementation AppLib.KOIN_CORE
+    implementation ModuleLib.KOIN_CORE
 }
