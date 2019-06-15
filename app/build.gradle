@@ -1,28 +1,17 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'io.fabric'
-
-def props = new Properties()
-project.file("app.properties").withInputStream { props.load(it) }
+apply from: '../android-module.gradle'
 
 android {
-    compileSdkVersion Config.COMPILE_SDK_VERSION
     defaultConfig {
         applicationId Config.APPLICATION_ID
-
-        minSdkVersion Config.MIN_SDK_VERSION
-        targetSdkVersion Config.TARGET_SDK_VERSION
 
         versionCode 1 // Set by CI
         versionName Config.VERSION_NAME
 
-        resConfigs 'en', 'pt'
         buildConfigField 'String', 'EXPLORER_ROOT_FOLDER_NAME', "\"${Config.EXPLORER_ROOT_FOLDER_NAME}\""
         buildConfigField 'String', 'SETTINGS_FILE_NAME', "\"${Config.SETTINGS_FILE_NAME}\""
-        buildConfigField 'String', 'INSTABUG_KEY', props['key.instabug']
     }
     buildTypes {
         debug {
@@ -40,57 +29,15 @@ android {
             resValue 'string', 'app_name', 'Verne'
         }
     }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin/'
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    dexOptions {
-        preDexLibraries true
-        maxProcessCount 8
-    }
-    androidExtensions {
-        experimental true
-        defaultCacheImplementation "SPARSE_ARRAY"
-    }
-    packagingOptions {
-        exclude 'META-INF/library_release.kotlin_module'
-    }
-}
-
-kapt {
-    useBuildCache true
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(':presentation')
     implementation project(':domain')
     implementation project(':data')
     implementation project(':shared')
 
-    // Kotlin
-    implementation ModuleLib.KOTLIN
-    implementation ModuleLib.COROUTINES
-    implementation ModuleLib.COROUTINES_SCOPES_APP_COMPAT
-    implementation ModuleLib.COROUTINES_SCOPES_VIEW_MODEL
-
-    // Firebase
-    implementation ModuleLib.FIREBASE_CORE
-    implementation ModuleLib.FIREBASE_PERF
-
-    // Quality
-    implementation ModuleLib.INSTABUG
-    implementation ModuleLib.CRASHLYTICS
-    releaseImplementation ModuleLib.LEAK_CANARY_NO_OP
-    debugImplementation ModuleLib.LEAK_CANARY_ANDROID
-    debugImplementation ModuleLib.LEAK_CANARY_FRAGMENT
-
-    // Util
-    implementation ModuleLib.KOIN_VIEW_MODEL
+    debugImplementation ModuleLib.LEAK_CANARY
     implementation ModuleLib.TIMBER
 }
 

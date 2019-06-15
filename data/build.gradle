@@ -1,23 +1,8 @@
-apply plugin: 'kotlin'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin/'
-}
+apply from: '../kotlin-module.gradle'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(':domain')
     implementation project(':shared')
 
-    // Kotlin
-    implementation ModuleLib.KOTLIN
-    implementation ModuleLib.COROUTINES
-
-    // Util
     implementation ModuleLib.PUFFER_DB
-    implementation ModuleLib.KOIN_CORE
 }

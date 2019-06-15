@@ -1,0 +1,48 @@
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion Config.COMPILE_SDK_VERSION
+    defaultConfig {
+        minSdkVersion Config.MIN_SDK_VERSION
+        targetSdkVersion Config.TARGET_SDK_VERSION
+
+        resConfigs 'en', 'pt'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin/'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
+    packagingOptions {
+        exclude 'META-INF/library_release.kotlin_module'
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+androidExtensions {
+    experimental true
+    defaultCacheImplementation "SPARSE_ARRAY"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation ModuleLib.KOIN_VIEW_MODEL
+
+    ModuleLib.kotlin.forEach { implementation it }
+    ModuleLib.firebase.forEach { implementation it }
+
+    TestLib.unitTest.forEach { testImplementation it }
+    TestLib.instrumentationTest.forEach { androidTestImplementation it }
+}

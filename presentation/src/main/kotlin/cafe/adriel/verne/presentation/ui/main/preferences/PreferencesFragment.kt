@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
@@ -21,9 +22,8 @@ import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
-import cafe.adriel.verne.shared.extension.launchMain
-import com.instabug.bug.BugReporting
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class PreferencesFragment :
@@ -34,7 +34,6 @@ class PreferencesFragment :
         const val PREF_FULLSCREEN = "appFullscreen"
 
         const val ABOUT_CONTACT_US = "aboutContactUs"
-        const val ABOUT_REPORT_BUG = "aboutReportBug"
         const val ABOUT_SHARE = "aboutShare"
         const val ABOUT_RATE_REVIEW = "aboutRateReview"
         const val ABOUT_PRIVACY_POLICY = "aboutPrivacyPolicy"
@@ -52,7 +51,6 @@ class PreferencesFragment :
         findPreference<Preference>(PREF_FULLSCREEN)?.onPreferenceChangeListener = this
 
         findPreference<Preference>(ABOUT_CONTACT_US)?.onPreferenceClickListener = this
-        findPreference<Preference>(ABOUT_REPORT_BUG)?.onPreferenceClickListener = this
         findPreference<Preference>(ABOUT_SHARE)?.onPreferenceClickListener = this
         findPreference<Preference>(ABOUT_RATE_REVIEW)?.onPreferenceClickListener = this
         findPreference<Preference>(ABOUT_PRIVACY_POLICY)?.onPreferenceClickListener = this
@@ -77,7 +75,7 @@ class PreferencesFragment :
                 analyticsHelper.logSwitchFullScreen(newValue)
             }
         }
-        launchMain {
+        lifecycleScope.launch {
             delay(actionDelayMs)
             activity?.recreate()
         }
@@ -87,10 +85,6 @@ class PreferencesFragment :
     override fun onPreferenceClick(preference: Preference?) = when (preference?.key) {
         ABOUT_CONTACT_US -> {
             sendEmail()
-            true
-        }
-        ABOUT_REPORT_BUG -> {
-            BugReporting.show(BugReporting.ReportType.BUG)
             true
         }
         ABOUT_SHARE -> {
@@ -134,7 +128,7 @@ class PreferencesFragment :
 
     private fun rateApp() = activity?.apply {
         try {
-            Uri.parse(BuildConfig.MARKET_URL).openInExternalBrowser(this)
+            Uri.parse(BuildConfig.MARKET_URI).openInExternalBrowser(this)
         } catch (e: Exception) {
             Uri.parse(BuildConfig.PLAY_STORE_URL).openInChromeTab(this, customTabsHelper.packageNameToUse)
         }

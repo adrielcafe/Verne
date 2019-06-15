@@ -10,11 +10,7 @@ class ExplorerItemChangeListener(
 ) : FileObserver(dir.path, EVENTS) {
 
     companion object {
-        private const val EVENTS =
-            FileObserver.DELETE or
-            FileObserver.CREATE or
-            FileObserver.MOVED_TO or
-            FileObserver.MOVED_FROM
+        private const val EVENTS = DELETE or CREATE or MOVED_TO or MOVED_FROM
     }
 
     init {

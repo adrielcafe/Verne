@@ -11,11 +11,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.core.view.forEachIndexed
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedActivity
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
@@ -36,6 +37,7 @@ import cafe.adriel.verne.presentation.extension.setAnimatedState
 import cafe.adriel.verne.presentation.extension.setMargins
 import cafe.adriel.verne.presentation.extension.showAnimated
 import cafe.adriel.verne.presentation.extension.showKeyboard
+import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
@@ -45,7 +47,6 @@ import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragment
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragmentListener
 import cafe.adriel.verne.presentation.util.StateAware
 import com.afollestad.materialdialogs.MaterialDialog
-import com.google.android.material.snackbar.Snackbar
 import com.rw.keyboardlistener.KeyboardUtils
 import kotlinx.android.synthetic.main.activity_editor.*
 import kotlinx.coroutines.Dispatchers
@@ -57,7 +58,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.AztecText
 import org.wordpress.aztec.IHistoryListener
 
-class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
+class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, TypographyFragmentListener {
 
     companion object {
         private const val EXTRA_FILE_PATH = "filePath"
@@ -151,12 +152,12 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
         super.onPostCreate(savedInstanceState)
         viewModel.observeState(this, ::onStateUpdated)
         statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
-        launch { loadText() }
+        lifecycleScope.launch { loadText() }
     }
 
     override fun onBackPressed() {
         if (viewModel.editMode) {
-            launch { saveText() }
+            lifecycleScope.launch { saveText() }
         } else {
             super.onBackPressed()
         }
@@ -168,7 +169,7 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
     }
 
     override fun onPause() {
-        launch { saveText(true) }
+        lifecycleScope.launch { saveText(true) }
         super.onPause()
     }
 
@@ -193,7 +194,7 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         android.R.id.home -> {
             if (viewModel.editMode) {
-                launch { saveText() }
+                lifecycleScope.launch { saveText() }
             } else {
                 NavUtils.navigateUpFromSameTask(this)
             }
@@ -329,7 +330,7 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
             if (uri?.path?.endsWith(".html") == true) {
                 uri.readText(this)
             } else {
-                Snackbar.make(vRoot, R.string.unsupported_file_format, Snackbar.LENGTH_SHORT).show()
+                showSnackBar(R.string.unsupported_file_format)
                 null
             }
         }
@@ -410,7 +411,7 @@ class EditorActivity : CoroutineScopedActivity(), StateAware<EditorViewState>, T
 
     private fun showStatisticsDialog() {
         vEditor.text?.toString()?.let { text ->
-            launch {
+            lifecycleScope.launch {
                 val message = viewModel.getStatisticsText(text)
                 MaterialDialog(this@EditorActivity).show {
                     title(R.string.statistics)

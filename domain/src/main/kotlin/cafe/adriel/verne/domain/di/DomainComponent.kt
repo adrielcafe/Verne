@@ -14,11 +14,7 @@ import org.koin.dsl.module
 
 class DomainComponent : Component {
 
-    private val interactorModule = module {
-        single { FontFamilySettingsInteractor(get()) }
-        single { FontSizeSettingsInteractor(get()) }
-        single { MarginSizeSettingsInteractor(get()) }
-
+    private val explorerInteractorModule = module {
         single { SearchItemsExplorerInteractor(get()) }
         single { SelectItemsExplorerInteractor(get(), get()) }
         single { CreateItemExplorerInteractor(get()) }
@@ -27,5 +23,11 @@ class DomainComponent : Component {
         single { ItemTextExplorerInteractor(get()) }
     }
 
-    override fun getModules() = listOf(interactorModule)
+    private val settingsInteractorModule = module {
+        single { FontFamilySettingsInteractor(get()) }
+        single { FontSizeSettingsInteractor(get()) }
+        single { MarginSizeSettingsInteractor(get()) }
+    }
+
+    override fun getModules() = listOf(explorerInteractorModule, settingsInteractorModule)
 }

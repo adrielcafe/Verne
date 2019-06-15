@@ -23,11 +23,6 @@
             android:icon="@drawable/ic_email"/>
 
         <Preference
-            android:key="aboutReportBug"
-            android:title="@string/report_bug"
-            android:icon="@drawable/ic_bug_report"/>
-
-        <Preference
             android:key="aboutShare"
             android:title="@string/share"
             android:icon="@drawable/ic_share"/>

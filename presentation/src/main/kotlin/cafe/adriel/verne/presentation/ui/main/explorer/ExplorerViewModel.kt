@@ -3,6 +3,7 @@ package cafe.adriel.verne.presentation.ui.main.explorer
 import android.content.Context
 import androidx.core.text.HtmlCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.interactor.explorer.CreateItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
@@ -12,8 +13,8 @@ import cafe.adriel.verne.domain.interactor.explorer.SearchItemsExplorerInteracto
 import cafe.adriel.verne.domain.interactor.explorer.SelectItemsExplorerInteractor
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerItemChangeListener
-import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import cafe.adriel.verne.shared.model.AppConfig
+import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import com.uttampanchasara.pdfgenerator.CreatePdf
 import kotlinx.coroutines.launch
 import java.io.File
@@ -29,7 +30,7 @@ class ExplorerViewModel(
     private val moveItemInteractor: MoveItemExplorerInteractor,
     private val renameItemInteractor: RenameItemExplorerInteractor,
     private val itemTextInteractor: ItemTextExplorerInteractor
-) : CoroutineScopedStateViewModel<ExplorerViewState>() {
+) : StateViewModel<ExplorerViewState>() {
 
     override val state = MutableLiveData<ExplorerViewState>()
 
@@ -86,7 +87,7 @@ class ExplorerViewModel(
             listener.stopWatching()
         }
         listener = ExplorerItemChangeListener(dir, true) {
-            launch {
+            viewModelScope.launch {
                 selectItems(dir)
             }
         }
@@ -162,7 +163,7 @@ class ExplorerViewModel(
     }
 
     suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCoroutine { continuation ->
-        launch {
+        viewModelScope.launch {
             getHtmlText(item)?.let { text ->
                 CreatePdf(appContext)
                     .setPdfName(item.title)

@@ -2,6 +2,7 @@ package cafe.adriel.verne.presentation.ui.main.explorer
 
 import android.view.View
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import cafe.adriel.verne.domain.extension.getPathAfterBaseDir
 import cafe.adriel.verne.domain.model.ExplorerItem
@@ -9,22 +10,25 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.shared.extension.filesCount
 import cafe.adriel.verne.shared.extension.formatMedium
-import cafe.adriel.verne.shared.extension.launchMain
-import com.mikepenz.fastadapter.commons.utils.FastAdapterUIUtils
 import com.mikepenz.fastadapter.items.AbstractItem
+import com.mikepenz.fastadapter.ui.utils.FastAdapterUIUtils
 import kotlinx.android.synthetic.main.item_explorer.view.*
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Date
 
 class ExplorerAdapterItem(
+    private val lifecycleScope: LifecycleCoroutineScope,
     val item: ExplorerItem,
     private val explorerRootFolder: File,
     private val searchResult: Boolean = false
-) : AbstractItem<ExplorerAdapterItem, ExplorerAdapterItem.ViewHolder>() {
+) : AbstractItem<ExplorerAdapterItem.ViewHolder>() {
 
-    override fun getLayoutRes() = R.layout.item_explorer
+    override val layoutRes: Int
+        get() = R.layout.item_explorer
 
-    override fun getType() = layoutRes
+    override val type: Int
+        get() = R.id.vItemContentLayout
 
     override fun getViewHolder(v: View) = ViewHolder(v)
 
@@ -38,7 +42,7 @@ class ExplorerAdapterItem(
             when (item) {
                 is ExplorerItem.Folder -> {
                     vItemDetails.text = context.resources.getQuantityString(R.plurals.files, 0, 0)
-                    launchMain {
+                    lifecycleScope.launch {
                         val filesCount = item.file.filesCount()
                         vItemDetails.text = context.resources.getQuantityString(R.plurals.files, filesCount, filesCount)
                     }
@@ -62,7 +66,7 @@ class ExplorerAdapterItem(
         super.unbindView(holder)
         with(holder.itemView) {
             vItemPath.text = ""
-            vItemPath.visibility = android.view.View.GONE
+            vItemPath.visibility = View.GONE
         }
     }
 

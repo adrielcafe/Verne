@@ -2,17 +2,12 @@ package cafe.adriel.verne.shared.extension
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-// TODO Add coroutines scope in all classes that uses this extension
-fun launchMain(body: suspend CoroutineScope.() -> Unit) {
-    GlobalScope.launch(Dispatchers.Main) {
-        body()
-    }
+suspend fun <T> withIo(body: suspend CoroutineScope.() -> T) = withContext(Dispatchers.IO) {
+    body()
 }
 
-suspend fun <T> withIo(body: suspend CoroutineScope.() -> T) = withContext(Dispatchers.IO) {
+suspend fun <T> withDefault(body: suspend CoroutineScope.() -> T) = withContext(Dispatchers.Default) {
     body()
 }

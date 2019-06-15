@@ -1,103 +1,24 @@
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+apply from: '../android-module.gradle'
 
 android {
-    compileSdkVersion Config.COMPILE_SDK_VERSION
     defaultConfig {
-        minSdkVersion Config.MIN_SDK_VERSION
-        targetSdkVersion Config.TARGET_SDK_VERSION
-
         buildConfigField 'String', 'PROVIDER_AUTHORITY', "\"${Config.PROVIDER_AUTHORITY}\""
         buildConfigField 'String', 'CONTACT_EMAIL', "\"${Config.CONTACT_EMAIL}\""
         buildConfigField 'String', 'PRIVACY_POLICY_URL', "\"${Config.PRIVACY_POLICY_URL}\""
         buildConfigField 'String', 'PLAY_STORE_URL', "\"${Config.PLAY_STORE_URL}\""
-        buildConfigField 'String', 'MARKET_URL', "\"${Config.MARKET_URL}\""
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField 'String', 'MARKET_URI', "\"${Config.MARKET_URI}\""
     }
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin/'
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    dexOptions {
-        preDexLibraries true
-        maxProcessCount 8
-    }
-    androidExtensions {
-        experimental true
-        defaultCacheImplementation "SPARSE_ARRAY"
-    }
-}
-
-kapt {
-    useBuildCache true
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(':domain')
     implementation project(':shared')
 
-    // Kotlin
-    implementation ModuleLib.KOTLIN
-    implementation ModuleLib.COROUTINES
-    implementation ModuleLib.COROUTINES_SCOPES_APP_COMPAT
-    implementation ModuleLib.COROUTINES_SCOPES_VIEW_MODEL
-
-    // Android
-    implementation ModuleLib.MATERIAL
-    implementation ModuleLib.APP_COMPAT
-    implementation ModuleLib.PREFERENCE
-    implementation ModuleLib.CONSTRAINT_LAYOUT
-    implementation ModuleLib.LIFECYCLE
-    implementation ModuleLib.BROWSER
-
-    // Android KTX
-    implementation ModuleLib.CORE_KTX
-    implementation ModuleLib.PREFERENCE_KTX
-    implementation ModuleLib.FRAGMENT_KTX
-
-    // Firebase
-    implementation ModuleLib.FIREBASE_CORE
-
-    // Quality
-    implementation ModuleLib.INSTABUG
-
-    // View
-    implementation ModuleLib.KRUMBS_VIEW
-    implementation ModuleLib.FAST_ADAPTER
-    implementation ModuleLib.FAST_ADAPTER_COMMONS
-    implementation ModuleLib.FAST_ADAPTER_EXTENSIONS
-    implementation ModuleLib.FAB_OPTIONS
-    implementation ModuleLib.SIMPLE_SEARCH_VIEW
-    implementation ModuleLib.NUMBER_SLIDING_PICKER
-    implementation ModuleLib.STATEFUL_LAYOUT
-
-    // Util
-    implementation ModuleLib.KOIN_VIEW_MODEL
     implementation ModuleLib.EIFFEL
     implementation ModuleLib.TIMBER
-    implementation ModuleLib.KEYBOARD_LISTENER
-    implementation ModuleLib.PRETTY_TIME
-    implementation ModuleLib.PDF_GENERATOR
-    implementation ModuleLib.ASSENT
 
-    // Forks
-    // https://github.com/adrielcafe/AztecEditor-Android
-    implementation ModuleLib.AZTEC_EDITOR
-    // https://github.com/adrielcafe/material-dialogs
-    implementation ModuleLib.MATERIAL_DIALOGS_CORE
-    implementation ModuleLib.MATERIAL_DIALOGS_INPUT
-    implementation ModuleLib.MATERIAL_DIALOGS_FILES
-
-    // Test
-    testImplementation TestLib.JUNIT
-    androidTestImplementation TestLib.ESPRESSO
-    androidTestImplementation TestLib.RUNNER
+    ModuleLib.android.forEach { implementation it }
+    ModuleLib.androidKtx.forEach { implementation it }
+    ModuleLib.view.forEach { implementation it }
 }

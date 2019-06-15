@@ -2,6 +2,7 @@ package cafe.adriel.verne.presentation.ui.editor
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.settings.FontFamilySettingsInteractor
@@ -16,10 +17,10 @@ import cafe.adriel.verne.presentation.extension.readTimeInSeconds
 import cafe.adriel.verne.presentation.extension.wordCount
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
-import cafe.adriel.verne.presentation.util.CoroutineScopedStateViewModel
 import cafe.adriel.verne.shared.extension.formatShort
 import cafe.adriel.verne.shared.extension.withIo
 import cafe.adriel.verne.shared.model.AppConfig
+import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Calendar
@@ -32,7 +33,7 @@ class EditorViewModel(
     private val marginSizeInteractor: MarginSizeSettingsInteractor,
     private val renameItemInteractor: RenameItemExplorerInteractor,
     private val itemTextInteractor: ItemTextExplorerInteractor
-) : CoroutineScopedStateViewModel<EditorViewState>() {
+) : StateViewModel<EditorViewState>() {
 
     override val state = MutableLiveData<EditorViewState>()
 
@@ -46,7 +47,7 @@ class EditorViewModel(
     }
 
     fun onSettingsChanged() {
-        launch {
+        viewModelScope.launch {
             updateState { it.copy(settings = getSettings()) }
         }
     }

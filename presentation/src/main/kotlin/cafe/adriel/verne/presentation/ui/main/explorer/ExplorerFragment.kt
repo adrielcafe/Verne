@@ -10,7 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedFragment
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import cafe.adriel.verne.domain.extension.asExplorerItem
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
@@ -20,6 +21,7 @@ import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.setAnimatedState
 import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.extension.showAnimated
+import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.ui.editor.EditorActivity
@@ -35,18 +37,21 @@ import com.afollestad.materialdialogs.input.input
 import com.afollestad.materialdialogs.list.listItems
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.mikepenz.fastadapter.commons.adapters.FastItemAdapter
+import com.mikepenz.fastadapter.ISelectionListener
+import com.mikepenz.fastadapter.adapters.FastItemAdapter
+import com.mikepenz.fastadapter.helpers.ActionModeHelper
 import com.mikepenz.fastadapter.select.SelectExtension
-import com.mikepenz.fastadapter_extensions.ActionModeHelper
+import com.mikepenz.fastadapter.select.getSelectExtension
 import kotlinx.android.synthetic.main.fragment_explorer.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ExplorerFragment :
-    CoroutineScopedFragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
+class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
 
     companion object {
         private const val FILE_NAME_MAX_LENGTH = 50
@@ -59,7 +64,7 @@ class ExplorerFragment :
     private val adapter by lazy { FastItemAdapter<ExplorerAdapterItem>() }
     private val adapterSelectHelper by lazy { adapter.getExtension(javaClass<SelectExtension<ExplorerAdapterItem>>()) }
     private val adapterActionModeHelper by lazy {
-        ActionModeHelper<ExplorerAdapterItem>(adapter, R.menu.main_action_mode, this)
+        ActionModeHelper(adapter, R.menu.main_action_mode, this)
     }
 
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
@@ -95,7 +100,7 @@ class ExplorerFragment :
             findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList =
                 ColorStateList.valueOf(Color.WHITE)
             setOnClickListener { view ->
-                launch {
+                lifecycleScope.launch {
                     delay(actionDelayMs)
                     when (view.id) {
                         R.id.action_new_folder -> showNewItemDialog(true)
@@ -115,24 +120,24 @@ class ExplorerFragment :
     override fun onStateUpdated(state: ExplorerViewState) {
         state.apply {
             items?.let { setItems(it) }
-            exception?.let { Snackbar.make(vStateLayout, it.localizedMessage, Snackbar.LENGTH_SHORT).show() }
+            exception?.let { activity?.showSnackBar(it.localizedMessage) }
         }
     }
 
-    override fun onClick(mode: ActionMode, menuItem: MenuItem): Boolean {
+    override fun onClick(mode: ActionMode, item: MenuItem): Boolean {
         val selectedItems = adapterSelectHelper?.selectedItems?.map { it.item }
         selectedItems?.also { items ->
-            when (menuItem.itemId) {
+            when (item.itemId) {
                 R.id.action_print -> {
-                    val item = items.firstOrNull()
-                    if (item is ExplorerItem.File) {
-                        printItem(item)
+                    val explorerItem = items.firstOrNull()
+                    if (explorerItem is ExplorerItem.File) {
+                        printItem(explorerItem)
                     }
                 }
                 R.id.action_share -> {
-                    val item = items.firstOrNull()
-                    if (item is ExplorerItem.File) {
-                        shareItem(item)
+                    val explorerItem = items.firstOrNull()
+                    if (explorerItem is ExplorerItem.File) {
+                        shareItem(explorerItem)
                     }
                 }
                 R.id.action_move -> showMoveItemsDialog(selectedItems)
@@ -147,10 +152,11 @@ class ExplorerFragment :
     }
 
     private fun initAdapter() {
-        adapter.withSelectable(true)
-            .withMultiSelect(true)
-            .withSelectOnLongClick(true)
-            .withOnPreLongClickListener { _, _, _, position ->
+        adapter.apply {
+            withUseIdDistributor(true)
+            setHasStableIds(true)
+
+            onPreLongClickListener = { _, _, _, position ->
                 val activity = requireActivity() as AppCompatActivity?
                 when {
                     viewModel.searchMode -> false
@@ -158,13 +164,15 @@ class ExplorerFragment :
                     else -> false
                 }
             }
-            .withOnPreClickListener { _, _, item, _ ->
+
+            onPreClickListener = { _, _, item, _ ->
                 when {
                     viewModel.searchMode -> false
                     else -> adapterActionModeHelper.onClick(item) ?: false
                 }
             }
-            .withOnClickListener { _, _, item, _ ->
+
+            onClickListener = { _, _, item, _ ->
                 if (adapterActionModeHelper.isActive) {
                     true
                 } else {
@@ -172,39 +180,46 @@ class ExplorerFragment :
                     false
                 }
             }
-            .withSelectionListener { _, _ ->
-                adapterActionModeHelper.actionMode?.let {
-                    updateActionModeMenu(it)
+
+            getSelectExtension().apply {
+                isSelectable = true
+                multiSelect = true
+                selectOnLongClick = true
+                selectionListener = object : ISelectionListener<ExplorerAdapterItem> {
+                    override fun onSelectionChanged(item: ExplorerAdapterItem?, selected: Boolean) {
+                        adapterActionModeHelper.actionMode?.let {
+                            updateActionModeMenu(it)
+                        }
+                    }
                 }
             }
-            .setHasStableIds(true)
+        }
     }
 
     private fun setItems(items: List<ExplorerItem>) {
-        launch {
-            val state = if (viewModel.searchMode && viewModel.isSearchQueryEmpty()) {
-                StatefulLayoutHelper.STATE_EMPTY
-            } else if (items.isEmpty()) {
-                StatefulLayoutHelper.STATE_NOT_FOUND
-            } else {
-                StatefulLayoutHelper.STATE_CONTENT
-            }
-            statefulLayoutHelper.controller.setAnimatedState(vStateLayout, state)
+        val state = when {
+            viewModel.searchMode && viewModel.isSearchQueryEmpty() -> StatefulLayoutHelper.STATE_EMPTY
+            items.isEmpty() -> StatefulLayoutHelper.STATE_NOT_FOUND
+            else -> StatefulLayoutHelper.STATE_CONTENT
         }
+        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, state)
 
-        val scrollY = vItems.scrollY
-        val adapterItems = items
-            .asSequence()
-            .sortedBy { it.title.toLowerCase() } // Secondary comparator
-            .sortedBy { it is ExplorerItem.File } // Primary comparator
-            .map { ExplorerAdapterItem(it, viewModel.getBaseDir(), viewModel.searchMode) }
-            .toList()
-        adapter.set(adapterItems)
-        vItems.scrollTo(0, scrollY)
+        lifecycleScope.launch {
+            val adapterItems = withContext(Dispatchers.Default) {
+                items.asSequence()
+                    .sortedBy { it.title.toLowerCase() } // Secondary comparator
+                    .sortedBy { it is ExplorerItem.File } // Primary comparator
+                    .map { ExplorerAdapterItem(lifecycleScope, it, viewModel.getBaseDir(), viewModel.searchMode) }
+                    .toList()
+            }
+            val scrollY = vItems.scrollY
+            adapter.set(adapterItems)
+            vItems.scrollTo(0, scrollY)
+        }
     }
 
     private fun createItem(name: String, isFolder: Boolean = false) {
-        launch {
+        lifecycleScope.launch {
             val newItem = viewModel.putItem(name, isFolder)
             openItem(newItem)
             if (isFolder) {
@@ -226,16 +241,20 @@ class ExplorerFragment :
     }
 
     private fun printItem(item: ExplorerItem.File) {
-        launch {
-            viewModel.getHtmlText(item)?.let {
-                listener.onPrintHtml(item.title, it)
+        lifecycleScope.launch {
+            viewModel.getHtmlText(item)?.let { html ->
+                if (html.isEmpty()) {
+                    activity?.showSnackBar(R.string.file_empty)
+                } else {
+                    listener.onPrintHtml(item.title, html)
+                }
             }
         }
     }
 
     private fun shareItem(item: ExplorerItem.File) {
         if (item.isEmpty) {
-            Snackbar.make(vStateLayout, R.string.file_empty, Snackbar.LENGTH_SHORT).show()
+            activity?.showSnackBar(R.string.file_empty)
             return
         }
 
@@ -244,7 +263,7 @@ class ExplorerFragment :
                 title(R.string.share_as)
                 negativeButton(R.string.cancel)
                 listItems(R.array.share_item_options) { dialog, _, text ->
-                    launch {
+                    lifecycleScope.launch {
                         when (text) {
                             getString(R.string.text) -> viewModel.getPlainText(item)?.share(this@apply)
                             getString(R.string.html_text) -> viewModel.getHtmlText(item)?.share(this@apply, true)
@@ -260,14 +279,14 @@ class ExplorerFragment :
     }
 
     private fun deleteItems(items: List<ExplorerItem>) {
-        launch {
+        lifecycleScope.launch {
             view?.apply {
                 val text = resources.getQuantityString(R.plurals.items_deleted, items.size, items.size)
                 items.forEach { viewModel.softDeleteItem(it) }
                 Snackbar.make(this, text, Snackbar.LENGTH_LONG)
                     .setActionTextColor(color(R.color.colorAccent))
                     .setAction(R.string.undo) {
-                        this@ExplorerFragment.launch {
+                        lifecycleScope.launch {
                             items.forEach { viewModel.restoreItem(it) }
                         }
                     }
@@ -277,7 +296,7 @@ class ExplorerFragment :
     }
 
     private fun moveItems(items: List<ExplorerItem>, folder: File) {
-        launch {
+        lifecycleScope.launch {
             val item = folder.asExplorerItem()
             if (item is ExplorerItem.Folder) {
                 items.forEach { viewModel.moveItem(it, item) }
@@ -286,11 +305,11 @@ class ExplorerFragment :
     }
 
     fun search(query: String) {
-        launch { viewModel.searchItems(query) }
+        lifecycleScope.launch { viewModel.searchItems(query) }
     }
 
     fun setSearchModeEnabled(enabled: Boolean) {
-        launch {
+        lifecycleScope.launch {
             viewModel.searchMode = enabled
             delay(actionDelayMs)
             if (enabled) {
@@ -334,7 +353,7 @@ class ExplorerFragment :
                     inputType = InputType.TYPE_TEXT_FLAG_CAP_SENTENCES,
                     prefill = item.title
                 ) { _, name ->
-                    launch {
+                    lifecycleScope.launch {
                         viewModel.renameItem(item, name.toString())
                     }
                 }

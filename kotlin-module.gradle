@@ -1,0 +1,18 @@
+apply plugin: 'kotlin'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin/'
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation ModuleLib.KOIN_CORE
+
+    ModuleLib.kotlin.forEach { implementation it }
+
+    TestLib.unitTest.forEach { testImplementation it }
+}

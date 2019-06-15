@@ -5,15 +5,17 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import cafe.adriel.androidcoroutinescopes.appcompat.CoroutineScopedActivity
+import androidx.lifecycle.lifecycleScope
 import cafe.adriel.krumbsview.model.Krumb
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.getFragment
+import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerFragment
@@ -22,14 +24,13 @@ import cafe.adriel.verne.presentation.ui.main.preferences.PreferencesFragment
 import cafe.adriel.verne.shared.extension.tagOf
 import com.ferfalk.simplesearchview.SimpleSearchView
 import com.ferfalk.simplesearchview.SimpleSearchViewListener
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : CoroutineScopedActivity(), ExplorerFragmentListener {
+class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
 
     companion object {
         private const val BACK_PRESSED_DELAY = 2000L
@@ -103,9 +104,9 @@ class MainActivity : CoroutineScopedActivity(), ExplorerFragmentListener {
             vSearch.isSearchOpen -> vSearch.closeSearch()
             backToPreviousFolder -> vBreadcrumbs.removeLastItem()
             backPressedRecently -> super.onBackPressed()
-            else -> launch {
+            else -> lifecycleScope.launch {
                 backPressedRecently = true
-                Snackbar.make(vRoot, R.string.press_back_exit, Snackbar.LENGTH_SHORT).show()
+                showSnackBar(R.string.press_back_exit)
                 delay(BACK_PRESSED_DELAY)
                 backPressedRecently = false
             }
