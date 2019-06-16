@@ -32,7 +32,7 @@ class App : Application() {
                 DomainComponent().getModules() +
                 DataComponent().getModules()
         startKoin {
-            androidLogger(if (BuildConfig.RELEASE) Level.ERROR else Level.DEBUG)
+            if (!BuildConfig.RELEASE) androidLogger(Level.DEBUG)
             androidContext(applicationContext)
             modules(modules)
         }

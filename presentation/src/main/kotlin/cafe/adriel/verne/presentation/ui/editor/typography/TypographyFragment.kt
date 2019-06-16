@@ -25,9 +25,8 @@ import it.sephiroth.android.library.numberpicker.doOnProgressChanged
 import kotlinx.android.synthetic.main.fragment_typography.*
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import timber.log.Timber
 
-class TypographyFragment : BottomSheetDialogFragment() {
+internal class TypographyFragment : BottomSheetDialogFragment() {
 
     private val fontFamilyInteractor by inject<FontFamilySettingsInteractor>()
     private val fontSizeInteractor by inject<FontSizeSettingsInteractor>()
@@ -54,14 +53,8 @@ class TypographyFragment : BottomSheetDialogFragment() {
             }
             post {
                 onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(
-                        parent: AdapterView<*>?,
-                        view: View?,
-                        position: Int,
-                        id: Long
-                    ) {
-                        lifecycleScope.launch { onFontFamilySelected(FontFamily.sortedValues[position]) }
-                    }
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) =
+                        onFontFamilySelected(FontFamily.sortedValues[position])
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
@@ -70,21 +63,17 @@ class TypographyFragment : BottomSheetDialogFragment() {
         vFontSize.apply {
             setupNumberPicker(this)
             doOnProgressChanged { _, progress, fromUser ->
-                if (fromUser) {
-                    lifecycleScope.launch { onFontSizeSelected(progress) }
-                }
+                if (fromUser) onFontSizeSelected(progress)
             }
         }
         vMarginSize.apply {
             setupNumberPicker(this)
             doOnProgressChanged { _, progress, fromUser ->
-                if (fromUser) {
-                    lifecycleScope.launch { onMarginSizeSelected(progress) }
-                }
+                if (fromUser) onMarginSizeSelected(progress)
             }
         }
 
-        lifecycleScope.launch { loadSettings() }
+        loadSettings()
     }
 
     override fun onDestroy() {
@@ -104,7 +93,7 @@ class TypographyFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private suspend fun loadSettings() {
+    private fun loadSettings() {
         lifecycleScope.launch {
             val selectedFontFamilyPosition = FontFamily.sortedValues
                 .indexOfFirst { fontFamily ->
@@ -118,27 +107,24 @@ class TypographyFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private suspend fun onFontFamilySelected(selectedFontFamily: FontFamily) {
+    private fun onFontFamilySelected(selectedFontFamily: FontFamily) {
         lifecycleScope.launch {
-            Timber.e("SAVE FONT FAMILY $selectedFontFamily")
             fontFamilyInteractor.set(selectedFontFamily.name)
             listener?.onSettingsChanged()
             analyticsHelper.logTypographyFontFamily(selectedFontFamily.name)
         }
     }
 
-    private suspend fun onFontSizeSelected(selectedFontSize: Int) {
+    private fun onFontSizeSelected(selectedFontSize: Int) {
         lifecycleScope.launch {
-            Timber.e("SAVE FONT SIZE $selectedFontSize")
             fontSizeInteractor.set(selectedFontSize)
             listener?.onSettingsChanged()
             analyticsHelper.logTypographyFontSize(selectedFontSize)
         }
     }
 
-    private suspend fun onMarginSizeSelected(selectedMarginSize: Int) {
+    private fun onMarginSizeSelected(selectedMarginSize: Int) {
         lifecycleScope.launch {
-            Timber.e("SAVE MARGIN SIZE $selectedMarginSize")
             marginSizeInteractor.set(selectedMarginSize)
             listener?.onSettingsChanged()
             analyticsHelper.logTypographyMarginSize(selectedMarginSize)

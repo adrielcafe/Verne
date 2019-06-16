@@ -6,20 +6,20 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import androidx.annotation.Px
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.getSystemService
 import androidx.transition.Fade
 import androidx.transition.TransitionManager
 import cafe.adriel.verne.presentation.R
 import cz.kinst.jakub.view.StatefulLayout
 
-fun EditText.showKeyboard() = context.getSystemService<InputMethodManager>()?.showSoftInput(this, 0)
+fun EditText.showKeyboard() {
+    context.getSystemService<InputMethodManager>()?.showSoftInput(this, 0)
+}
 
-fun EditText.hideKeyboard() = context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
+fun EditText.hideKeyboard() {
+    context.getSystemService<InputMethodManager>()?.hideSoftInputFromWindow(windowToken, 0)
+}
 
 fun View.showAnimated() {
     if (visibility != View.VISIBLE) {
@@ -35,29 +35,18 @@ fun View.hideAnimated() {
     }
 }
 
-fun ViewGroup.setMargins(
-    @Px start: Int = 0,
-    @Px top: Int = 0,
-    @Px right: Int = 0,
-    @Px bottom: Int = 0
-) {
-    when (layoutParams) {
-        is FrameLayout.LayoutParams ->
-            (layoutParams as FrameLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is LinearLayout.LayoutParams ->
-            (layoutParams as LinearLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is RelativeLayout.LayoutParams ->
-            (layoutParams as RelativeLayout.LayoutParams).setMargins(start, top, right, bottom)
-        is ConstraintLayout.LayoutParams ->
-            (layoutParams as ConstraintLayout.LayoutParams).setMargins(start, top, right, bottom)
-        else -> throw IllegalArgumentException("${layoutParams.javaClass} not implemented")
+fun ViewGroup.setMargins(@Px start: Int = 0, @Px top: Int = 0, @Px right: Int = 0, @Px bottom: Int = 0) {
+    when (val params = layoutParams) {
+        is ViewGroup.MarginLayoutParams -> {
+            params.setMargins(start, top, right, bottom)
+            requestLayout()
+        }
     }
-    requestLayout()
 }
 
-fun StatefulLayout.StateController.setAnimatedState(layout: StatefulLayout, state: String) {
+fun StatefulLayout.StateController.setStateWithAnimation(layout: StatefulLayout, newState: String) {
     TransitionManager.beginDelayedTransition(layout, Fade())
-    this.state = state
+    state = newState
 }
 
 fun Int.dpToPx() = (this * Resources.getSystem().displayMetrics.density).toInt()

@@ -22,7 +22,6 @@ fun Context.colorFromAttr(@AttrRes resId: Int): Int {
     attrs.recycle()
     return color
 }
-
 fun Fragment.colorFromAttr(@AttrRes resId: Int) = context?.colorFromAttr(resId) ?: Color.TRANSPARENT
 
 fun Context.int(@IntegerRes resId: Int) = resources.getInteger(resId)
@@ -33,13 +32,8 @@ fun Fragment.long(@IntegerRes resId: Int) = context?.long(resId) ?: -1
 
 fun Context.font(@FontRes resId: Int, callback: (typeface: Typeface) -> Unit) =
     ResourcesCompat.getFont(this, resId, object : ResourcesCompat.FontCallback() {
-        override fun onFontRetrieved(typeface: Typeface) {
-            callback(typeface)
-        }
-
-        override fun onFontRetrievalFailed(reason: Int) {
-            Timber.e("Font retrieval failed: $reason")
-        }
+        override fun onFontRetrieved(typeface: Typeface) = callback(typeface)
+        override fun onFontRetrievalFailed(reason: Int) = Timber.e("Font retrieval failed: $reason")
     }, null)
 
 fun Context.drawable(@DrawableRes resId: Int, tintColor: Int? = null) =

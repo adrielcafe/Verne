@@ -18,7 +18,7 @@ import cafe.adriel.verne.presentation.extension.wordCount
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
 import cafe.adriel.verne.shared.extension.formatShort
-import cafe.adriel.verne.shared.extension.withIo
+import cafe.adriel.verne.shared.extension.withIO
 import cafe.adriel.verne.shared.model.AppConfig
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import kotlinx.coroutines.launch
@@ -65,28 +65,19 @@ class EditorViewModel(
         return ExplorerItem.File(file.path)
     }
 
-    suspend fun saveText(title: String, text: String) = withIo {
-        try {
-            // Rename the file if the title has changed
-            if (title != item.title) {
-                item = renameItemInteractor(item, title) as ExplorerItem.File
-            }
-            itemTextInteractor.set(item, text)
-        } catch (e: Exception) {
-            e.printStackTrace()
+    suspend fun saveText(title: String, text: String) = withIO {
+        // Rename the file if the title has changed
+        if (title != item.title) {
+            item = renameItemInteractor(item, title) as ExplorerItem.File
         }
+        itemTextInteractor.set(item, text)
     }
 
-    suspend fun getHtmlText() = withIo {
-        try {
-            itemTextInteractor.get(item)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ""
-        }
+    suspend fun getHtmlText() = withIO {
+        itemTextInteractor.get(item)
     }
 
-    suspend fun getStatisticsText(text: String): String {
+    suspend fun getStatisticsHtmlText(text: String): String {
         val paragraphCount = text.paragraphCount()
         val wordCount = text.wordCount()
         val charCountWithWhitespace = text.length

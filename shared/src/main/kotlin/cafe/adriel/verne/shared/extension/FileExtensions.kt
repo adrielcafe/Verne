@@ -7,8 +7,9 @@ private val fileFilter by lazy {
     FileFilter { !it.isDirectory && !it.isHidden }
 }
 
-suspend fun File.filesCount() = withIo {
-    walk().fold(0) { acc, file ->
-        acc + (file.listFiles(fileFilter)?.size ?: 0)
+suspend fun File.filesCount() = withIO {
+    walk().fold(0) { total, file ->
+        val count = file.listFiles(fileFilter)?.size ?: 0
+        total + count
     }
 }

@@ -6,18 +6,16 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate
 import cafe.adriel.verne.presentation.R
 
-class ThemeHelper(private val preferencesHelper: PreferencesHelper) {
+internal class ThemeHelper(private val preferencesHelper: PreferencesHelper) {
 
     /**
      * Must be called before `super.onCreate()`
      */
     fun init(activity: Activity) {
-        activity.apply {
-            setTheme(R.style.AppTheme)
+        activity.setTheme(R.style.AppTheme)
 
-            updateDarkMode(preferencesHelper.isDarkMode())
-            updateFullscreen(window, preferencesHelper.isFullscreen())
-        }
+        updateDarkMode(preferencesHelper.isDarkMode())
+        updateFullscreen(activity.window, preferencesHelper.isFullscreen())
     }
 
     private fun updateDarkMode(isDarkMode: Boolean) {

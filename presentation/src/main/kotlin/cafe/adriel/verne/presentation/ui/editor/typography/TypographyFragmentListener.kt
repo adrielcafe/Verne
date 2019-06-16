@@ -1,6 +1,6 @@
 package cafe.adriel.verne.presentation.ui.editor.typography
 
-interface TypographyFragmentListener {
+internal interface TypographyFragmentListener {
 
     fun onSettingsChanged()
 }

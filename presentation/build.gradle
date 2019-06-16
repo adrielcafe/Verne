@@ -16,7 +16,7 @@ dependencies {
     implementation project(':shared')
 
     implementation ModuleLib.EIFFEL
-    implementation ModuleLib.TIMBER
+    api ModuleLib.TIMBER
 
     ModuleLib.android.forEach { implementation it }
     ModuleLib.androidKtx.forEach { implementation it }

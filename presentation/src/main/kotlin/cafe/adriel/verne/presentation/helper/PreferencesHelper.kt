@@ -2,7 +2,7 @@ package cafe.adriel.verne.presentation.helper
 
 import android.content.SharedPreferences
 
-class PreferencesHelper(private val preferences: SharedPreferences) {
+internal class PreferencesHelper(private val preferences: SharedPreferences) {
 
     companion object {
         const val PREF_DARK_MODE = "appDarkMode"

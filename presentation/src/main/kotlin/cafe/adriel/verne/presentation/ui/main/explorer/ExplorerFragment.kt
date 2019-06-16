@@ -18,7 +18,7 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
 import cafe.adriel.verne.presentation.extension.hideAnimated
 import cafe.adriel.verne.presentation.extension.long
-import cafe.adriel.verne.presentation.extension.setAnimatedState
+import cafe.adriel.verne.presentation.extension.setStateWithAnimation
 import cafe.adriel.verne.presentation.extension.share
 import cafe.adriel.verne.presentation.extension.showAnimated
 import cafe.adriel.verne.presentation.extension.showSnackBar
@@ -28,6 +28,7 @@ import cafe.adriel.verne.presentation.ui.editor.EditorActivity
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
 import cafe.adriel.verne.presentation.util.StateAware
 import cafe.adriel.verne.shared.extension.javaClass
+import cafe.adriel.verne.shared.extension.withDefault
 import com.afollestad.assent.Permission
 import com.afollestad.assent.runWithPermissions
 import com.afollestad.materialdialogs.MaterialDialog
@@ -43,15 +44,14 @@ import com.mikepenz.fastadapter.helpers.ActionModeHelper
 import com.mikepenz.fastadapter.select.SelectExtension
 import com.mikepenz.fastadapter.select.getSelectExtension
 import kotlinx.android.synthetic.main.fragment_explorer.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 
-class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
+internal class ExplorerFragment :
+    Fragment(), StateAware<ExplorerViewState>, ActionModeHelper.ActionItemClickedListener {
 
     companion object {
         private const val FILE_NAME_MAX_LENGTH = 50
@@ -63,21 +63,14 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
 
     private val adapter by lazy { FastItemAdapter<ExplorerAdapterItem>() }
     private val adapterSelectHelper by lazy { adapter.getExtension(javaClass<SelectExtension<ExplorerAdapterItem>>()) }
-    private val adapterActionModeHelper by lazy {
-        ActionModeHelper(adapter, R.menu.main_action_mode, this)
-    }
+    private val adapterActionModeHelper by lazy { ActionModeHelper(adapter, R.menu.main_action_mode, this) }
 
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
 
-    lateinit var listener: ExplorerFragmentListener
+    var listener: ExplorerFragmentListener? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_explorer, container, false)
-    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
+        inflater.inflate(R.layout.fragment_explorer, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,32 +80,9 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
         }
 
         initAdapter()
+        initViews()
 
-        vStateLayout.setStateController(statefulLayoutHelper.controller)
-        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
-
-        with(vItems) {
-            setHasFixedSize(true)
-            adapter = this@ExplorerFragment.adapter
-            itemAnimator = null
-        }
-        with(vExplorerFab) {
-            findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList =
-                ColorStateList.valueOf(Color.WHITE)
-            setOnClickListener { view ->
-                lifecycleScope.launch {
-                    delay(actionDelayMs)
-                    when (view.id) {
-                        R.id.action_new_folder -> showNewItemDialog(true)
-                        R.id.action_new_file -> showNewItemDialog(false)
-                    }
-                }
-            }
-        }
-
-        if (savedInstanceState != null) {
-            setSearchModeEnabled(viewModel.searchMode)
-        }
+        if (savedInstanceState != null) setSearchModeEnabled(viewModel.searchMode)
 
         viewModel.observeState(this, ::onStateUpdated)
     }
@@ -130,15 +100,11 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
             when (item.itemId) {
                 R.id.action_print -> {
                     val explorerItem = items.firstOrNull()
-                    if (explorerItem is ExplorerItem.File) {
-                        printItem(explorerItem)
-                    }
+                    if (explorerItem is ExplorerItem.File) printItem(explorerItem)
                 }
                 R.id.action_share -> {
                     val explorerItem = items.firstOrNull()
-                    if (explorerItem is ExplorerItem.File) {
-                        shareItem(explorerItem)
-                    }
+                    if (explorerItem is ExplorerItem.File) shareItem(explorerItem)
                 }
                 R.id.action_move -> showMoveItemsDialog(selectedItems)
                 R.id.action_rename -> items.firstOrNull()?.let { item ->
@@ -157,18 +123,19 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
             setHasStableIds(true)
 
             onPreLongClickListener = { _, _, _, position ->
-                val activity = requireActivity() as AppCompatActivity?
-                when {
-                    viewModel.searchMode -> false
-                    activity != null -> adapterActionModeHelper.onLongClick(activity, position) != null
-                    else -> false
+                val activity = activity as? AppCompatActivity
+                if (!viewModel.searchMode && activity != null) {
+                    adapterActionModeHelper.onLongClick(activity, position) != null
+                } else {
+                    false
                 }
             }
 
             onPreClickListener = { _, _, item, _ ->
-                when {
-                    viewModel.searchMode -> false
-                    else -> adapterActionModeHelper.onClick(item) ?: false
+                if (!viewModel.searchMode) {
+                    adapterActionModeHelper.onClick(item) ?: false
+                } else {
+                    false
                 }
             }
 
@@ -196,16 +163,40 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
         }
     }
 
+    private fun initViews() {
+        vStateLayout.setStateController(statefulLayoutHelper.controller)
+        statefulLayoutHelper.controller.setStateWithAnimation(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
+
+        with(vItems) {
+            setHasFixedSize(true)
+            adapter = this@ExplorerFragment.adapter
+            itemAnimator = null
+        }
+        with(vExplorerFab) {
+            findViewById<FloatingActionButton>(R.id.faboptions_fab).supportImageTintList =
+                ColorStateList.valueOf(Color.WHITE)
+            setOnClickListener { view ->
+                lifecycleScope.launch {
+                    delay(actionDelayMs)
+                    when (view.id) {
+                        R.id.action_new_folder -> showNewItemDialog(true)
+                        R.id.action_new_file -> showNewItemDialog(false)
+                    }
+                }
+            }
+        }
+    }
+
     private fun setItems(items: List<ExplorerItem>) {
-        val state = when {
+        val layoutState = when {
             viewModel.searchMode && viewModel.isSearchQueryEmpty() -> StatefulLayoutHelper.STATE_EMPTY
             items.isEmpty() -> StatefulLayoutHelper.STATE_NOT_FOUND
             else -> StatefulLayoutHelper.STATE_CONTENT
         }
-        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, state)
+        statefulLayoutHelper.controller.setStateWithAnimation(vStateLayout, layoutState)
 
         lifecycleScope.launch {
-            val adapterItems = withContext(Dispatchers.Default) {
+            val adapterItems = withDefault {
                 items.asSequence()
                     .sortedBy { it.title.toLowerCase() } // Secondary comparator
                     .sortedBy { it is ExplorerItem.File } // Primary comparator
@@ -231,7 +222,7 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
     }
 
     private fun openItem(item: ExplorerItem) {
-        listener.onItemOpened(item)
+        listener?.onItemOpened(item)
         when (item) {
             is ExplorerItem.Folder -> viewModel.currentDir = item.file
             is ExplorerItem.File -> context?.apply {
@@ -241,13 +232,17 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
     }
 
     private fun printItem(item: ExplorerItem.File) {
+        if (item.isEmpty) {
+            activity?.showSnackBar(R.string.file_empty)
+            return
+        }
+
         lifecycleScope.launch {
-            viewModel.getHtmlText(item)?.let { html ->
-                if (html.isEmpty()) {
-                    activity?.showSnackBar(R.string.file_empty)
-                } else {
-                    listener.onPrintHtml(item.title, html)
-                }
+            val html = viewModel.getHtmlText(item)
+            if (html.isEmpty()) {
+                activity?.showSnackBar(R.string.file_empty)
+            } else {
+                listener?.onPrintHtml(item.title, html)
             }
         }
     }
@@ -265,8 +260,8 @@ class ExplorerFragment : Fragment(), StateAware<ExplorerViewState>, ActionModeHe
                 listItems(R.array.share_item_options) { dialog, _, text ->
                     lifecycleScope.launch {
                         when (text) {
-                            getString(R.string.text) -> viewModel.getPlainText(item)?.share(this@apply)
-                            getString(R.string.html_text) -> viewModel.getHtmlText(item)?.share(this@apply, true)
+                            getString(R.string.text) -> viewModel.getPlainText(item).share(this@apply)
+                            getString(R.string.html_text) -> viewModel.getHtmlText(item).share(this@apply, true)
                             getString(R.string.html_file) -> item.file.share(this@apply)
                             getString(R.string.pdf_file) -> viewModel.getPdfFile(item).share(this@apply)
                         }

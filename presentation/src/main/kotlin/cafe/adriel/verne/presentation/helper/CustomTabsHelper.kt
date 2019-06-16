@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 
 // Based on https://github.com/saurabharora90/CustomTabs-Kotlin
-class CustomTabsHelper(appContext: Context) {
+internal class CustomTabsHelper(appContext: Context) {
 
     companion object {
         private const val STABLE_PACKAGE = "com.android.chrome"
@@ -46,11 +46,7 @@ class CustomTabsHelper(appContext: Context) {
         return packages
     }
 
-    private fun findBestPackageName(
-        packages: List<String>,
-        defaultPackage: String?,
-        hasSpecializedIntent: Boolean
-    ) =
+    private fun findBestPackageName(packages: List<String>, defaultPackage: String?, hasSpecializedIntent: Boolean) =
         when {
             packages.size == 1 -> packages[0]
             !defaultPackage.isNullOrBlank() &&

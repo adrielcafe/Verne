@@ -6,6 +6,5 @@ data class AppConfig(
     val versionCode: Int,
     val versionName: String,
     val isDebug: Boolean,
-    val explorerRootFolder: File,
-    val settingsFile: File
+    val explorerRootFolder: File
 )

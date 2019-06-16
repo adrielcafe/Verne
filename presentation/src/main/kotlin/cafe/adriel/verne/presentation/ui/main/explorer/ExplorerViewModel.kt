@@ -9,32 +9,36 @@ import cafe.adriel.verne.domain.interactor.explorer.CreateItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.ItemTextExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.MoveItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.RenameItemExplorerInteractor
+import cafe.adriel.verne.domain.interactor.explorer.RestoreItemExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SearchItemsExplorerInteractor
 import cafe.adriel.verne.domain.interactor.explorer.SelectItemsExplorerInteractor
+import cafe.adriel.verne.domain.interactor.explorer.SoftDeleteItemExplorerInteractor
 import cafe.adriel.verne.domain.model.ExplorerItem
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerItemChangeListener
 import cafe.adriel.verne.shared.model.AppConfig
 import com.etiennelenhart.eiffel.viewmodel.StateViewModel
 import com.uttampanchasara.pdfgenerator.CreatePdf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.File
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
-class ExplorerViewModel(
+internal class ExplorerViewModel(
     private val appContext: Context,
     private val appConfig: AppConfig,
+    private val itemTextInteractor: ItemTextExplorerInteractor,
     private val searchItemsInteractor: SearchItemsExplorerInteractor,
     private val selectItemsInteractor: SelectItemsExplorerInteractor,
     private val createItemInteractor: CreateItemExplorerInteractor,
     private val moveItemInteractor: MoveItemExplorerInteractor,
     private val renameItemInteractor: RenameItemExplorerInteractor,
-    private val itemTextInteractor: ItemTextExplorerInteractor
+    private val softDeleteItemInteractor: SoftDeleteItemExplorerInteractor,
+    private val restoreItemInteractor: RestoreItemExplorerInteractor
 ) : StateViewModel<ExplorerViewState>() {
 
     override val state = MutableLiveData<ExplorerViewState>()
 
-    private lateinit var listener: ExplorerItemChangeListener
+    private var listener: ExplorerItemChangeListener? = null
 
     private var searchQuery = ""
     var searchMode = false
@@ -72,9 +76,7 @@ class ExplorerViewModel(
 
     private fun onSearchModeChange(enabled: Boolean) {
         if (enabled) {
-            if (::listener.isInitialized) {
-                listener.stopWatching()
-            }
+            listener?.stopWatching()
             updateState { it.copy(items = emptyList()) }
         } else {
             searchQuery = ""
@@ -83,15 +85,12 @@ class ExplorerViewModel(
     }
 
     private fun onCurrentDirChange(dir: File) {
-        if (::listener.isInitialized) {
-            listener.stopWatching()
-        }
+        listener?.stopWatching()
         listener = ExplorerItemChangeListener(dir, true) {
             viewModelScope.launch {
                 selectItems(dir)
             }
-        }
-        listener.startWatching()
+        }.also { it.startWatching() }
     }
 
     private suspend fun selectItems(folder: File) {
@@ -126,59 +125,38 @@ class ExplorerViewModel(
         renameItemInteractor(item, newName)
     }
 
-    // TODO Move to Interactor
     suspend fun softDeleteItem(item: ExplorerItem) {
-        if (!item.isDeleted) {
-            renameItemInteractor(item, ".${item.file.name}")
-        }
+        softDeleteItemInteractor(item)
     }
 
-    // TODO Move to Interactor
     suspend fun restoreItem(item: ExplorerItem) {
-        val deletedFile = File(item.file.parent, ".${item.file.name}")
-        if (item.isDeleted) {
-            renameItemInteractor(item, item.file.name.removePrefix("."))
-        } else if (deletedFile.exists()) {
-            renameItemInteractor(deletedFile.asExplorerItem(), deletedFile.name.removePrefix("."))
-        }
+        restoreItemInteractor(item)
     }
 
-    suspend fun getPlainText(item: ExplorerItem.File) = try {
-        val html = getHtmlText(item)
-        if (html != null) {
-            HtmlCompat.fromHtml(html, HtmlCompat.FROM_HTML_MODE_COMPACT).toString()
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    suspend fun getPlainText(item: ExplorerItem.File) =
+        HtmlCompat.fromHtml(
+            getHtmlText(item),
+            HtmlCompat.FROM_HTML_MODE_COMPACT
+        ).toString()
 
-    suspend fun getHtmlText(item: ExplorerItem.File) = try {
-        itemTextInteractor.get(item)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null
-    }
+    suspend fun getHtmlText(item: ExplorerItem.File) = itemTextInteractor.get(item)
 
-    suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCoroutine { continuation ->
+    suspend fun getPdfFile(item: ExplorerItem.File): File = suspendCancellableCoroutine { continuation ->
         viewModelScope.launch {
-            getHtmlText(item)?.let { text ->
-                CreatePdf(appContext)
-                    .setPdfName(item.title)
-                    .setContent(text)
-                    .setCallbackListener(object : CreatePdf.PdfCallbackListener {
-                        override fun onSuccess(filePath: String) {
-                            continuation.resume(File(filePath))
-                        }
+            CreatePdf(appContext)
+                .setPdfName(item.title)
+                .setContent(getHtmlText(item))
+                .setCallbackListener(object : CreatePdf.PdfCallbackListener {
+                    override fun onSuccess(filePath: String) = continuation.resume(File(filePath))
 
-                        override fun onFailure(errorMsg: String) {
-                            updateState { it.copy(exception = RuntimeException(errorMsg)) }
+                    override fun onFailure(errorMsg: String) {
+                        updateState {
+                            it.copy(exception = RuntimeException(errorMsg))
                         }
-                    })
-                    .create()
-            }
+                        continuation.cancel(RuntimeException(errorMsg))
+                    }
+                })
+                .create()
         }
     }
 }

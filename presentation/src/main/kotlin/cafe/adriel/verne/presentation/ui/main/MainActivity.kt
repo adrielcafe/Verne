@@ -1,5 +1,6 @@
 package cafe.adriel.verne.presentation.ui.main
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -17,6 +18,7 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.getFragment
 import cafe.adriel.verne.presentation.extension.showSnackBar
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
+import cafe.adriel.verne.presentation.helper.HtmlPrinterHelper
 import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerFragment
 import cafe.adriel.verne.presentation.ui.main.explorer.listener.ExplorerFragmentListener
@@ -37,8 +39,9 @@ class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
     }
 
     private val viewModel by viewModel<MainViewModel>()
-    private val analyticsHelper by inject<AnalyticsHelper>()
     private val themeHelper by inject<ThemeHelper>()
+    private val analyticsHelper by inject<AnalyticsHelper>()
+    private val printerHelper by inject<HtmlPrinterHelper>()
 
     private var backPressedRecently = false
 
@@ -50,51 +53,7 @@ class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
         setContentView(R.layout.activity_main)
         setSupportActionBar(vToolbar)
 
-        with(vBreadcrumbs) {
-            setOnPreviousItemClickListener {
-                getExplorerFragment()?.backToPreviousFolder()
-            }
-        }
-        with(vSearch) {
-            setTextColor(Color.WHITE)
-            setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    getExplorerFragment()?.search(newText?.trim() ?: "")
-                    analyticsHelper.logTextSearch()
-                    return false
-                }
-
-                override fun onQueryTextCleared(): Boolean {
-                    return false
-                }
-            })
-            setOnSearchViewListener(object : SimpleSearchViewListener() {
-                override fun onSearchViewShown() {
-                    getExplorerFragment()?.setSearchModeEnabled(true)
-                }
-
-                override fun onSearchViewClosed() {
-                    getExplorerFragment()?.setSearchModeEnabled(false)
-                }
-            })
-        }
-
-        vAppVersion.text = viewModel.appVersion
-
-        supportFragmentManager.commit {
-            replace(
-                R.id.vContent, getExplorerFragment() ?: ExplorerFragment(),
-                tagOf<ExplorerFragment>()
-            )
-            replace(
-                R.id.vPreferences, getPreferencesFragment() ?: PreferencesFragment(),
-                tagOf<PreferencesFragment>()
-            )
-        }
+        init()
     }
 
     override fun onBackPressed() {
@@ -116,9 +75,9 @@ class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (vSearch.onActivityResult(requestCode, resultCode, data)) {
             analyticsHelper.logVoiceSearch()
-            return
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onAttachFragment(fragment: Fragment) {
@@ -127,10 +86,11 @@ class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
         }
     }
 
+    @SuppressLint("PrivateResource")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        val searchMenuItem = menu.findItem(R.id.action_search)
         vSearch.post {
+            val searchMenuItem = menu.findItem(R.id.action_search)
             val menuItemSize = resources.getDimensionPixelSize(R.dimen.design_navigation_icon_size)
             with(vSearch) {
                 // Fix animation start position
@@ -149,15 +109,58 @@ class MainActivity : AppCompatActivity(), ExplorerFragmentListener {
         else -> false
     }
 
-    override fun onPrintHtml(fileName: String, html: String) {
-        viewModel.printHtml(this, fileName, html)
-        analyticsHelper.logPrint()
-    }
-
     override fun onItemOpened(item: ExplorerItem) {
         when (item) {
             is ExplorerItem.Folder -> vBreadcrumbs.addItem(Krumb(item.title))
             is ExplorerItem.File -> vSearch.closeSearch()
+        }
+    }
+
+    override fun onPrintHtml(fileName: String, html: String) {
+        printerHelper.printHtml(this, fileName, html)
+        analyticsHelper.logPrint()
+    }
+
+    private fun init() {
+        with(vSearch) {
+            setTextColor(Color.WHITE)
+            setOnQueryTextListener(object : SimpleSearchView.OnQueryTextListener {
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    getExplorerFragment()?.search(newText?.trim() ?: "")
+                    analyticsHelper.logTextSearch()
+                    return false
+                }
+
+                override fun onQueryTextSubmit(query: String?) = true
+
+                override fun onQueryTextCleared() = false
+            })
+            setOnSearchViewListener(object : SimpleSearchViewListener() {
+                override fun onSearchViewShown() {
+                    getExplorerFragment()?.setSearchModeEnabled(true)
+                }
+
+                override fun onSearchViewClosed() {
+                    getExplorerFragment()?.setSearchModeEnabled(false)
+                }
+            })
+        }
+
+        vBreadcrumbs.setOnPreviousItemClickListener {
+            getExplorerFragment()?.backToPreviousFolder()
+        }
+
+        vAppVersion.text = viewModel.appVersion
+
+        supportFragmentManager.commit {
+            replace(
+                R.id.vContent, getExplorerFragment() ?: ExplorerFragment(),
+                tagOf<ExplorerFragment>()
+            )
+            replace(
+                R.id.vPreferences, getPreferencesFragment() ?: PreferencesFragment(),
+                tagOf<PreferencesFragment>()
+            )
         }
     }
 

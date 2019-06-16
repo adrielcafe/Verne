@@ -3,7 +3,7 @@ package cafe.adriel.verne.presentation.ui.main.explorer.listener
 import android.os.FileObserver
 import java.io.File
 
-class ExplorerItemChangeListener(
+internal class ExplorerItemChangeListener(
     dir: File,
     fireOnInit: Boolean,
     val listener: () -> Unit

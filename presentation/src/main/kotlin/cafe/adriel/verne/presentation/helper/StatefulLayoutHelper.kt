@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import cafe.adriel.verne.presentation.R
 import cz.kinst.jakub.view.StatefulLayout
 
-class StatefulLayoutHelper {
+internal class StatefulLayoutHelper {
 
     companion object {
         const val STATE_CONTENT = "content"
@@ -17,11 +17,13 @@ class StatefulLayoutHelper {
     lateinit var controller: StatefulLayout.StateController
 
     fun init(context: Context) {
-        controller = StatefulLayout.StateController
-            .create()
-            .withState(STATE_PROGRESS, LayoutInflater.from(context).inflate(R.layout.state_loading, null))
-            .withState(STATE_NOT_FOUND, LayoutInflater.from(context).inflate(R.layout.state_not_found, null))
-            .withState(STATE_EMPTY, LayoutInflater.from(context).inflate(R.layout.state_empty, null))
-            .build()
+        LayoutInflater.from(context).apply {
+            controller = StatefulLayout.StateController
+                .create()
+                .withState(STATE_PROGRESS, inflate(R.layout.state_loading, null))
+                .withState(STATE_NOT_FOUND, inflate(R.layout.state_not_found, null))
+                .withState(STATE_EMPTY, inflate(R.layout.state_empty, null))
+                .build()
+        }
     }
 }

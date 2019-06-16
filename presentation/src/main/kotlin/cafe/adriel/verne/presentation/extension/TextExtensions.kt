@@ -6,29 +6,26 @@ import androidx.core.app.ShareCompat
 import androidx.core.text.HtmlCompat
 import androidx.core.text.getSpans
 import androidx.core.text.toSpanned
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import cafe.adriel.verne.shared.extension.withDefault
 import org.wordpress.aztec.Constants
 import java.util.StringTokenizer
 import kotlin.math.roundToInt
 
 private const val WORDS_PER_MINUTE = 200F
 
-suspend fun String.paragraphCount() = withContext(Dispatchers.Default) {
+suspend fun String.paragraphCount() = withDefault {
     trim()
         .split('\n')
         .filter { it.isNotBlank() && it.trim() != Constants.ZWJ_STRING }
         .size
 }
 
-suspend fun String.wordCount() = withContext(Dispatchers.Default) {
-    val str = this@wordCount.replace(Constants.ZWJ_STRING, "")
-    StringTokenizer(str).countTokens()
+suspend fun String.wordCount() = withDefault {
+    StringTokenizer(replace(Constants.ZWJ_STRING, "")).countTokens()
 }
 
-suspend fun String.charCount() = withContext(Dispatchers.Default) {
-    val str = this@charCount.replace(Constants.ZWJ_STRING, "")
-    val tokenizer = StringTokenizer(str)
+suspend fun String.charCount() = withDefault {
+    val tokenizer = StringTokenizer(replace(Constants.ZWJ_STRING, ""))
     var count = 0
     while (tokenizer.hasMoreTokens()) {
         count += tokenizer.nextToken().length
@@ -36,13 +33,14 @@ suspend fun String.charCount() = withContext(Dispatchers.Default) {
     count
 }
 
-suspend fun String.readTimeInSeconds() = withContext(Dispatchers.Default) {
-    val wordCount = this@readTimeInSeconds.wordCount()
-    val seconds = wordCount / WORDS_PER_MINUTE * SIXTY_SECONDS
+suspend fun String.readTimeInSeconds() = withDefault {
+    val seconds = wordCount() / WORDS_PER_MINUTE * SIXTY_SECONDS
     seconds.roundToInt()
 }
 
-fun String.fromHtml() = HtmlCompat.fromHtml(this, HtmlCompat.FROM_HTML_MODE_COMPACT)
+suspend fun String.fromHtml() = withDefault {
+    HtmlCompat.fromHtml(this@fromHtml, HtmlCompat.FROM_HTML_MODE_COMPACT)
+}
 
 fun String.share(activity: Activity, html: Boolean = false) =
     ShareCompat.IntentBuilder.from(activity).run {

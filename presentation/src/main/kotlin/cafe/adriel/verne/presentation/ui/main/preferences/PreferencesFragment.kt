@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class PreferencesFragment :
+internal class PreferencesFragment :
     PreferenceFragmentCompat(), Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
 
     companion object {
@@ -104,27 +104,26 @@ class PreferencesFragment :
 
     private fun sendEmail() {
         activity?.apply {
-            try {
-                val appName = getString(R.string.app_name)
-                val versionName = BuildConfig.VERSION_NAME
-                val versionCode = BuildConfig.VERSION_CODE
-                val sdkInt = Build.VERSION.SDK_INT
+            val appName = getString(R.string.app_name)
+            val versionName = BuildConfig.VERSION_NAME
+            val versionCode = BuildConfig.VERSION_CODE
+            val sdkInt = Build.VERSION.SDK_INT
 
-                val email = Uri.parse("mailto:${BuildConfig.CONTACT_EMAIL}")
-                val subject = "$appName for Android | v$versionName (Build $versionCode), SDK $sdkInt"
-                Intent(Intent.ACTION_SENDTO, email).run {
-                    putExtra(Intent.EXTRA_SUBJECT, subject)
-                    startActivity(this)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                showSnackBar("Oops! No Email app found :/")
-            }
+            val email = Uri.parse("mailto:${BuildConfig.CONTACT_EMAIL}")
+            val subject = "$appName for Android | v$versionName (Build $versionCode), SDK $sdkInt"
+
+            val intent = Intent(Intent.ACTION_SENDTO, email).putExtra(Intent.EXTRA_SUBJECT, subject)
+            intent.resolveActivity(packageManager)?.let {
+                startActivity(intent)
+            } ?: showSnackBar("Oops! No Email app found :/")
         }
     }
 
-    private fun shareApp() =
-        "${getString(R.string.you_should_try)}\n${BuildConfig.PLAY_STORE_URL}".share(requireActivity())
+    private fun shareApp() {
+        activity?.apply {
+            "${getString(R.string.you_should_try)}\n${BuildConfig.PLAY_STORE_URL}".share(this)
+        }
+    }
 
     private fun rateApp() = activity?.apply {
         try {

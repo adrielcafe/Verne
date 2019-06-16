@@ -1,11 +1,11 @@
 package cafe.adriel.verne.presentation.helper
 
 import android.content.Context
-import android.os.Bundle
+import androidx.core.os.bundleOf
 import cafe.adriel.verne.shared.model.AppConfig
 import com.google.firebase.analytics.FirebaseAnalytics
 
-class AnalyticsHelper(appContext: Context, appConfig: AppConfig) {
+internal class AnalyticsHelper(appContext: Context, appConfig: AppConfig) {
 
     companion object {
         private const val EVENT_OPEN_FILE = "open_file"
@@ -30,58 +30,76 @@ class AnalyticsHelper(appContext: Context, appConfig: AppConfig) {
     private var analytics: FirebaseAnalytics? = null
 
     init {
-        if (!appConfig.isDebug) {
-            analytics = FirebaseAnalytics.getInstance(appContext)
-        }
+        if (!appConfig.isDebug) analytics = FirebaseAnalytics.getInstance(appContext)
     }
 
-    fun logOpenFile() = analytics?.logEvent(EVENT_OPEN_FILE, null)
+    fun logOpenFile() {
+        analytics?.logEvent(EVENT_OPEN_FILE, null)
+    }
 
-    fun logNewFile(source: String) = analytics?.logEvent(
-        EVENT_NEW_FILE,
-        Bundle().apply {
-            putString(FirebaseAnalytics.Param.SOURCE, source)
-        })
+    fun logNewFile(source: String) {
+        analytics?.logEvent(
+            EVENT_NEW_FILE,
+            bundleOf(FirebaseAnalytics.Param.SOURCE to source)
+        )
+    }
 
-    fun logNewFolder() = analytics?.logEvent(EVENT_NEW_FOLDER, null)
+    fun logNewFolder() {
+        analytics?.logEvent(EVENT_NEW_FOLDER, null)
+    }
 
-    fun logTextSearch() = analytics?.logEvent(EVENT_TEXT_SEARCH, null)
+    fun logTextSearch() {
+        analytics?.logEvent(EVENT_TEXT_SEARCH, null)
+    }
 
-    fun logVoiceSearch() = analytics?.logEvent(EVENT_VOICE_SEARCH, null)
+    fun logVoiceSearch() {
+        analytics?.logEvent(EVENT_VOICE_SEARCH, null)
+    }
 
-    fun logShare() = analytics?.logEvent(EVENT_SHARE, null)
+    fun logShare() {
+        analytics?.logEvent(EVENT_SHARE, null)
+    }
 
-    fun logPrint() = analytics?.logEvent(EVENT_PRINT, null)
+    fun logPrint() {
+        analytics?.logEvent(EVENT_PRINT, null)
+    }
 
-    fun logSwitchDarkMode(value: Boolean) = analytics?.logEvent(
-        EVENT_SWITCH_DARK_MODE,
-        Bundle().apply {
-            putBoolean(FirebaseAnalytics.Param.VALUE, value)
-        })
+    fun logSwitchDarkMode(value: Boolean) {
+        analytics?.logEvent(
+            EVENT_SWITCH_DARK_MODE,
+            bundleOf(FirebaseAnalytics.Param.VALUE to value)
+        )
+    }
 
-    fun logSwitchFullScreen(value: Boolean) = analytics?.logEvent(
-        EVENT_SWITCH_FULL_SCREEN,
-        Bundle().apply {
-            putBoolean(FirebaseAnalytics.Param.VALUE, value)
-        })
+    fun logSwitchFullScreen(value: Boolean) {
+        analytics?.logEvent(
+            EVENT_SWITCH_FULL_SCREEN,
+            bundleOf(FirebaseAnalytics.Param.VALUE to value)
+        )
+    }
 
-    fun logShowStatistics() = analytics?.logEvent(EVENT_SHOW_STATISTICS, null)
+    fun logShowStatistics() {
+        analytics?.logEvent(EVENT_SHOW_STATISTICS, null)
+    }
 
-    fun logTypographyFontFamily(value: String) = analytics?.logEvent(
-        EVENT_TYPOGRAPHY_FONT_FAMILY,
-        Bundle().apply {
-            putString(FirebaseAnalytics.Param.VALUE, value)
-        })
+    fun logTypographyFontFamily(value: String) {
+        analytics?.logEvent(
+            EVENT_TYPOGRAPHY_FONT_FAMILY,
+            bundleOf(FirebaseAnalytics.Param.VALUE to value)
+        )
+    }
 
-    fun logTypographyFontSize(value: Int) = analytics?.logEvent(
-        EVENT_TYPOGRAPHY_FONT_SIZE,
-        Bundle().apply {
-            putInt(FirebaseAnalytics.Param.VALUE, value)
-        })
+    fun logTypographyFontSize(value: Int) {
+        analytics?.logEvent(
+            EVENT_TYPOGRAPHY_FONT_SIZE,
+            bundleOf(FirebaseAnalytics.Param.VALUE to value)
+        )
+    }
 
-    fun logTypographyMarginSize(value: Int) = analytics?.logEvent(
-        EVENT_TYPOGRAPHY_MARGIN_SIZE,
-        Bundle().apply {
-            putInt(FirebaseAnalytics.Param.VALUE, value)
-        })
+    fun logTypographyMarginSize(value: Int) {
+        analytics?.logEvent(
+            EVENT_TYPOGRAPHY_MARGIN_SIZE,
+            bundleOf(FirebaseAnalytics.Param.VALUE to value)
+        )
+    }
 }

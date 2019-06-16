@@ -41,22 +41,21 @@ class ExplorerAdapterItem(
             vItemName.text = item.title
             when (item) {
                 is ExplorerItem.Folder -> {
+                    vItemIcon.setImageResource(R.drawable.ic_folder)
                     vItemDetails.text = context.resources.getQuantityString(R.plurals.files, 0, 0)
                     lifecycleScope.launch {
                         val filesCount = item.file.filesCount()
-                        vItemDetails.text = context.resources.getQuantityString(R.plurals.files, filesCount, filesCount)
+                        vItemDetails.text = context.resources
+                            .getQuantityString(R.plurals.files, filesCount, filesCount)
                     }
-
-                    vItemIcon.setImageResource(R.drawable.ic_folder)
                 }
                 is ExplorerItem.File -> {
-                    vItemDetails.text = Date(item.file.lastModified()).formatMedium()
                     if (searchResult) {
                         vItemPath.text = item.getPathAfterBaseDir(explorerRootFolder)
                         vItemPath.visibility = View.VISIBLE
                     }
-
                     vItemIcon.setImageResource(R.drawable.ic_file)
+                    vItemDetails.text = Date(item.file.lastModified()).formatMedium()
                 }
             }
         }

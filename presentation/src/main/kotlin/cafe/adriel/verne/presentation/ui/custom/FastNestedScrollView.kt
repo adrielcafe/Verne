@@ -11,7 +11,7 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.color
 import com.mixiaoxiao.fastscroll.FastScrollDelegate
 
-class FastNestedScrollView(context: Context, attrs: AttributeSet) :
+internal class FastNestedScrollView(context: Context, attrs: AttributeSet) :
     NestedScrollView(context, attrs), FastScrollDelegate.FastScrollable {
 
     private val delegate: FastScrollDelegate by lazy {

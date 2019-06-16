@@ -9,7 +9,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 
 // Based on https://stackoverflow.com/a/42261118/1055354
-class FullscreenKeyboardHelper(private val preferencesHelper: PreferencesHelper) : LifecycleObserver {
+internal class FullscreenKeyboardHelper(private val preferencesHelper: PreferencesHelper) : LifecycleObserver {
     private lateinit var contentContainer: ViewGroup
 
     private val rootView by lazy { contentContainer.getChildAt(0) }

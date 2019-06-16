@@ -29,12 +29,12 @@ import cafe.adriel.verne.presentation.extension.hasSpans
 import cafe.adriel.verne.presentation.extension.hideAnimated
 import cafe.adriel.verne.presentation.extension.hideKeyboard
 import cafe.adriel.verne.presentation.extension.int
-import cafe.adriel.verne.presentation.extension.intentFor
+import cafe.adriel.verne.presentation.extension.intent
 import cafe.adriel.verne.presentation.extension.long
 import cafe.adriel.verne.presentation.extension.openInChromeTab
 import cafe.adriel.verne.presentation.extension.readText
-import cafe.adriel.verne.presentation.extension.setAnimatedState
 import cafe.adriel.verne.presentation.extension.setMargins
+import cafe.adriel.verne.presentation.extension.setStateWithAnimation
 import cafe.adriel.verne.presentation.extension.showAnimated
 import cafe.adriel.verne.presentation.extension.showKeyboard
 import cafe.adriel.verne.presentation.extension.showSnackBar
@@ -46,13 +46,12 @@ import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragment
 import cafe.adriel.verne.presentation.ui.editor.typography.TypographyFragmentListener
 import cafe.adriel.verne.presentation.util.StateAware
+import cafe.adriel.verne.shared.extension.withDefault
 import com.afollestad.materialdialogs.MaterialDialog
 import com.rw.keyboardlistener.KeyboardUtils
 import kotlinx.android.synthetic.main.activity_editor.*
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.wordpress.aztec.AztecText
@@ -74,8 +73,8 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
             R.id.format_bar_button_link
         )
 
-        fun start(context: Context, item: ExplorerItem) {
-            val intent = context.intentFor<EditorActivity>(EXTRA_FILE_PATH to item.path)
+        fun start(context: Context, item: ExplorerItem.File) {
+            val intent = context.intent<EditorActivity>().putExtra(EXTRA_FILE_PATH, item.path)
             context.startActivity(intent)
         }
     }
@@ -89,7 +88,7 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
 
     private val actionNewFile by lazy { "$packageName.action.NEW_FILE" }
 
-    private lateinit var menu: Menu
+    private var menu: Menu? = null
     private var externalText: CharSequence? = null
     private var keyboardVisible = false
     private val actionDelayMs by lazy { long(R.integer.action_delay) }
@@ -116,48 +115,26 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
         vToolbar.overflowIcon?.setTint(colorFromAttr(R.attr.actionMenuTextColor))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        if (savedInstanceState == null) {
-            viewModel.item = getItemFromIntent(intent)
-        }
-
         statefulLayoutHelper.init(this)
         fullscreenKeyboardHelper.init(this)
 
-        vStateLayout.setStateController(statefulLayoutHelper.controller)
-        vEditMode.setOnClickListener { viewModel.toggleEditMode() }
-        vScroll.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_UP && !vEditor.hasFocus() && viewModel.editMode) {
-                vEditor.requestFocus()
-                vEditor.showKeyboard()
-            }
-            false
-        }
-        vEditor.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus && viewModel.editMode) {
-                vEditorToolbar.showAnimated()
-            } else if (keyboardVisible || vTitle.hasFocus()) {
-                vEditorToolbar.visibility = View.GONE
-            } else {
-                vEditorToolbar.hideAnimated()
-            }
-        }
+        if (savedInstanceState == null) viewModel.item = getItemFromIntent(intent)
 
-        KeyboardUtils.addKeyboardToggleListener(this) { keyboardVisible = it }
-
-        setupEditor()
-        setupEditorToolbar()
+        initViews()
+        initEditor()
+        initEditorToolbar()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         viewModel.observeState(this, ::onStateUpdated)
-        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
-        lifecycleScope.launch { loadText() }
+        statefulLayoutHelper.controller.setStateWithAnimation(vStateLayout, StatefulLayoutHelper.STATE_PROGRESS)
+        loadText()
     }
 
     override fun onBackPressed() {
         if (viewModel.editMode) {
-            lifecycleScope.launch { saveText() }
+            saveText()
         } else {
             super.onBackPressed()
         }
@@ -169,7 +146,7 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
     }
 
     override fun onPause() {
-        lifecycleScope.launch { saveText(true) }
+        saveText(true)
         super.onPause()
     }
 
@@ -194,7 +171,7 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         android.R.id.home -> {
             if (viewModel.editMode) {
-                lifecycleScope.launch { saveText() }
+                saveText()
             } else {
                 NavUtils.navigateUpFromSameTask(this)
             }
@@ -254,7 +231,30 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
         }
     }
 
-    private fun setupEditor() {
+    private fun initViews() {
+        vStateLayout.setStateController(statefulLayoutHelper.controller)
+        vEditMode.setOnClickListener { viewModel.toggleEditMode() }
+        vScroll.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP && !vEditor.hasFocus() && viewModel.editMode) {
+                vEditor.requestFocus()
+                vEditor.showKeyboard()
+            }
+            false
+        }
+        vEditor.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus && viewModel.editMode) {
+                vEditorToolbar.showAnimated()
+            } else if (keyboardVisible || vTitle.hasFocus()) {
+                vEditorToolbar.visibility = View.GONE
+            } else {
+                vEditorToolbar.hideAnimated()
+            }
+        }
+
+        KeyboardUtils.addKeyboardToggleListener(this) { keyboardVisible = it }
+    }
+
+    private fun initEditor() {
         vEditor.setToolbar(vEditorToolbar)
         vEditor.isInCalypsoMode = false
         vEditor.history.setHistoryListener(object : IHistoryListener {
@@ -273,7 +273,7 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
         })
     }
 
-    private fun setupEditorToolbar() {
+    private fun initEditorToolbar() {
         vEditorToolbar.setEditor(vEditor, null)
         vEditorToolbar.findViewById<View>(R.id.format_bar_horizontal_divider)
             .setBackgroundColor(color(R.color.colorPrimaryDark))
@@ -338,50 +338,50 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
         else -> null
     }
 
-    private suspend fun loadText() {
-        if (externalText != null) {
-            if (externalText?.hasSpans() == true) {
-                vEditor.setText(externalText)
+    private fun loadText() {
+        lifecycleScope.launch {
+            if (externalText != null) {
+                if (externalText?.hasSpans() == true) {
+                    vEditor.setText(externalText)
+                } else {
+                    val html = externalText?.toString()?.replace("\n", "<br>")
+                    vEditor.fromHtml(html ?: "")
+                }
+                externalText = null
             } else {
-                val html = externalText?.toString()?.replace("\n", "<br>")
-                vEditor.fromHtml(html ?: "")
+                val text = viewModel.getHtmlText()
+                vEditor.fromHtml(text)
             }
-            externalText = null
-        } else {
-            val text = viewModel.getHtmlText()
-            vEditor.fromHtml(text)
+            statefulLayoutHelper.controller.setStateWithAnimation(vStateLayout, StatefulLayoutHelper.STATE_CONTENT)
         }
-        statefulLayoutHelper.controller.setAnimatedState(vStateLayout, StatefulLayoutHelper.STATE_CONTENT)
     }
 
-    private suspend fun saveText(silent: Boolean = false) {
-        if (!silent) {
-            supportActionBar?.setHomeAsUpIndicator(loadingDrawable)
-            vEditor.hideKeyboard()
-            delay(actionDelayMs)
-        }
+    private fun saveText(silent: Boolean = false) {
+        lifecycleScope.launch {
+            if (!silent) {
+                supportActionBar?.setHomeAsUpIndicator(loadingDrawable)
+                vEditor.hideKeyboard()
+                delay(actionDelayMs)
+            }
 
-        withContext(Dispatchers.Default) {
-            val title = vTitle.text.toString()
-            val text = vEditor.toHtml()
-            viewModel.saveText(title, text)
-        }
+            withDefault {
+                val title = vTitle.text.toString()
+                val text = vEditor.toHtml()
+                viewModel.saveText(title, text)
+            }
 
-        if (!silent) {
-            viewModel.toggleEditMode()
+            if (!silent) {
+                viewModel.toggleEditMode()
+            }
         }
     }
 
     private fun setUndoMenuItemEnabled(enabled: Boolean) {
-        if (::menu.isInitialized) {
-            menu.findItem(R.id.action_undo).isEnabled = enabled
-        }
+        menu?.findItem(R.id.action_undo)?.isEnabled = enabled
     }
 
     private fun setRedoMenuItemEnabled(enabled: Boolean) {
-        if (::menu.isInitialized) {
-            menu.findItem(R.id.action_redo).isEnabled = enabled
-        }
+        menu?.findItem(R.id.action_redo)?.isEnabled = enabled
     }
 
     private fun setEditModeEnabled(enabled: Boolean) {
@@ -412,10 +412,10 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
     private fun showStatisticsDialog() {
         vEditor.text?.toString()?.let { text ->
             lifecycleScope.launch {
-                val message = viewModel.getStatisticsText(text)
+                val message = viewModel.getStatisticsHtmlText(text).fromHtml()
                 MaterialDialog(this@EditorActivity).show {
                     title(R.string.statistics)
-                    message(text = message.fromHtml(), html = true)
+                    message(text = message, html = true)
                     positiveButton(android.R.string.ok)
                 }
                 analyticsHelper.logShowStatistics()

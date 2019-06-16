@@ -12,7 +12,7 @@ import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.font
 import cafe.adriel.verne.presentation.model.FontFamily
 
-class FontFamilyAdapter(context: Context) :
+internal class FontFamilyAdapter(context: Context) :
     ArrayAdapter<FontFamily>(context, R.layout.item_font_family, FontFamily.sortedValues) {
 
     private val typefaces = SparseArray<Typeface>(count)

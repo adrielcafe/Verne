@@ -4,6 +4,7 @@ import android.content.Context
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.helper.CustomTabsHelper
 import cafe.adriel.verne.presentation.helper.FullscreenKeyboardHelper
+import cafe.adriel.verne.presentation.helper.HtmlPrinterHelper
 import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.helper.ThemeHelper
@@ -18,7 +19,7 @@ class PresentationComponent(appContext: Context) : Component {
 
     private val viewModelModule = module {
         viewModel { MainViewModel(get()) }
-        viewModel { ExplorerViewModel(appContext, get(), get(), get(), get(), get(), get(), get()) }
+        viewModel { ExplorerViewModel(appContext, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { EditorViewModel(appContext, get(), get(), get(), get(), get(), get()) }
     }
 
@@ -27,6 +28,7 @@ class PresentationComponent(appContext: Context) : Component {
         single { ThemeHelper(get()) }
         single { AnalyticsHelper(appContext, get()) }
         single { CustomTabsHelper(appContext) }
+        single { HtmlPrinterHelper() }
         factory { FullscreenKeyboardHelper(get()) }
         factory { StatefulLayoutHelper() }
     }

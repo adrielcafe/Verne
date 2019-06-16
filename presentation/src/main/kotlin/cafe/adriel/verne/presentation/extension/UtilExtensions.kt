@@ -12,20 +12,17 @@ inline fun minSdk(sdk: Int, body: () -> Unit) {
 }
 
 fun Uri.openInChromeTab(activity: Activity, packageName: String?) {
-    val intent = CustomTabsIntent.Builder()
-        .setShowTitle(true)
-        .setToolbarColor(activity.color(R.color.colorPrimary))
-        .setSecondaryToolbarColor(activity.color(R.color.colorPrimaryDark))
-        .addDefaultShareMenuItem()
-        .enableUrlBarHiding()
-        .build()
-
-    if (packageName == null) {
-        openInExternalBrowser(activity)
-    } else {
-        intent.intent.setPackage(packageName)
-        intent.launchUrl(activity, this)
-    }
+    packageName?.let {
+        CustomTabsIntent.Builder()
+            .setShowTitle(true)
+            .setToolbarColor(activity.color(R.color.colorPrimary))
+            .setSecondaryToolbarColor(activity.color(R.color.colorPrimaryDark))
+            .addDefaultShareMenuItem()
+            .enableUrlBarHiding()
+            .build()
+            .also { it.intent.setPackage(packageName) }
+            .launchUrl(activity, this)
+    } ?: openInExternalBrowser(activity)
 }
 
 fun Uri.openInExternalBrowser(activity: Activity, showErrorMessage: Boolean = true) = try {
