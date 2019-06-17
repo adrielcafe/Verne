@@ -25,7 +25,6 @@ internal object Version {
     const val FRAGMENT_KTX = "1.1.0-beta01"
     const val VIEWMODEL_KTX = "2.2.0-alpha01"
     const val LIFECYCLE_KTX = "2.2.0-alpha01"
-    const val LIVEDATA_KTX = "2.2.0-alpha01"
 
     // Firebase
     const val FIREBASE_CORE = "16.0.9"
@@ -90,7 +89,6 @@ object ModuleLib {
     const val FRAGMENT_KTX = "androidx.fragment:fragment-ktx:${Version.FRAGMENT_KTX}"
     const val VIEWMODEL_KTX = "androidx.lifecycle:lifecycle-viewmodel-ktx:${Version.VIEWMODEL_KTX}"
     const val LIFECYCLE_KTX = "androidx.lifecycle:lifecycle-runtime-ktx:${Version.LIFECYCLE_KTX}"
-    const val LIVEDATA_KTX = "androidx.lifecycle:lifecycle-livedata-ktx:${Version.LIVEDATA_KTX}"
 
     // Firebase
     const val FIREBASE_CORE = "com.google.firebase:firebase-core:${Version.FIREBASE_CORE}"
@@ -131,7 +129,7 @@ object ModuleLib {
 
     val kotlin = setOf(KOTLIN, COROUTINES)
     val android = setOf(MATERIAL, APP_COMPAT, PREFERENCE, CONSTRAINT_LAYOUT, LIFECYCLE, BROWSER)
-    val androidKtx = setOf(CORE_KTX, PREFERENCE_KTX, FRAGMENT_KTX, VIEWMODEL_KTX, LIFECYCLE_KTX, LIVEDATA_KTX)
+    val androidKtx = setOf(CORE_KTX, PREFERENCE_KTX, FRAGMENT_KTX, VIEWMODEL_KTX, LIFECYCLE_KTX)
     val firebase = setOf(FIREBASE_CORE, FIREBASE_PERF, FIREBASE_CRASHLYTICS)
     val view = setOf(KRUMBS_VIEW, AZTEC_EDITOR, FAST_ADAPTER_CORE, FAST_ADAPTER_UI, FAST_ADAPTER_UTILS, FAB_OPTIONS,
         SIMPLE_SEARCH_VIEW, STATEFUL_LAYOUT, MATERIAL_DIALOGS_CORE, MATERIAL_DIALOGS_INPUT, KEYBOARD_LISTENER,

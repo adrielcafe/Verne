@@ -9,6 +9,7 @@ import cafe.adriel.verne.presentation.helper.PreferencesHelper
 import cafe.adriel.verne.presentation.helper.StatefulLayoutHelper
 import cafe.adriel.verne.presentation.helper.ThemeHelper
 import cafe.adriel.verne.presentation.ui.editor.EditorViewModel
+import cafe.adriel.verne.presentation.ui.editor.typography.TypographyViewModel
 import cafe.adriel.verne.presentation.ui.main.MainViewModel
 import cafe.adriel.verne.presentation.ui.main.explorer.ExplorerViewModel
 import cafe.adriel.verne.shared.di.Component
@@ -21,6 +22,7 @@ class PresentationComponent(appContext: Context) : Component {
         viewModel { MainViewModel(get()) }
         viewModel { ExplorerViewModel(appContext, get(), get(), get(), get(), get(), get(), get(), get(), get()) }
         viewModel { EditorViewModel(appContext, get(), get(), get(), get(), get(), get()) }
+        viewModel { TypographyViewModel(get(), get(), get()) }
     }
 
     private val helperModule = module {

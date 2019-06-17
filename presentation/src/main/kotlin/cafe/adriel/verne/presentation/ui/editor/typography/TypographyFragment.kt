@@ -9,28 +9,25 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
 import cafe.adriel.krumbsview.util.tintDrawable
-import cafe.adriel.verne.domain.interactor.settings.FontFamilySettingsInteractor
-import cafe.adriel.verne.domain.interactor.settings.FontSizeSettingsInteractor
-import cafe.adriel.verne.domain.interactor.settings.MarginSizeSettingsInteractor
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.colorFromAttr
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.model.FontFamily
+import cafe.adriel.verne.presentation.model.TypographySettings
+import cafe.adriel.verne.presentation.util.StateMachineView
 import cafe.adriel.verne.shared.extension.tagOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import it.sephiroth.android.library.numberpicker.NumberPicker
 import it.sephiroth.android.library.numberpicker.doOnProgressChanged
 import kotlinx.android.synthetic.main.fragment_typography.*
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-internal class TypographyFragment : BottomSheetDialogFragment() {
+internal class TypographyFragment : BottomSheetDialogFragment(), StateMachineView<TypographyState> {
 
-    private val fontFamilyInteractor by inject<FontFamilySettingsInteractor>()
-    private val fontSizeInteractor by inject<FontSizeSettingsInteractor>()
-    private val marginSizeInteractor by inject<MarginSizeSettingsInteractor>()
+    private val viewModel by viewModel<TypographyViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
 
     var listener: TypographyFragmentListener? = null
@@ -47,6 +44,33 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initViews()
+
+        viewModel.state.observe(this@TypographyFragment, Observer { onState(it) })
+    }
+
+    override fun onDestroy() {
+        listener = null
+        super.onDestroy()
+    }
+
+    override fun onState(state: TypographyState) {
+        when (state) {
+            is TypographyState.Init -> initSettings(state.settings)
+            is TypographyState.SettingsChanged -> listener?.onSettingsChanged()
+        }
+    }
+
+    private fun initSettings(settings: TypographySettings) {
+        val selectedFontFamilyPosition = FontFamily.sortedValues
+            .indexOfFirst { it == settings.fontFamily }
+
+        vFontFamily.setSelection(selectedFontFamilyPosition)
+        vFontSize.progress = settings.fontSize
+        vMarginSize.progress = settings.marginSize
+    }
+
+    private fun initViews() {
         vFontFamily.apply {
             context?.apply {
                 adapter = FontFamilyAdapter(this)
@@ -72,13 +96,6 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
                 if (fromUser) onMarginSizeSelected(progress)
             }
         }
-
-        loadSettings()
-    }
-
-    override fun onDestroy() {
-        listener = null
-        super.onDestroy()
     }
 
     private fun setupNumberPicker(numberPickerView: NumberPicker) {
@@ -93,41 +110,18 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun loadSettings() {
-        lifecycleScope.launch {
-            val selectedFontFamilyPosition = FontFamily.sortedValues
-                .indexOfFirst { fontFamily ->
-                    val selectedFontFamily = FontFamily.valueOf(fontFamilyInteractor.get())
-                    fontFamily == selectedFontFamily
-                }
-
-            vFontFamily.setSelection(selectedFontFamilyPosition)
-            vFontSize.progress = fontSizeInteractor.get()
-            vMarginSize.progress = marginSizeInteractor.get()
-        }
+    private fun onFontFamilySelected(fontFamily: FontFamily) {
+        viewModel.setAction(TypographyAction.SetFontFamily(fontFamily))
+        analyticsHelper.logTypographyFontFamily(fontFamily.name)
     }
 
-    private fun onFontFamilySelected(selectedFontFamily: FontFamily) {
-        lifecycleScope.launch {
-            fontFamilyInteractor.set(selectedFontFamily.name)
-            listener?.onSettingsChanged()
-            analyticsHelper.logTypographyFontFamily(selectedFontFamily.name)
-        }
+    private fun onFontSizeSelected(fontSize: Int) {
+        viewModel.setAction(TypographyAction.SetFontSize(fontSize))
+        analyticsHelper.logTypographyFontSize(fontSize)
     }
 
-    private fun onFontSizeSelected(selectedFontSize: Int) {
-        lifecycleScope.launch {
-            fontSizeInteractor.set(selectedFontSize)
-            listener?.onSettingsChanged()
-            analyticsHelper.logTypographyFontSize(selectedFontSize)
-        }
-    }
-
-    private fun onMarginSizeSelected(selectedMarginSize: Int) {
-        lifecycleScope.launch {
-            marginSizeInteractor.set(selectedMarginSize)
-            listener?.onSettingsChanged()
-            analyticsHelper.logTypographyMarginSize(selectedMarginSize)
-        }
+    private fun onMarginSizeSelected(marginSize: Int) {
+        viewModel.setAction(TypographyAction.SetMarginSize(marginSize))
+        analyticsHelper.logTypographyMarginSize(marginSize)
     }
 }

@@ -87,6 +87,11 @@ internal class ExplorerFragment :
         viewModel.observeState(this, ::onStateUpdated)
     }
 
+    override fun onDestroy() {
+        listener = null
+        super.onDestroy()
+    }
+
     override fun onStateUpdated(state: ExplorerViewState) {
         state.apply {
             items?.let { setItems(it) }

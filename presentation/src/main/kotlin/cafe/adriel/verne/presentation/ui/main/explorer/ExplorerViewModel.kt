@@ -57,6 +57,10 @@ internal class ExplorerViewModel(
         refreshCurrentDir()
     }
 
+    override fun onCleared() {
+        listener = null
+    }
+
     fun goToParentDir() = if (isBaseDir()) {
         false
     } else {
