@@ -8,7 +8,7 @@ import cafe.adriel.verne.domain.interactor.settings.FontSizeSettingsInteractor
 import cafe.adriel.verne.domain.interactor.settings.MarginSizeSettingsInteractor
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
-import cafe.adriel.verne.presentation.util.StateMachineViewModel
+import cafe.adriel.verne.presentation.util.StateMachine
 import cafe.adriel.verne.shared.extension.withDefault
 import kotlinx.coroutines.launch
 
@@ -16,18 +16,18 @@ internal class TypographyViewModel(
     private val fontFamilyInteractor: FontFamilySettingsInteractor,
     private val fontSizeInteractor: FontSizeSettingsInteractor,
     private val marginSizeInteractor: MarginSizeSettingsInteractor
-) : ViewModel(), StateMachineViewModel<TypographyAction, TypographyState> {
+) : ViewModel(), StateMachine.ViewModel<TypographyAction, TypographyState> {
 
     override val state = MutableLiveData<TypographyState>()
 
     init {
-        setAction(TypographyAction.Init)
+        this + TypographyAction.Init
     }
 
-    override fun setAction(action: TypographyAction) {
+    override fun plus(action: TypographyAction) {
         viewModelScope.launch {
             state.value = when (action) {
-                is TypographyAction.Init -> TypographyState.Init(loadSettings())
+                is TypographyAction.Init -> TypographyState.SettingsLoaded(loadSettings())
 
                 is TypographyAction.SetFontFamily -> {
                     fontFamilyInteractor.set(action.fontFamily.name)

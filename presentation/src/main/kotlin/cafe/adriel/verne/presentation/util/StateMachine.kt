@@ -2,18 +2,21 @@ package cafe.adriel.verne.presentation.util
 
 import androidx.lifecycle.LiveData
 
-internal interface StateMachineAction
+internal interface StateMachine {
 
-internal interface StateMachineState
+    interface Action
 
-internal interface StateMachineView<S : StateMachineState> {
+    interface State
 
-    fun onState(state: S)
-}
+    interface View<S : State> {
 
-internal interface StateMachineViewModel<A : StateMachineAction, S : StateMachineState> {
+        fun onState(state: S)
+    }
 
-    val state: LiveData<S>
+    interface ViewModel<A : Action, S : State> {
 
-    fun setAction(action: A)
+        val state: LiveData<S>
+
+        operator fun plus(action: A)
+    }
 }

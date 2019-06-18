@@ -16,7 +16,7 @@ import cafe.adriel.verne.presentation.extension.colorFromAttr
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
-import cafe.adriel.verne.presentation.util.StateMachineView
+import cafe.adriel.verne.presentation.util.StateMachine
 import cafe.adriel.verne.shared.extension.tagOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import it.sephiroth.android.library.numberpicker.NumberPicker
@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_typography.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-internal class TypographyFragment : BottomSheetDialogFragment(), StateMachineView<TypographyState> {
+internal class TypographyFragment : BottomSheetDialogFragment(), StateMachine.View<TypographyState> {
 
     private val viewModel by viewModel<TypographyViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
@@ -56,7 +56,7 @@ internal class TypographyFragment : BottomSheetDialogFragment(), StateMachineVie
 
     override fun onState(state: TypographyState) {
         when (state) {
-            is TypographyState.Init -> initSettings(state.settings)
+            is TypographyState.SettingsLoaded -> initSettings(state.settings)
             is TypographyState.SettingsChanged -> listener?.onSettingsChanged()
         }
     }
@@ -111,17 +111,17 @@ internal class TypographyFragment : BottomSheetDialogFragment(), StateMachineVie
     }
 
     private fun onFontFamilySelected(fontFamily: FontFamily) {
-        viewModel.setAction(TypographyAction.SetFontFamily(fontFamily))
+        viewModel + TypographyAction.SetFontFamily(fontFamily)
         analyticsHelper.logTypographyFontFamily(fontFamily.name)
     }
 
     private fun onFontSizeSelected(fontSize: Int) {
-        viewModel.setAction(TypographyAction.SetFontSize(fontSize))
+        viewModel + TypographyAction.SetFontSize(fontSize)
         analyticsHelper.logTypographyFontSize(fontSize)
     }
 
     private fun onMarginSizeSelected(marginSize: Int) {
-        viewModel.setAction(TypographyAction.SetMarginSize(marginSize))
+        viewModel + TypographyAction.SetMarginSize(marginSize)
         analyticsHelper.logTypographyMarginSize(marginSize)
     }
 }
