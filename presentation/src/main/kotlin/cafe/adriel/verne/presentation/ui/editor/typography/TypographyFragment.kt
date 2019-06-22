@@ -9,14 +9,15 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.Observer
+import cafe.adriel.hal.observe
+import cafe.adriel.hal.observer.LiveDataStateObserver
+import cafe.adriel.hal.plus
 import cafe.adriel.krumbsview.util.tintDrawable
 import cafe.adriel.verne.presentation.R
 import cafe.adriel.verne.presentation.extension.colorFromAttr
 import cafe.adriel.verne.presentation.helper.AnalyticsHelper
 import cafe.adriel.verne.presentation.model.FontFamily
 import cafe.adriel.verne.presentation.model.TypographySettings
-import cafe.adriel.verne.presentation.util.StateMachine
 import cafe.adriel.verne.shared.extension.tagOf
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import it.sephiroth.android.library.numberpicker.NumberPicker
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.fragment_typography.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-internal class TypographyFragment : BottomSheetDialogFragment(), StateMachine.View<TypographyState> {
+internal class TypographyFragment : BottomSheetDialogFragment() {
 
     private val viewModel by viewModel<TypographyViewModel>()
     private val analyticsHelper by inject<AnalyticsHelper>()
@@ -46,7 +47,7 @@ internal class TypographyFragment : BottomSheetDialogFragment(), StateMachine.Vi
 
         initViews()
 
-        viewModel.state.observe(this@TypographyFragment, Observer { onState(it) })
+        viewModel.observe(LiveDataStateObserver(this, ::onState))
     }
 
     override fun onDestroy() {
@@ -54,7 +55,7 @@ internal class TypographyFragment : BottomSheetDialogFragment(), StateMachine.Vi
         super.onDestroy()
     }
 
-    override fun onState(state: TypographyState) {
+    private fun onState(state: TypographyState) {
         when (state) {
             is TypographyState.SettingsLoaded -> initSettings(state.settings)
             is TypographyState.SettingsChanged -> listener?.onSettingsChanged()

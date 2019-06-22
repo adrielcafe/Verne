@@ -8,7 +8,7 @@ internal object Version {
     const val FABRIC = "1.29.0"
 
     // Kotlin
-    const val KOTLIN = "1.3.31"
+    const val KOTLIN = "1.3.40"
     const val COROUTINES = "1.2.1"
 
     // Android
@@ -38,16 +38,17 @@ internal object Version {
     const val FAB_OPTIONS = "1.2.0"
     const val SIMPLE_SEARCH_VIEW = "0.1.4"
     const val STATEFUL_LAYOUT = "2.0.8"
-
-    // Util
-    const val PUFFER_DB = "1.0.0"
-    const val KOIN = "2.0.1"
-    const val EIFFEL = "4.1.0"
-    const val TIMBER = "4.7.1"
     const val KEYBOARD_LISTENER = "1.0.0"
     const val PRETTY_TIME = "4.0.2.Final"
     const val PDF_GENERATOR = "1.2"
     const val ASSENT = "2.3.0"
+
+    // Util
+    const val PUFFER_DB = "1.0.1"
+    const val HAL = "master-SNAPSHOT" // TODO Update to stable release
+    const val KOIN = "2.0.1"
+    const val EIFFEL = "4.1.0"
+    const val TIMBER = "4.7.1"
     const val LEAK_CANARY = "2.0-alpha-2"
 
     // Forks
@@ -95,9 +96,6 @@ object ModuleLib {
     const val FIREBASE_PERF = "com.google.firebase:firebase-perf:${Version.FIREBASE_PERF}"
     const val FIREBASE_CRASHLYTICS = "com.crashlytics.sdk.android:crashlytics:${Version.FIREBASE_CRASHLYTICS}"
 
-    // Quality
-    const val LEAK_CANARY = "com.squareup.leakcanary:leakcanary-android:${Version.LEAK_CANARY}"
-
     // View
     const val KRUMBS_VIEW = "com.github.adrielcafe:krumbsview:${Version.KRUMBS_VIEW}"
     const val AZTEC_EDITOR = "com.github.wordpress-mobile.WordPress-Aztec-Android:aztec:${Version.AZTEC_EDITOR}"
@@ -114,10 +112,13 @@ object ModuleLib {
 
     // Util
     const val PUFFER_DB = "com.github.adrielcafe.pufferdb:core:${Version.PUFFER_DB}"
+    const val HAL_CORE = "com.github.adrielcafe.hal:hal-core:${Version.HAL}"
+    const val HAL_LIVEDATA = "com.github.adrielcafe.hal:hal-livedata:${Version.HAL}"
     const val KOIN_CORE = "org.koin:koin-core:${Version.KOIN}"
     const val KOIN_VIEW_MODEL = "org.koin:koin-androidx-viewmodel:${Version.KOIN}"
     const val EIFFEL = "com.github.etiennelenhart:eiffel:${Version.EIFFEL}"
     const val TIMBER = "com.jakewharton.timber:timber:${Version.TIMBER}"
+    const val LEAK_CANARY = "com.squareup.leakcanary:leakcanary-android:${Version.LEAK_CANARY}"
 
     // Forks
     // https://github.com/adrielcafe/material-dialogs
