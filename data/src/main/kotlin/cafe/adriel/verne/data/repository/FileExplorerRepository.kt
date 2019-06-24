@@ -5,6 +5,10 @@ import cafe.adriel.verne.shared.error.FileExplorerError
 import cafe.adriel.verne.shared.extension.tryOrThrow
 import cafe.adriel.verne.shared.extension.withIO
 import cafe.adriel.verne.shared.model.AppConfig
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import java.io.File
 
 internal class FileExplorerRepository(private val appConfig: AppConfig) : ExplorerRepository {
@@ -24,17 +28,17 @@ internal class FileExplorerRepository(private val appConfig: AppConfig) : Explor
 
     override suspend fun search(query: String, showDeleted: Boolean) = withIO {
         if (query.isBlank()) {
-            emptySequence()
+            emptyFlow()
         } else {
             appConfig.explorerRootFolder
                 .walk()
+                .asFlow()
                 .filter { searchFilter(it, query, showDeleted) }
         }
     }
 
     override suspend fun select(dir: File, showDeleted: Boolean) = withIO {
-        (dir.listFiles() ?: emptyArray())
-            .asSequence()
+        flowOf(*dir.listFiles() ?: emptyArray())
             .filter { selectFilter(it, showDeleted) }
     }
 

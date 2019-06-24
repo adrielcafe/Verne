@@ -3,7 +3,6 @@ package cafe.adriel.verne.presentation.ui.editor.typography
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cafe.adriel.hal.HAL
-import cafe.adriel.hal.plus
 import cafe.adriel.verne.domain.interactor.settings.FontFamilySettingsInteractor
 import cafe.adriel.verne.domain.interactor.settings.FontSizeSettingsInteractor
 import cafe.adriel.verne.domain.interactor.settings.MarginSizeSettingsInteractor
@@ -16,28 +15,24 @@ internal class TypographyViewModel(
     private val marginSizeInteractor: MarginSizeSettingsInteractor
 ) : ViewModel(), HAL.StateMachine<TypographyAction, TypographyState> {
 
-    override val hal by HAL(viewModelScope, ::reducer)
+    override val hal by HAL(viewModelScope, TypographyState.Init, ::reducer)
 
-    init {
-        this + TypographyAction.Init
-    }
-
-    private suspend fun reducer(action: TypographyAction): TypographyState = when (action) {
-        is TypographyAction.Init -> TypographyState.SettingsLoaded(loadSettings())
+    private suspend fun reducer(action: TypographyAction, transitionTo: (TypographyState) -> Unit) = when (action) {
+        is TypographyAction.LoadSettings -> transitionTo(TypographyState.SettingsLoaded(loadSettings()))
 
         is TypographyAction.SetFontFamily -> {
             fontFamilyInteractor.set(action.fontFamily.name)
-            TypographyState.SettingsChanged
+            transitionTo(TypographyState.SettingsChanged)
         }
 
         is TypographyAction.SetFontSize -> {
             fontSizeInteractor.set(action.size)
-            TypographyState.SettingsChanged
+            transitionTo(TypographyState.SettingsChanged)
         }
 
         is TypographyAction.SetMarginSize -> {
             marginSizeInteractor.set(action.size)
-            TypographyState.SettingsChanged
+            transitionTo(TypographyState.SettingsChanged)
         }
     }
 

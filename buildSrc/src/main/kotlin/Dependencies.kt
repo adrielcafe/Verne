@@ -9,7 +9,7 @@ internal object Version {
 
     // Kotlin
     const val KOTLIN = "1.3.40"
-    const val COROUTINES = "1.2.1"
+    const val COROUTINES = "1.3.0-M1"
 
     // Android
     const val MATERIAL = "1.1.0-alpha07"
@@ -45,7 +45,7 @@ internal object Version {
 
     // Util
     const val PUFFER_DB = "1.0.1"
-    const val HAL = "master-SNAPSHOT" // TODO Update to stable release
+    const val HAL = "0.0.1"
     const val KOIN = "2.0.1"
     const val EIFFEL = "4.1.0"
     const val TIMBER = "4.7.1"

@@ -9,8 +9,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
-import cafe.adriel.hal.observe
-import cafe.adriel.hal.observer.LiveDataStateObserver
+import cafe.adriel.hal.livedata.observeState
 import cafe.adriel.hal.plus
 import cafe.adriel.krumbsview.util.tintDrawable
 import cafe.adriel.verne.presentation.R
@@ -47,7 +46,7 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
 
         initViews()
 
-        viewModel.observe(LiveDataStateObserver(this, ::onState))
+        viewModel.observeState(this, ::onState)
     }
 
     override fun onDestroy() {
@@ -57,6 +56,7 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
 
     private fun onState(state: TypographyState) {
         when (state) {
+            is TypographyState.Init -> viewModel + TypographyAction.LoadSettings
             is TypographyState.SettingsLoaded -> initSettings(state.settings)
             is TypographyState.SettingsChanged -> listener?.onSettingsChanged()
         }

@@ -202,6 +202,7 @@ internal class ExplorerFragment :
 
         lifecycleScope.launch {
             val adapterItems = withDefault {
+                // TODO Replace Sequence by Flow?
                 items.asSequence()
                     .sortedBy { it.title.toLowerCase() } // Secondary comparator
                     .sortedBy { it is ExplorerItem.File } // Primary comparator
