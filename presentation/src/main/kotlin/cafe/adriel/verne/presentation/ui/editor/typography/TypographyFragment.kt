@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import androidx.core.view.forEach
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
 import cafe.adriel.hal.livedata.observeState
 import cafe.adriel.hal.plus
 import cafe.adriel.krumbsview.util.tintDrawable
@@ -74,7 +75,7 @@ internal class TypographyFragment : BottomSheetDialogFragment() {
     private fun initViews() {
         vFontFamily.apply {
             context?.apply {
-                adapter = FontFamilyAdapter(this)
+                adapter = FontFamilyAdapter(this, lifecycleScope)
             }
             post {
                 onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

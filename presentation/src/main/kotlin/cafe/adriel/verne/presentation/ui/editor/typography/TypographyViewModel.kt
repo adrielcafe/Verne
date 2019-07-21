@@ -15,24 +15,25 @@ internal class TypographyViewModel(
     private val marginSizeInteractor: MarginSizeSettingsInteractor
 ) : ViewModel(), HAL.StateMachine<TypographyAction, TypographyState> {
 
-    override val hal by HAL(viewModelScope, TypographyState.Init, ::reducer)
+    override val hal by HAL(viewModelScope, TypographyState.Init) { action, transitionTo ->
+        when (action) {
+            is TypographyAction.LoadSettings ->
+                transitionTo(TypographyState.SettingsLoaded(loadSettings()))
 
-    private suspend fun reducer(action: TypographyAction, transitionTo: (TypographyState) -> Unit) = when (action) {
-        is TypographyAction.LoadSettings -> transitionTo(TypographyState.SettingsLoaded(loadSettings()))
+            is TypographyAction.SetFontFamily -> {
+                fontFamilyInteractor.set(action.fontFamily.name)
+                transitionTo(TypographyState.SettingsChanged)
+            }
 
-        is TypographyAction.SetFontFamily -> {
-            fontFamilyInteractor.set(action.fontFamily.name)
-            transitionTo(TypographyState.SettingsChanged)
-        }
+            is TypographyAction.SetFontSize -> {
+                fontSizeInteractor.set(action.size)
+                transitionTo(TypographyState.SettingsChanged)
+            }
 
-        is TypographyAction.SetFontSize -> {
-            fontSizeInteractor.set(action.size)
-            transitionTo(TypographyState.SettingsChanged)
-        }
-
-        is TypographyAction.SetMarginSize -> {
-            marginSizeInteractor.set(action.size)
-            transitionTo(TypographyState.SettingsChanged)
+            is TypographyAction.SetMarginSize -> {
+                marginSizeInteractor.set(action.size)
+                transitionTo(TypographyState.SettingsChanged)
+            }
         }
     }
 

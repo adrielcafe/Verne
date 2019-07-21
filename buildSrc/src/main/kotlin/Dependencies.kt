@@ -45,7 +45,7 @@ internal object Version {
 
     // Util
     const val PUFFER_DB = "1.0.1"
-    const val HAL = "0.0.1"
+    const val HAL = "0.0.2"
     const val KOIN = "2.0.1"
     const val EIFFEL = "4.1.0"
     const val TIMBER = "4.7.1"

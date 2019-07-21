@@ -215,9 +215,11 @@ class EditorActivity : AppCompatActivity(), StateAware<EditorViewState>, Typogra
             setRedoMenuItemEnabled(vEditor.history.redoValid())
 
             with(settings) {
-                font(fontFamily.resId) { typeface ->
-                    vTitle.typeface = typeface
-                    vEditor.typeface = typeface
+                lifecycleScope.launch {
+                    font(fontFamily.resId)?.let { typeface ->
+                        vTitle.typeface = typeface
+                        vEditor.typeface = typeface
+                    }
                 }
 
                 val padding = marginSize.dpToPx()
