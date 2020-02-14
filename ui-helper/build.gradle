@@ -1,0 +1,9 @@
+apply plugin: 'com.android.library'
+apply from: '../android-module.gradle'
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':shared')
+
+    implementation ModuleDep.KOIN_ANDROID
+}

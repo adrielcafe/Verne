@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+apply from: '../android-module.gradle'
+
+android {
+    defaultConfig {
+        applicationId Config.APPLICATION_ID
+
+        versionCode Config.VERSION_CODE
+        versionName Config.VERSION_NAME
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            applicationIdSuffix '.dev'
+            versionNameSuffix '-dev'
+            buildConfigField 'Boolean', 'RELEASE', 'false'
+            resValue 'string', 'app_name', 'Verne Dev'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField 'Boolean', 'RELEASE', 'true'
+            resValue 'string', 'app_name', 'Verne'
+        }
+    }
+}
+
+dependencies {
+    implementation project(':shared')
+    implementation project(':domain')
+    implementation project(':data')
+    implementation project(':ui-helper')
+    implementation project(':ui-presentation')
+
+    implementation ModuleDep.KOIN_ANDROID
+
+//    ModuleDep.firebase.forEach { implementation it }
+}

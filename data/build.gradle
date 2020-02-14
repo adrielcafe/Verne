@@ -1,0 +1,15 @@
+apply plugin: 'com.android.library'
+apply from: '../android-module.gradle'
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':shared')
+
+    releaseImplementation ModuleDep.OBJECT_BOX
+    debugImplementation ModuleDep.OBJECT_BOX_BROWSER
+    implementation ModuleDep.OBJECT_BOX_KTX
+
+    implementation ModuleDep.KOIN_ANDROID
+}
+
+apply plugin: 'io.objectbox'

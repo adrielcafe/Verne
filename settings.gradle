@@ -1,0 +1,3 @@
+rootProject.name='Verne'
+
+include ':app', ':shared', ':data', ':domain', ':ui-helper', ':ui-presentation'

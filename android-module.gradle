@@ -1,0 +1,45 @@
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion Config.COMPILE_SDK_VERSION
+    defaultConfig {
+        minSdkVersion Config.MIN_SDK_VERSION
+        targetSdkVersion Config.TARGET_SDK_VERSION
+
+        resConfigs 'en', 'pt'
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin/'
+        test.java.srcDirs += 'src/test/kotlin/'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin/'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    dexOptions {
+        preDexLibraries true
+        maxProcessCount 8
+    }
+    packagingOptions {
+        exclude 'META-INF/*'
+    }
+}
+
+androidExtensions {
+    experimental true
+    defaultCacheImplementation "SPARSE_ARRAY"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    ModuleDep.kotlin.forEach { implementation it }
+
+    TestDep.unitTest.forEach { testImplementation it }
+    TestDep.instrumentationTest.forEach { testImplementation it }
+}

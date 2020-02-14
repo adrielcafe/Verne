@@ -1,0 +1,7 @@
+apply from: '../kotlin-module.gradle'
+
+dependencies {
+    implementation project(':shared')
+
+    implementation ModuleDep.KOIN
+}
