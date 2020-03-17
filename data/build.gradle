@@ -2,14 +2,9 @@ apply plugin: 'com.android.library'
 apply from: '../android-module.gradle'
 
 dependencies {
-    implementation project(':domain')
     implementation project(':shared')
+    implementation project(':domain')
 
-    releaseImplementation ModuleDep.OBJECT_BOX
-    debugImplementation ModuleDep.OBJECT_BOX_BROWSER
-    implementation ModuleDep.OBJECT_BOX_KTX
-
-    implementation ModuleDep.KOIN_ANDROID
+    implementation ModuleDep.FIREBASE_FIRESTORE
+    implementation ModuleDep.KOIN
 }
-
-apply plugin: 'io.objectbox'

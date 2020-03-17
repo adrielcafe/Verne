@@ -30,10 +30,13 @@ dependencies {
     implementation project(':shared')
     implementation project(':domain')
     implementation project(':data')
-    implementation project(':ui-helper')
+    implementation project(':ui-shared')
     implementation project(':ui-presentation')
 
+    implementation ModuleDep.FIREBASE_ANALYTICS
     implementation ModuleDep.KOIN_ANDROID
 
 //    ModuleDep.firebase.forEach { implementation it }
 }
+
+apply plugin: 'com.google.gms.google-services'

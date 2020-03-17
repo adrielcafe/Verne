@@ -28,8 +28,8 @@ console-reports:
     - 'ProjectStatisticsReport'
     - 'ComplexityReport'
     - 'NotificationReport'
-    - 'FindingsReport'
     - 'FileBasedFindingsReport'
+    # - 'FindingsReport'
 
 comments:
   active: true
@@ -471,7 +471,7 @@ style:
   UnusedPrivateClass:
     active: true
   UnusedPrivateMember:
-    active: true
+    active: false
     allowedNames: "(_|ignored|expected|serialVersionUID)"
   UseArrayLiteralsInAnnotations:
     active: true
@@ -482,7 +482,7 @@ style:
     excludeAnnotatedClasses: ""
     allowVars: true
   UseIfInsteadOfWhen:
-    active: true
+    active: false
   UseRequire:
     active: true
   UselessCallOnNotNull:

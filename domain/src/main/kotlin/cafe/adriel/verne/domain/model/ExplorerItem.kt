@@ -3,44 +3,39 @@ package cafe.adriel.verne.domain.model
 import java.util.Date
 
 sealed class ExplorerItem(
-    open val id: Long,
+    open val id: String,
+    open val parentId: String?,
     open val name: String,
-    open val path: String,
-    open val deleted: Boolean,
     open val createdAt: Date,
     open val updatedAt: Date?
 ) {
 
     data class Folder(
-        override val id: Long,
+        override val id: String,
+        override val parentId: String?,
         override val name: String,
-        override val path: String,
-        override val deleted: Boolean,
         override val createdAt: Date,
-        override val updatedAt: Date? = null,
+        override val updatedAt: Date?,
         val filesCount: Int
     ) : ExplorerItem(
         id = id,
+        parentId = parentId,
         name = name,
-        path = path,
-        deleted = deleted,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
 
     data class File(
-        override val id: Long,
+        override val id: String,
+        override val parentId: String?,
         override val name: String,
-        override val path: String,
-        override val deleted: Boolean,
         override val createdAt: Date,
-        override val updatedAt: Date? = null,
-        val content: String
+        override val updatedAt: Date?,
+        val contentId: String
     ) : ExplorerItem(
         id = id,
+        parentId = parentId,
         name = name,
-        path = path,
-        deleted = deleted,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
